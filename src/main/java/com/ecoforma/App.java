@@ -1,6 +1,7 @@
 package com.ecoforma;
 
 import javax.swing.*;
+import java.io.IOException;
 
 // Основной класс приложения
 public class App {
@@ -13,7 +14,11 @@ public class App {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                formSignIn = new FormSignIn();
+                try {
+                    formSignIn = new FormSignIn();
+                } catch (IOException e) {
+                    System.out.println(e);
+                }
             }
         });
     }
