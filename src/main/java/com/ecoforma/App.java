@@ -11,14 +11,11 @@ public class App {
 
     public static void main(String[] args) {
         // Запуск формы в потоке обработки событий
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    formSignIn = new FormSignIn();
-                } catch (IOException e) {
-                    System.out.println(e);
-                }
+        SwingUtilities.invokeLater(() -> {
+            try {
+                formSignIn = new FormSignIn();
+            } catch (IOException e) {
+                System.out.println(e);
             }
         });
     }

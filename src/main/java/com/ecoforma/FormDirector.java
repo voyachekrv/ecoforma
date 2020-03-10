@@ -13,7 +13,7 @@ import static com.ecoforma.App.COMPANY_NAME;
 public class FormDirector {
     FormDirector() throws IOException {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Размеры окна
-        Path pathToIcon = Paths.get("C:", "ecoforma", "src", "main", "resources", "logo1.png"); // Путь к иконке приложения
+        Path pathToIcon = Paths.get("C:", "ecoforma", "src", "main", "resources", "img/logo1.png"); // Путь к иконке приложения
 
         JFrame frame = new JFrame(COMPANY_NAME + " - Директор"); // Основная панель формы
         frame.setLayout(new FlowLayout());

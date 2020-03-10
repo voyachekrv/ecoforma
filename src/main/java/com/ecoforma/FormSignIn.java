@@ -5,12 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import static com.ecoforma.App.COMPANY_NAME;
 
@@ -26,15 +21,14 @@ public class FormSignIn {
 
     FormSignIn() throws IOException {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Размеры окна
-        Path pathToIcon = Paths.get("C:", "ecoforma", "src", "main", "resources", "logo1.png"); // Путь к иконке приложения
 
         frame = new JFrame(COMPANY_NAME + " - Вход в систему"); // Основная панель формы
         frame.setLayout(new FlowLayout());
         frame.setSize(375, 400); // Установка размеров
-        frame.setLocation((screenSize.width / 2) - 130, (screenSize.height / 2) - 190); // Установка положения на экране
+        frame.setLocation((screenSize.width / 3) + 130, (screenSize.height / 4) + 30); // Установка положения на экране
         frame.setResizable(false); // Запрет изменения размера окна
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Установка операции закрытия окна приложения
-        frame.setIconImage(ImageIO.read(new File(pathToIcon.toString())));
+        frame.setIconImage(ImageIO.read(getClass().getResource("/img/logo1.png")));
 
         JPanel grid = new JPanel(); // Панель для компоновки элементов формы
         grid.setLayout(new GridLayout(3, 1, 1, 10)); // Установка диспетчера компоновки "Таблица"
@@ -58,7 +52,7 @@ public class FormSignIn {
         bClear.setFocusPainted(false);
 
         // Вспомогательный диспетчер компоновки для текстовых полей формы
-        GridLayout tfLayout = new GridLayout(2, 1,1, 1);
+        GridLayout tfLayout = new GridLayout(2, 1, 1, 1);
 
         // Компоновка поля ввода логина
         JPanel loginPanel = new JPanel();
@@ -83,34 +77,25 @@ public class FormSignIn {
         buttonPanel.add(bSignIn, constraints);
         buttonPanel.add(bClear);
 
-        // Логотип фирмы
-        Path pathToPicture = Paths.get("C:", "ecoforma", "src", "main", "resources", "logo2.png");
-        ImageIcon mainIcon = new ImageIcon(pathToPicture.toString());
-
         // Добавление на форму всех элементов
         grid.add(loginPanel);
         grid.add(passwordPanel);
         grid.add(buttonPanel);
 
-        frame.add(new JLabel(mainIcon));
+        frame.add(new JLabel(new ImageIcon(getClass().getResource("/img/logo2.png"))));
         frame.add(grid);
 
         // Установка видимости формы
         frame.setVisible(true);
 
         // Очистка полей формы по кнопке "Очистить"
-        bClear.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                tfLogin.setText("");
-                tfPassword.setText("");
-            }
+        bClear.addActionListener(actionEvent -> {
+            tfLogin.setText("");
+            tfPassword.setText("");
         });
 
         // Обработка входа
-        bSignIn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+        bSignIn.addActionListener(actionEvent -> {
                 if (tfLogin.getText().equals(testLogin) && passwordEqualing(testPassword, tfPassword.getPassword())) {
                     frame.setVisible(false);
                     frame = null;
@@ -124,8 +109,7 @@ public class FormSignIn {
                     tfLogin.setText("");
                     tfPassword.setText("");
                 }
-            }
-        });
+            });
     }
 
     private boolean passwordEqualing(@NotNull char[] r, @NotNull char[] m) {
