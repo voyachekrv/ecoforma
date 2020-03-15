@@ -1,27 +1,31 @@
-package com.ecoforma;
+package com.ecoforma.forms;
 
+import com.ecoforma.db.DbSession;
+import com.ecoforma.db.mappers.RegistrationDataMapper;
+import org.apache.ibatis.session.SqlSession;
 import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.util.Objects;
 
 import static com.ecoforma.App.COMPANY_NAME;
+import static com.ecoforma.App.mainForm;
 
 // Форма регистрации в систем
-public class FormSignIn {
-    private JFrame frame;
+public class SignInForm {
+    JFrame frame;
     private JTextField tfLogin; // Поле для ввода логина
     private JPasswordField tfPassword; // Поле для ввода пароля
-    FormDirector director;
 
-    private final String testLogin = "roma";
-    private final char[] testPassword = {'1', '2', '3'};
-
-    FormSignIn() throws IOException {
+    public SignInForm() throws IOException {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Размеры окна
 
+        // Форма
         frame = new JFrame(COMPANY_NAME + " - Вход в систему"); // Основная панель формы
         frame.setLayout(new FlowLayout());
         frame.setSize(375, 400); // Установка размеров
@@ -43,7 +47,7 @@ public class FormSignIn {
         tfPassword.setFont(new Font("Default", Font.PLAIN, 14));
 
         // Кнопка подтверждения входа
-        final JButton bSignIn = new JButton("Войти");
+        JButton bSignIn = new JButton("Войти");
         bSignIn.setPreferredSize(new Dimension(88, 26));
         bSignIn.setFocusPainted(false);
 
@@ -82,42 +86,64 @@ public class FormSignIn {
         grid.add(passwordPanel);
         grid.add(buttonPanel);
 
-        frame.add(new JLabel(new ImageIcon(getClass().getResource("/img/logo2.png"))));
+        frame.add(new JLabel(new ImageIcon(getClass().getResource("/img/logo2.png")))); // Логотип фирмы
         frame.add(grid);
+
+        bClear.addActionListener(actionEvent -> clearTextFields()); // Очистка полей формы по кнопке "Очистить"
+
+        bSignIn.addActionListener(actionEvent -> signIn()); // Обработка входа
+
+        // Добавление нажатия кнопки Enter для входа в систему
+        tfPassword.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                super.keyReleased(e);
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    signIn();
+                }
+            }
+        });
 
         // Установка видимости формы
         frame.setVisible(true);
-
-        // Очистка полей формы по кнопке "Очистить"
-        bClear.addActionListener(actionEvent -> {
-            tfLogin.setText("");
-            tfPassword.setText("");
-        });
-
-        // Обработка входа
-        bSignIn.addActionListener(actionEvent -> {
-                if (tfLogin.getText().equals(testLogin) && passwordEqualing(testPassword, tfPassword.getPassword())) {
-                    frame.setVisible(false);
-                    frame = null;
-                    try {
-                        director = new FormDirector();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(frame, "Неверный логин или пароль", "Ошибка", JOptionPane.ERROR_MESSAGE);
-                    tfLogin.setText("");
-                    tfPassword.setText("");
-                }
-            });
     }
 
-    private boolean passwordEqualing(@NotNull char[] r, @NotNull char[] m) {
-        for (byte i = 0; i < r.length; i++) {
-            if (r[i] != m[i]) {
-                return false;
-            }
+    // Очистка полей ввода
+    private void clearTextFields() {
+        tfLogin.setText("");
+        tfPassword.setText("");
+        tfLogin.requestFocus();
+    }
+
+    // Преобразование в строку пароля, полученного с форма
+    @NotNull
+    private String buildClientPassword(@NotNull char[] chars) {
+        StringBuilder clientPassword = new StringBuilder();
+
+        for (char passwordChar: chars) {
+            clientPassword.append(passwordChar);
         }
-        return true;
+
+        return clientPassword.toString();
+    }
+
+    // Вход в систему
+    private void signIn() {
+        try (SqlSession session = DbSession.startSession()) {
+            RegistrationDataMapper mapper = session.getMapper(RegistrationDataMapper.class);
+            String sessionType = mapper.getSessionType(tfLogin.getText(), buildClientPassword(tfPassword.getPassword()));
+
+            if (Objects.isNull(sessionType)) {
+                JOptionPane.showMessageDialog(frame, "Неверный логин или пароль", "Ошибка", JOptionPane.WARNING_MESSAGE);
+                clearTextFields();
+            } else  {
+                frame.setVisible(false);
+                mainForm = new MainForm(sessionType);
+                mainForm.frame.setVisible(true);
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(frame, e.getMessage(), "Системная ошибка", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }
+

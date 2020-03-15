@@ -1,5 +1,6 @@
 package com.ecoforma;
 
+import com.ecoforma.forms.*;
 import javax.swing.*;
 import java.io.IOException;
 
@@ -7,15 +8,17 @@ import java.io.IOException;
 public class App {
     public static final String COMPANY_NAME = "Экоформа-Пенза"; // Название компании
 
-    private static FormSignIn formSignIn; // Форма регистрации в системе
+    public static MainForm mainForm;
+    public static SignInForm signInForm;
 
     public static void main(String[] args) {
         // Запуск формы в потоке обработки событий
+        System.out.println(java.lang.System.getProperty("java.library.path"));
         SwingUtilities.invokeLater(() -> {
             try {
-                formSignIn = new FormSignIn();
+                signInForm = new SignInForm();
             } catch (IOException e) {
-                System.out.println(e);
+                e.printStackTrace();
             }
         });
     }
