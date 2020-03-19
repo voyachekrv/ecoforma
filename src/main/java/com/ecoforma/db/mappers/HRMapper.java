@@ -13,4 +13,10 @@ public interface HRMapper {
 
     @Select("SELECT * FROM employee WHERE (ID = #{ID} AND deleted = 0);")
     Employee getEmployeeByID(@Param("ID") long ID);
+
+    @Select("SELECT name FROM post WHERE deleted = 0")
+    String[] getPostNames();
+
+    @Select("SELECT name FROM department WHERE deleted = 0")
+    String[] getDepartmentNames();
 }

@@ -25,6 +25,7 @@ public class MainForm {
     JTable table;
     JTextField tfName, tfDateOfBirth, tfPassport, tfEducation, tfAddress, tfPhoneNumber, tfEmail, tfPersonalSalary;
     JButton btnAcceptChanges, btnDeleteEmployee, btnUnpick, btnNewEmployee;
+    JComboBox cbboxPost, cbboxDepartment;
 
     String currentSession;
     Insets insets;
@@ -66,7 +67,7 @@ public class MainForm {
         toolBar.setBounds(0, 0, 1346, 44);
         frame.getContentPane().add(toolBar);
 
-        btnSignOut = new JButton("Выход из системы");
+        btnSignOut = new JButton("Выход из системы", new ImageIcon(getClass().getResource("/img/icon-logout.png")));
         btnSignOut.setFocusPainted(false);
         toolBar.add(btnSignOut);
 
@@ -94,59 +95,59 @@ public class MainForm {
         frame.getContentPane().add(tfSearch);
         tfSearch.setColumns(50);
 
-        btnSearch = new JButton("Поиск");
-        btnSearch.setBounds(145, 64, 70, 23);
+        btnSearch = new JButton("Поиск", new ImageIcon(getClass().getResource("/img/icon-search.png")));
+        btnSearch.setBounds(145, 64, 90, 23);
         btnSearch.setFocusPainted(false);
         frame.getContentPane().add(btnSearch);
 
         JLabel lSearchOptions = new JLabel("Критерии поиска:");
-        lSearchOptions.setBounds(222, 70, 105, 14);
+        lSearchOptions.setBounds(252, 70, 105, 14);
         frame.getContentPane().add(lSearchOptions);
 
         rbID = new JRadioButton("Табельный номер");
-        rbID.setBounds(325, 66, 135, 23);
+        rbID.setBounds(355, 66, 135, 23);
         rbID.setFocusPainted(false);
         frame.getContentPane().add(rbID);
 
         rbName = new JRadioButton("Имя");
-        rbName.setBounds(456, 66, 55, 23);
+        rbName.setBounds(486, 66, 55, 23);
         rbName.setSelected(true);
         rbName.setFocusPainted(false);
         frame.getContentPane().add(rbName);
 
         rbPassport = new JRadioButton("Номер паспорта");
         rbPassport.setFocusPainted(false);
-        rbPassport.setBounds(507, 66, 119, 23);
+        rbPassport.setBounds(537, 66, 119, 23);
         frame.getContentPane().add(rbPassport);
 
         rbEducation = new JRadioButton("Образование");
         rbEducation.setFocusPainted(false);
-        rbEducation.setBounds(626, 66, 106, 23);
+        rbEducation.setBounds(656, 66, 106, 23);
         frame.getContentPane().add(rbEducation);
 
         rbAdress = new JRadioButton("Адрес");
         rbAdress.setFocusPainted(false);
-        rbAdress.setBounds(730, 66, 67, 23);
+        rbAdress.setBounds(760, 66, 67, 23);
         frame.getContentPane().add(rbAdress);
 
         rbPhoneNumber = new JRadioButton("Номер телефона");
         rbPhoneNumber.setFocusPainted(false);
-        rbPhoneNumber.setBounds(797, 66, 125, 23);
+        rbPhoneNumber.setBounds(827, 66, 125, 23);
         frame.getContentPane().add(rbPhoneNumber);
 
         rbEmail = new JRadioButton("E-mail");
         rbEmail.setFocusPainted(false);
-        rbEmail.setBounds(920, 66, 67, 23);
+        rbEmail.setBounds(950, 66, 67, 23);
         frame.getContentPane().add(rbEmail);
 
         rbPost = new JRadioButton("Должность");
         rbPost.setFocusPainted(false);
-        rbPost.setBounds(985, 66, 96, 23);
+        rbPost.setBounds(1015, 66, 96, 23);
         frame.getContentPane().add(rbPost);
 
         rbDepartment = new JRadioButton("Отдел");
         rbDepartment.setFocusPainted(false);
-        rbDepartment.setBounds(1080, 66, 67, 23);
+        rbDepartment.setBounds(1110, 66, 67, 23);
         frame.getContentPane().add(rbDepartment);
 
         ButtonGroup searchGroup = new ButtonGroup();
@@ -241,30 +242,50 @@ public class MainForm {
         lPersonalSalary.setBounds(612, 655, 150, 14);
         frame.getContentPane().add(lPersonalSalary);
 
-        btnAcceptChanges = new JButton("Подтвердить изменения");
-        btnAcceptChanges.setBounds(30, 714, 180, 30);
+        // Кнопки внизу панели редактирования сотрудника
+
+        btnAcceptChanges = new JButton("Подтвердить изменения", new ImageIcon(getClass().getResource("/img/icon-accept.png")));
+        btnAcceptChanges.setBounds(30, 714, 210, 30);
         btnAcceptChanges.setFocusPainted(false);
         btnAcceptChanges.setEnabled(false);
         frame.getContentPane().add(btnAcceptChanges);
 
-        //TODO: После окончания работы над расположением компонентов формы добавить к кнопке иконку "X"
-        btnDeleteEmployee = new JButton("Удалить сотрудника");
-        btnDeleteEmployee.setBounds(220, 714, 170, 30);
+        btnDeleteEmployee = new JButton("Удалить сотрудника", new ImageIcon(getClass().getResource("/img/icon-delete.png")));
+        btnDeleteEmployee.setBounds(250, 714, 185, 30);
         btnDeleteEmployee.setFocusPainted(false);
         btnDeleteEmployee.setEnabled(false);
         frame.getContentPane().add(btnDeleteEmployee);
 
-        btnUnpick = new JButton("Снять выбор");
-        btnUnpick.setBounds(400, 714, 170, 30);
+        btnUnpick = new JButton("Снять выбор", new ImageIcon(getClass().getResource("/img/icon-unfocus.png")));
+        btnUnpick.setBounds(445, 714, 140, 30);
         btnUnpick.setFocusPainted(false);
         btnUnpick.setEnabled(false);
         frame.getContentPane().add(btnUnpick);
 
-        //TODO: После окончания работы над расположением компонентов формы добавить к кнопке иконку "+"
-        btnNewEmployee = new JButton("Новый сотрудник");
-        btnNewEmployee.setBounds(580, 714, 170, 30);
+        btnNewEmployee = new JButton("Новый сотрудник", new ImageIcon(getClass().getResource("/img/icon-add.png")));
+        btnNewEmployee.setBounds(595, 714, 170, 30);
         btnNewEmployee.setFocusPainted(false);
         frame.getContentPane().add(btnNewEmployee);
+
+        JLabel lPost = new JLabel("Должность");
+        lPost.setBounds(807, 538, 150, 14);
+        frame.getContentPane().add(lPost);
+
+        cbboxPost = new JComboBox();
+        cbboxPost.setModel(new DefaultComboBoxModel(mapper.getPostNames()));
+        cbboxPost.setBounds(807, 562, 185, 23);
+        cbboxPost.setEnabled(false);
+        frame.getContentPane().add(cbboxPost);
+
+        JLabel lDepartment = new JLabel("Отдел");
+        lDepartment.setBounds(1007, 538, 150, 14);
+        frame.getContentPane().add(lDepartment);
+
+        cbboxDepartment = new JComboBox();
+        cbboxDepartment.setModel(new DefaultComboBoxModel(mapper.getDepartmentNames()));
+        cbboxDepartment.setBounds(1007, 562, 220, 23);
+        cbboxDepartment.setEnabled(false);
+        frame.getContentPane().add(cbboxDepartment);
 
         // Выход из системы
         btnSignOut.addActionListener(actionEvent -> signOut());
@@ -338,6 +359,9 @@ public class MainForm {
         tfPersonalSalary.setText(row.getPersonalSalary());
         tfPhoneNumber.setText(row.getPhoneNumber());
 
+        cbboxPost.setSelectedIndex((int) row.getPost_ID() - 1);
+        cbboxDepartment.setSelectedIndex((int) row.getDepartment_ID() - 1);
+
         tfName.setEnabled(true);
         tfDateOfBirth.setEnabled(true);
         tfEmail.setEnabled(true);
@@ -346,6 +370,9 @@ public class MainForm {
         tfPassport.setEnabled(true);
         tfPersonalSalary.setEnabled(true);
         tfPhoneNumber.setEnabled(true);
+
+        cbboxPost.setEnabled(true);
+        cbboxDepartment.setEnabled(true);
 
         btnAcceptChanges.setEnabled(true);
         btnDeleteEmployee.setEnabled(true);
@@ -381,6 +408,12 @@ public class MainForm {
         tfPassport.setEnabled(false);
         tfPersonalSalary.setEnabled(false);
         tfPhoneNumber.setEnabled(false);
+
+        cbboxPost.setSelectedIndex(0);
+        cbboxPost.setEnabled(false);
+
+        cbboxDepartment.setSelectedIndex(0);
+        cbboxDepartment.setEnabled(false);
 
         btnAcceptChanges.setEnabled(false);
         btnDeleteEmployee.setEnabled(false);
