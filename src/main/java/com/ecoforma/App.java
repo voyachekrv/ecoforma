@@ -1,6 +1,9 @@
 package com.ecoforma;
 
+import com.ecoforma.db.DbSession;
 import com.ecoforma.forms.*;
+import org.apache.ibatis.session.SqlSession;
+
 import javax.swing.*;
 import java.io.IOException;
 
@@ -10,10 +13,10 @@ public class App {
 
     public static MainForm mainForm;
     public static SignInForm signInForm;
+    public static SqlSession session = DbSession.startSession();
 
     public static void main(String[] args) {
         // Запуск формы в потоке обработки событий
-        System.out.println(java.lang.System.getProperty("java.library.path"));
         SwingUtilities.invokeLater(() -> {
             try {
                 signInForm = new SignInForm();

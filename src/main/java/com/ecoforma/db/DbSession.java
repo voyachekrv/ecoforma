@@ -1,5 +1,6 @@
 package com.ecoforma.db;
 
+import com.ecoforma.db.mappers.HRMapper;
 import com.ecoforma.db.mappers.RegistrationDataMapper;
 import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 import org.apache.ibatis.mapping.Environment;
@@ -35,6 +36,7 @@ public class DbSession {
         Environment environment = new Environment("development", transactionFactory, dataSource);
         Configuration configuration = new Configuration(environment);
         configuration.addMapper(RegistrationDataMapper.class);
+        configuration.addMapper(HRMapper.class);
         sqlSessionFactory = new SqlSessionFactoryBuilder().build(configuration);
     }
 

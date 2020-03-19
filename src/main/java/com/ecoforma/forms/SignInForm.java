@@ -1,6 +1,7 @@
 package com.ecoforma.forms;
 
 import com.ecoforma.db.DbSession;
+import com.ecoforma.db.mappers.HRMapper;
 import com.ecoforma.db.mappers.RegistrationDataMapper;
 import org.apache.ibatis.session.SqlSession;
 import org.jetbrains.annotations.NotNull;
@@ -13,8 +14,7 @@ import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.Objects;
 
-import static com.ecoforma.App.COMPANY_NAME;
-import static com.ecoforma.App.mainForm;
+import static com.ecoforma.App.*;
 
 // Форма регистрации в систем
 public class SignInForm {
@@ -69,6 +69,9 @@ public class SignInForm {
         passwordPanel.setLayout(tfLayout);
         passwordPanel.add(new JLabel("Пароль"));
         passwordPanel.add(tfPassword);
+
+        tfLogin.setText("kadr");
+        tfPassword.setText("abc");
 
         // Компоновка кнопки подтверждения входа
         JPanel buttonPanel = new JPanel();
@@ -129,7 +132,7 @@ public class SignInForm {
 
     // Вход в систему
     private void signIn() {
-        try (SqlSession session = DbSession.startSession()) {
+        try {
             RegistrationDataMapper mapper = session.getMapper(RegistrationDataMapper.class);
             String sessionType = mapper.getSessionType(tfLogin.getText(), buildClientPassword(tfPassword.getPassword()));
 

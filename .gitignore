@@ -1,2 +1,7 @@
 .idea
 ecoforma.iml
+/.metadata/
+.classpath
+.project
+ecoforma.eml
+ecoforma.userlibraries
