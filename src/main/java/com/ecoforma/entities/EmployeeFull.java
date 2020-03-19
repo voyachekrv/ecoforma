@@ -1,6 +1,6 @@
 package com.ecoforma.entities;
 
-public class Employee {
+public class EmployeeFull {
     long ID;
     String name;
     String dateOfBirth;
@@ -10,8 +10,8 @@ public class Employee {
     String phoneNumber;
     String email;
     String dateOfEmployment;
-    long post_ID;
-    long department_ID;
+    String post;
+    String department;
     String personalSalary;
 
     public long getID() {
@@ -86,20 +86,20 @@ public class Employee {
         this.dateOfEmployment = dateOfEmployment;
     }
 
-    public long getPost_ID() {
-        return post_ID;
+    public String getPost() {
+        return post;
     }
 
-    public void setPost_ID(long post_ID) {
-        this.post_ID = post_ID;
+    public void setPost(String post) {
+        this.post = post;
     }
 
-    public long getDepartment_ID() {
-        return department_ID;
+    public String getDepartment() {
+        return department;
     }
 
-    public void setDepartment_ID(long department_ID) {
-        this.department_ID = department_ID;
+    public void setDepartment(String department) {
+        this.department = department;
     }
 
     public String getPersonalSalary() {

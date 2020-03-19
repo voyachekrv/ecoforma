@@ -2,6 +2,7 @@ package com.ecoforma.forms;
 
 import com.ecoforma.db.mappers.HRMapper;
 import com.ecoforma.entities.Employee;
+import com.ecoforma.entities.EmployeeFull;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -20,11 +21,14 @@ public class MainForm {
     JTextField tfSearch;
     JRadioButton rbID, rbName, rbPassport, rbEducation, rbAdress, rbPhoneNumber, rbEmail, rbPost, rbDepartment;
     JButton btnSearch;
+    JScrollPane tableScroll;
     JTable table;
-    JTextField tfName, tfDateOfBirth, tfPassport, tfEducation, tfAddress, tfPhone, tfEmail;
+    JTextField tfName, tfDateOfBirth, tfPassport, tfEducation, tfAddress, tfPhoneNumber, tfEmail, tfPersonalSalary;
+    JButton btnAcceptChanges, btnDeleteEmployee, btnUnpick, btnNewEmployee;
 
     String currentSession;
     Insets insets;
+    HRMapper mapper = session.getMapper(HRMapper.class);
 
     public MainForm(String department) throws IOException {
         frame = new JFrame(COMPANY_NAME + " - " + department); // Основная панель формы
@@ -43,7 +47,7 @@ public class MainForm {
     private void displayInterface(String department) {
         switch (department) {
             case "Отдел кадров":
-                displayHumanResourceInterface();
+                displayHRInterface();
                 break;
             default:
                 JOptionPane.showMessageDialog(frame, "Для данной роли не доступен интерфейс", "Системная ошибка", JOptionPane.ERROR_MESSAGE);
@@ -53,7 +57,8 @@ public class MainForm {
         }
     }
 
-    private void displayHumanResourceInterface() {
+    // Отображение интерфейса отдела кадров
+    private void displayHRInterface() {
         // Кнопка выхода из системы
 
         toolBar = new JToolBar();
@@ -65,19 +70,19 @@ public class MainForm {
         btnSignOut.setFocusPainted(false);
         toolBar.add(btnSignOut);
 
-        btnSignOut.addActionListener(actionEvent -> signOut());
-
         // Таблица со списком сотрудников фирмы
 
         JPanel tablePanel = new JPanel();
-        tablePanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+        tablePanel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
         tablePanel.setBounds(10, 98, 1326, 430);
         frame.getContentPane().add(tablePanel);
 
         table = new JTable(setInitialTableModel());
         table.setRowHeight(30);
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.setDefaultEditor(Object.class, null);
 
-        JScrollPane tableScroll = new JScrollPane();
+        tableScroll = new JScrollPane();
         tableScroll.setViewportView(table);
         tableScroll.setPreferredSize(new Dimension(1300, 420));
         tablePanel.add(tableScroll);
@@ -157,69 +162,120 @@ public class MainForm {
 
         // Интерфейс изменения данных о сотруднике
         tfName = new JTextField();
-        tfName.setBounds(30, 554, 86, 20);
+        tfName.setBounds(30, 562, 185, 23);
+        tfName.setEnabled(false);
         frame.getContentPane().add(tfName);
         tfName.setColumns(10);
 
         JLabel lName = new JLabel("ФИО");
-        lName.setBounds(30, 529, 46, 14);
+        lName.setBounds(30, 538, 46, 14);
         frame.getContentPane().add(lName);
 
         tfDateOfBirth = new JTextField();
-        tfDateOfBirth.setBounds(126, 554, 86, 20);
+        tfDateOfBirth.setBounds(222, 562, 185, 23);
+        tfDateOfBirth.setEnabled(false);
         frame.getContentPane().add(tfDateOfBirth);
         tfDateOfBirth.setColumns(10);
 
         JLabel lDateOfBirth = new JLabel("Дата рождения");
-        lDateOfBirth.setBounds(126, 529, 86, 14);
+        lDateOfBirth.setBounds(222, 539, 100, 14);
         frame.getContentPane().add(lDateOfBirth);
 
         tfPassport = new JTextField();
-        tfPassport.setBounds(222, 554, 86, 20);
+        tfPassport.setBounds(417, 562, 185, 23);
+        tfPassport.setEnabled(false);
         frame.getContentPane().add(tfPassport);
         tfPassport.setColumns(10);
 
         JLabel lPassport = new JLabel("Номер паспорта");
-        lPassport.setBounds(222, 529, 86, 14);
+        lPassport.setBounds(417, 538, 100, 14);
         frame.getContentPane().add(lPassport);
 
         tfEducation = new JTextField();
-        tfEducation.setBounds(318, 554, 86, 20);
+        tfEducation.setBounds(30, 621, 572, 23);
+        tfEducation.setEnabled(false);
         frame.getContentPane().add(tfEducation);
         tfEducation.setColumns(10);
 
         JLabel lEducation = new JLabel("Образование");
-        lEducation.setBounds(320, 529, 84, 14);
+        lEducation.setBounds(30, 596, 84, 14);
         frame.getContentPane().add(lEducation);
 
         tfAddress = new JTextField();
-        tfAddress.setBounds(414, 554, 86, 20);
+        tfAddress.setBounds(30, 680, 572, 23);
+        tfAddress.setEnabled(false);
         frame.getContentPane().add(tfAddress);
         tfAddress.setColumns(10);
 
         JLabel lAddress = new JLabel("Адрес");
-        lAddress.setBounds(414, 529, 46, 14);
+        lAddress.setBounds(30, 655, 46, 14);
         frame.getContentPane().add(lAddress);
 
-        tfPhone = new JTextField();
-        tfPhone.setBounds(510, 554, 86, 20);
-        frame.getContentPane().add(tfPhone);
-        tfPhone.setColumns(10);
+        tfPhoneNumber = new JTextField();
+        tfPhoneNumber.setBounds(612, 562, 185, 23);
+        tfPhoneNumber.setEnabled(false);
+        frame.getContentPane().add(tfPhoneNumber);
+        tfPhoneNumber.setColumns(10);
 
-        JLabel lblNewLabel_6 = new JLabel("Телефон");
-        lblNewLabel_6.setBounds(510, 529, 83, 14);
-        frame.getContentPane().add(lblNewLabel_6);
+        JLabel lPhoneNumber = new JLabel("Телефон");
+        lPhoneNumber.setBounds(612, 539, 83, 14);
+        frame.getContentPane().add(lPhoneNumber);
 
         tfEmail = new JTextField();
-        tfEmail.setBounds(606, 554, 86, 20);
+        tfEmail.setBounds(612, 621, 185, 23);
+        tfEmail.setEnabled(false);
         frame.getContentPane().add(tfEmail);
         tfEmail.setColumns(10);
 
-        JLabel lblNewLabel_7 = new JLabel("E-mail");
-        lblNewLabel_7.setBounds(610, 529, 46, 14);
-        frame.getContentPane().add(lblNewLabel_7);
+        JLabel lEmail = new JLabel("E-mail");
+        lEmail.setBounds(612, 596, 46, 14);
+        frame.getContentPane().add(lEmail);
+
+        tfPersonalSalary = new JTextField();
+        tfPersonalSalary.setBounds(612, 680, 185, 23);
+        tfPersonalSalary.setEnabled(false);
+        frame.getContentPane().add(tfPersonalSalary);
+        tfPersonalSalary.setColumns(10);
+
+        JLabel lPersonalSalary = new JLabel("Заработная плата");
+        lPersonalSalary.setBounds(612, 655, 150, 14);
+        frame.getContentPane().add(lPersonalSalary);
+
+        btnAcceptChanges = new JButton("Подтвердить изменения");
+        btnAcceptChanges.setBounds(30, 714, 180, 30);
+        btnAcceptChanges.setFocusPainted(false);
+        btnAcceptChanges.setEnabled(false);
+        frame.getContentPane().add(btnAcceptChanges);
+
+        //TODO: После окончания работы над расположением компонентов формы добавить к кнопке иконку "X"
+        btnDeleteEmployee = new JButton("Удалить сотрудника");
+        btnDeleteEmployee.setBounds(220, 714, 170, 30);
+        btnDeleteEmployee.setFocusPainted(false);
+        btnDeleteEmployee.setEnabled(false);
+        frame.getContentPane().add(btnDeleteEmployee);
+
+        btnUnpick = new JButton("Снять выбор");
+        btnUnpick.setBounds(400, 714, 170, 30);
+        btnUnpick.setFocusPainted(false);
+        btnUnpick.setEnabled(false);
+        frame.getContentPane().add(btnUnpick);
+
+        //TODO: После окончания работы над расположением компонентов формы добавить к кнопке иконку "+"
+        btnNewEmployee = new JButton("Новый сотрудник");
+        btnNewEmployee.setBounds(580, 714, 170, 30);
+        btnNewEmployee.setFocusPainted(false);
+        frame.getContentPane().add(btnNewEmployee);
+
+        // Выход из системы
+        btnSignOut.addActionListener(actionEvent -> signOut());
+
+        ListSelectionModel selectionModel = table.getSelectionModel();
+        selectionModel.addListSelectionListener(listSelectionEvent -> prepareToEdit());
+
+        btnUnpick.addActionListener(actionEvent -> unpick());
     }
 
+    // Задание модели таблицы по умолчанию
     private DefaultTableModel setInitialTableModel() {
         DefaultTableModel tableModel = new DefaultTableModel();
         String[] columnsHeader = new String[] {
@@ -239,8 +295,7 @@ public class MainForm {
 
         tableModel.setColumnIdentifiers(columnsHeader);
 
-        HRMapper mapper = session.getMapper(HRMapper.class);
-        ArrayList<Employee> employees = mapper.getAllEmployees();
+        ArrayList<EmployeeFull> employees = mapper.getAllEmployees();
 
         for (int i = 0; i < employees.size(); i++) {
             tableModel.insertRow(i, new Object[] {
@@ -262,9 +317,73 @@ public class MainForm {
         return tableModel;
     }
 
+    // Выход из системы
     private void signOut() {
         currentSession = null;
         frame.setVisible(false);
         signInForm.frame.setVisible(true);
+    }
+
+    // Помещение значений данных о сотруднике в поля редактирования
+    private void prepareToEdit() {
+        int rowIndex = table.getSelectedRow();
+        Employee row = mapper.getEmployeeByID(Integer.parseInt(table.getModel().getValueAt(rowIndex, 0).toString()));
+
+        tfName.setText(row.getName());
+        tfDateOfBirth.setText(row.getDateOfBirth());
+        tfEmail.setText(row.getEmail());
+        tfAddress.setText(row.getAdress());
+        tfEducation.setText(row.getEducation());
+        tfPassport.setText(row.getPassport());
+        tfPersonalSalary.setText(row.getPersonalSalary());
+        tfPhoneNumber.setText(row.getPhoneNumber());
+
+        tfName.setEnabled(true);
+        tfDateOfBirth.setEnabled(true);
+        tfEmail.setEnabled(true);
+        tfAddress.setEnabled(true);
+        tfEducation.setEnabled(true);
+        tfPassport.setEnabled(true);
+        tfPersonalSalary.setEnabled(true);
+        tfPhoneNumber.setEnabled(true);
+
+        btnAcceptChanges.setEnabled(true);
+        btnDeleteEmployee.setEnabled(true);
+        btnUnpick.setEnabled(true);
+    }
+
+    private void unpick() {
+        tableScroll.setViewportView(null);
+
+        table = new JTable(setInitialTableModel());
+        table.setRowHeight(30);
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.setDefaultEditor(Object.class, null);
+        tableScroll.setViewportView(table);
+
+        ListSelectionModel selectionModel = table.getSelectionModel();
+        selectionModel.addListSelectionListener(listSelectionEvent -> prepareToEdit());
+
+        tfName.setText("");
+        tfDateOfBirth.setText("");
+        tfEmail.setText("");
+        tfAddress.setText("");
+        tfEducation.setText("");
+        tfPassport.setText("");
+        tfPersonalSalary.setText("");
+        tfPhoneNumber.setText("");
+
+        tfName.setEnabled(false);
+        tfDateOfBirth.setEnabled(false);
+        tfEmail.setEnabled(false);
+        tfAddress.setEnabled(false);
+        tfEducation.setEnabled(false);
+        tfPassport.setEnabled(false);
+        tfPersonalSalary.setEnabled(false);
+        tfPhoneNumber.setEnabled(false);
+
+        btnAcceptChanges.setEnabled(false);
+        btnDeleteEmployee.setEnabled(false);
+        btnUnpick.setEnabled(false);
     }
 }
