@@ -1,9 +1,6 @@
 package com.ecoforma.forms;
 
-import com.ecoforma.db.DbSession;
-import com.ecoforma.db.mappers.HRMapper;
 import com.ecoforma.db.mappers.RegistrationDataMapper;
-import org.apache.ibatis.session.SqlSession;
 import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;

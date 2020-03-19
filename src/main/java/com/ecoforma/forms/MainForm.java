@@ -9,6 +9,10 @@ import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -20,16 +24,21 @@ public class MainForm {
     JButton btnSignOut;
     JTextField tfSearch;
     JRadioButton rbID, rbName, rbPassport, rbEducation, rbAdress, rbPhoneNumber, rbEmail, rbPost, rbDepartment;
-    JButton btnSearch;
+    JButton btnSearch, btnStopSearch;
     JScrollPane tableScroll;
     JTable table;
-    JTextField tfName, tfDateOfBirth, tfPassport, tfEducation, tfAddress, tfPhoneNumber, tfEmail, tfPersonalSalary;
+    JTextField tfName, tfDateOfBirth, tfPassport, tfEducation, tfAddress, tfPhoneNumber, tfEmail;
+    JSpinner spinnerPersonalSalary;
     JButton btnAcceptChanges, btnDeleteEmployee, btnUnpick, btnNewEmployee;
     JComboBox cbboxPost, cbboxDepartment;
+
+    Action actionListener;
+    DefaultTableModel initialTableModel;
 
     String currentSession;
     Insets insets;
     HRMapper mapper = session.getMapper(HRMapper.class);
+    Employee currentEmployee;
 
     public MainForm(String department) throws IOException {
         frame = new JFrame(COMPANY_NAME + " - " + department); // Основная панель формы
@@ -82,10 +91,12 @@ public class MainForm {
         table.setRowHeight(30);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setDefaultEditor(Object.class, null);
+        table.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         tableScroll = new JScrollPane();
         tableScroll.setViewportView(table);
         tableScroll.setPreferredSize(new Dimension(1300, 420));
+        tableScroll.setCursor(new Cursor(Cursor.HAND_CURSOR));
         tablePanel.add(tableScroll);
 
         // Интерфейс поиска
@@ -100,54 +111,78 @@ public class MainForm {
         btnSearch.setFocusPainted(false);
         frame.getContentPane().add(btnSearch);
 
+        btnStopSearch = new JButton(new ImageIcon(getClass().getResource("/img/icon-close.png")));
+        btnStopSearch.setBounds(237, 64, 24, 23);
+        btnStopSearch.setFocusPainted(false);
+        btnStopSearch.setToolTipText("Очистка результов поиска");
+        frame.getContentPane().add(btnStopSearch);
+
         JLabel lSearchOptions = new JLabel("Критерии поиска:");
-        lSearchOptions.setBounds(252, 70, 105, 14);
+        lSearchOptions.setBounds(267, 70, 105, 14);
         frame.getContentPane().add(lSearchOptions);
 
         rbID = new JRadioButton("Табельный номер");
-        rbID.setBounds(355, 66, 135, 23);
+        rbID.setBounds(370, 66, 135, 23);
         rbID.setFocusPainted(false);
+        rbID.setActionCommand("employee.ID");
+        rbID.setCursor(new Cursor(Cursor.HAND_CURSOR));
         frame.getContentPane().add(rbID);
 
         rbName = new JRadioButton("Имя");
-        rbName.setBounds(486, 66, 55, 23);
+        rbName.setBounds(506, 66, 55, 23);
         rbName.setSelected(true);
         rbName.setFocusPainted(false);
+        rbName.setActionCommand("employee.name");
+        rbName.setCursor(new Cursor(Cursor.HAND_CURSOR));
         frame.getContentPane().add(rbName);
 
         rbPassport = new JRadioButton("Номер паспорта");
         rbPassport.setFocusPainted(false);
-        rbPassport.setBounds(537, 66, 119, 23);
+        rbPassport.setBounds(557, 66, 119, 23);
+        rbPassport.setActionCommand("employee.passport");
+        rbPassport.setCursor(new Cursor(Cursor.HAND_CURSOR));
         frame.getContentPane().add(rbPassport);
 
         rbEducation = new JRadioButton("Образование");
         rbEducation.setFocusPainted(false);
-        rbEducation.setBounds(656, 66, 106, 23);
+        rbEducation.setBounds(675, 66, 106, 23);
+        rbEducation.setActionCommand("employee.education");
+        rbEducation.setCursor(new Cursor(Cursor.HAND_CURSOR));
         frame.getContentPane().add(rbEducation);
 
         rbAdress = new JRadioButton("Адрес");
         rbAdress.setFocusPainted(false);
-        rbAdress.setBounds(760, 66, 67, 23);
+        rbAdress.setBounds(777, 66, 67, 23);
+        rbAdress.setActionCommand("employee.adress");
+        rbAdress.setCursor(new Cursor(Cursor.HAND_CURSOR));
         frame.getContentPane().add(rbAdress);
 
         rbPhoneNumber = new JRadioButton("Номер телефона");
         rbPhoneNumber.setFocusPainted(false);
-        rbPhoneNumber.setBounds(827, 66, 125, 23);
+        rbPhoneNumber.setBounds(840, 66, 125, 23);
+        rbPhoneNumber.setActionCommand("employee.phoneNumber");
+        rbPhoneNumber.setCursor(new Cursor(Cursor.HAND_CURSOR));
         frame.getContentPane().add(rbPhoneNumber);
 
         rbEmail = new JRadioButton("E-mail");
         rbEmail.setFocusPainted(false);
-        rbEmail.setBounds(950, 66, 67, 23);
+        rbEmail.setBounds(970, 66, 67, 23);
+        rbEmail.setActionCommand("employee.email");
+        rbEmail.setCursor(new Cursor(Cursor.HAND_CURSOR));
         frame.getContentPane().add(rbEmail);
 
         rbPost = new JRadioButton("Должность");
         rbPost.setFocusPainted(false);
-        rbPost.setBounds(1015, 66, 96, 23);
+        rbPost.setBounds(1035, 66, 96, 23);
+        rbPost.setActionCommand("post.name");
+        rbPost.setCursor(new Cursor(Cursor.HAND_CURSOR));
         frame.getContentPane().add(rbPost);
 
         rbDepartment = new JRadioButton("Отдел");
         rbDepartment.setFocusPainted(false);
-        rbDepartment.setBounds(1110, 66, 67, 23);
+        rbDepartment.setBounds(1130, 66, 67, 23);
+        rbDepartment.setActionCommand("department.name");
+        rbDepartment.setCursor(new Cursor(Cursor.HAND_CURSOR));
         frame.getContentPane().add(rbDepartment);
 
         ButtonGroup searchGroup = new ButtonGroup();
@@ -232,11 +267,11 @@ public class MainForm {
         lEmail.setBounds(612, 596, 46, 14);
         frame.getContentPane().add(lEmail);
 
-        tfPersonalSalary = new JTextField();
-        tfPersonalSalary.setBounds(612, 680, 185, 23);
-        tfPersonalSalary.setEnabled(false);
-        frame.getContentPane().add(tfPersonalSalary);
-        tfPersonalSalary.setColumns(10);
+        spinnerPersonalSalary = new JSpinner();
+        spinnerPersonalSalary.setBounds(612, 680, 185, 23);
+        spinnerPersonalSalary.setEnabled(false);
+        frame.add(spinnerPersonalSalary);
+        spinnerPersonalSalary.setModel(new SpinnerNumberModel(1, 1, 3999999, 1));
 
         JLabel lPersonalSalary = new JLabel("Заработная плата");
         lPersonalSalary.setBounds(612, 655, 150, 14);
@@ -290,15 +325,55 @@ public class MainForm {
         // Выход из системы
         btnSignOut.addActionListener(actionEvent -> signOut());
 
+        // Добавление сотрудника в поля для редактирования
         ListSelectionModel selectionModel = table.getSelectionModel();
         selectionModel.addListSelectionListener(listSelectionEvent -> prepareToEdit());
 
+        // Снятие фокуса с таблицы
         btnUnpick.addActionListener(actionEvent -> unpick());
+
+        // Добавление комбинации ctrl+f для активации формы поиска
+        String ACTION_KEY = "theAction";
+
+        actionListener = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                tfSearch.requestFocus();
+            }
+        };
+        KeyStroke ctrlF = KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_MASK);
+        InputMap inputMap = tfSearch.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        inputMap.put(ctrlF, ACTION_KEY);
+        ActionMap actionMap = tfSearch.getActionMap();
+        actionMap.put(ACTION_KEY, actionListener);
+        tfSearch.setActionMap(actionMap);
+
+        // Добавление события поиска по нажатию кнопки
+        btnSearch.addActionListener(actionEvent -> searchEmployee());
+
+        // Поиск сотрудника по нажатию Enter после ввода данных в поле
+        tfSearch.addActionListener(actionEvent -> searchEmployee());
+
+        // Событие очистки результатов поиска
+        btnStopSearch.addActionListener(actionEvent -> clearSearchResult());
+
+        tfSearch.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                super.keyReleased(e);
+                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                    clearSearchResult();
+                }
+            }
+        });
+
+        // Удаление сотрудника
+        btnDeleteEmployee.addActionListener(actionEvent -> deleteEmployee());
     }
 
     // Задание модели таблицы по умолчанию
     private DefaultTableModel setInitialTableModel() {
-        DefaultTableModel tableModel = new DefaultTableModel();
+        initialTableModel = new DefaultTableModel();
         String[] columnsHeader = new String[] {
                 "Табельный номер",
                 "ФИО",
@@ -314,12 +389,12 @@ public class MainForm {
                 "Заработная плата"
         };
 
-        tableModel.setColumnIdentifiers(columnsHeader);
+        initialTableModel.setColumnIdentifiers(columnsHeader);
 
         ArrayList<EmployeeFull> employees = mapper.getAllEmployees();
 
         for (int i = 0; i < employees.size(); i++) {
-            tableModel.insertRow(i, new Object[] {
+            initialTableModel.insertRow(i, new Object[] {
                     employees.get(i).getID(),
                     employees.get(i).getName(),
                     employees.get(i).getDateOfBirth(),
@@ -335,7 +410,7 @@ public class MainForm {
             });
         }
 
-        return tableModel;
+        return initialTableModel;
     }
 
     // Выход из системы
@@ -348,19 +423,19 @@ public class MainForm {
     // Помещение значений данных о сотруднике в поля редактирования
     private void prepareToEdit() {
         int rowIndex = table.getSelectedRow();
-        Employee row = mapper.getEmployeeByID(Integer.parseInt(table.getModel().getValueAt(rowIndex, 0).toString()));
+        currentEmployee = mapper.getEmployeeByID(Integer.parseInt(table.getModel().getValueAt(rowIndex, 0).toString()));
 
-        tfName.setText(row.getName());
-        tfDateOfBirth.setText(row.getDateOfBirth());
-        tfEmail.setText(row.getEmail());
-        tfAddress.setText(row.getAdress());
-        tfEducation.setText(row.getEducation());
-        tfPassport.setText(row.getPassport());
-        tfPersonalSalary.setText(row.getPersonalSalary());
-        tfPhoneNumber.setText(row.getPhoneNumber());
+        tfName.setText(currentEmployee.getName());
+        tfDateOfBirth.setText(currentEmployee.getDateOfBirth());
+        tfEmail.setText(currentEmployee.getEmail());
+        tfAddress.setText(currentEmployee.getAdress());
+        tfEducation.setText(currentEmployee.getEducation());
+        tfPassport.setText(currentEmployee.getPassport());
+        spinnerPersonalSalary.setValue(Integer.parseInt(currentEmployee.getPersonalSalary()));
+        tfPhoneNumber.setText(currentEmployee.getPhoneNumber());
 
-        cbboxPost.setSelectedIndex((int) row.getPost_ID() - 1);
-        cbboxDepartment.setSelectedIndex((int) row.getDepartment_ID() - 1);
+        cbboxPost.setSelectedIndex((int) currentEmployee.getPost_ID() - 1);
+        cbboxDepartment.setSelectedIndex((int) currentEmployee.getDepartment_ID() - 1);
 
         tfName.setEnabled(true);
         tfDateOfBirth.setEnabled(true);
@@ -368,7 +443,7 @@ public class MainForm {
         tfAddress.setEnabled(true);
         tfEducation.setEnabled(true);
         tfPassport.setEnabled(true);
-        tfPersonalSalary.setEnabled(true);
+        spinnerPersonalSalary.setEnabled(true);
         tfPhoneNumber.setEnabled(true);
 
         cbboxPost.setEnabled(true);
@@ -379,7 +454,8 @@ public class MainForm {
         btnUnpick.setEnabled(true);
     }
 
-    private void unpick() {
+    // Удаление фокуса с таблицы
+    private void removeFocusFromTable() {
         tableScroll.setViewportView(null);
 
         table = new JTable(setInitialTableModel());
@@ -390,6 +466,11 @@ public class MainForm {
 
         ListSelectionModel selectionModel = table.getSelectionModel();
         selectionModel.addListSelectionListener(listSelectionEvent -> prepareToEdit());
+    }
+
+    // Перевод полей редактирования сотрудника в неактивное состояние + удаление фокуса с таблицы
+    private void unpick() {
+        removeFocusFromTable();
 
         tfName.setText("");
         tfDateOfBirth.setText("");
@@ -397,7 +478,7 @@ public class MainForm {
         tfAddress.setText("");
         tfEducation.setText("");
         tfPassport.setText("");
-        tfPersonalSalary.setText("");
+        spinnerPersonalSalary.setValue(1);
         tfPhoneNumber.setText("");
 
         tfName.setEnabled(false);
@@ -406,7 +487,7 @@ public class MainForm {
         tfAddress.setEnabled(false);
         tfEducation.setEnabled(false);
         tfPassport.setEnabled(false);
-        tfPersonalSalary.setEnabled(false);
+        spinnerPersonalSalary.setEnabled(false);
         tfPhoneNumber.setEnabled(false);
 
         cbboxPost.setSelectedIndex(0);
@@ -418,5 +499,127 @@ public class MainForm {
         btnAcceptChanges.setEnabled(false);
         btnDeleteEmployee.setEnabled(false);
         btnUnpick.setEnabled(false);
+    }
+
+    // Поиск сотрудника
+    private void searchEmployee() {
+        unpick();
+
+        String column = "";
+        String query = "'%" + tfSearch.getText() + "%'";
+        String option = "";
+
+        if (rbID.isSelected()) {
+            column = rbID.getActionCommand();
+            option = rbID.getText();
+        } else if (rbName.isSelected()) {
+            column = rbName.getActionCommand();
+            option = rbName.getText();
+        } else if (rbPassport.isSelected()) {
+            column = rbPassport.getActionCommand();
+            option = rbPassport.getText();
+        } else if (rbEducation.isSelected()) {
+            column = rbEducation.getActionCommand();
+            option = rbEducation.getText();
+        } else if (rbAdress.isSelected()) {
+            column = rbAdress.getActionCommand();
+            option = rbAdress.getText();
+        } else if (rbPhoneNumber.isSelected()) {
+            column = rbPhoneNumber.getActionCommand();
+            option = rbPhoneNumber.getText();
+        } else if (rbEmail.isSelected()) {
+            column = rbEmail.getActionCommand();
+            option = rbEmail.getText();
+        } else if (rbPost.isSelected()) {
+            column = rbPost.getActionCommand();
+            option = rbPost.getText();
+        } else if (rbDepartment.isSelected()) {
+            column = rbDepartment.getActionCommand();
+            option = rbDepartment.getText();
+        }
+
+        ArrayList<EmployeeFull> result = mapper.findEmployee(column, query);
+
+        if (result.size() == 0) {
+            JOptionPane.showMessageDialog(frame,
+                    "По запросу \"" + tfSearch.getText() + "\" по критерию \"" + option +
+                            "\" ничего не найдено.\nПопробуйте уточнить запрос или изменить критерий поиска.", "Не найдено",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+            tfSearch.setText("");
+            return;
+        }
+
+        DefaultTableModel searchTableModel = new DefaultTableModel();
+        String[] columnsHeader = new String[] {
+                "Табельный номер",
+                "ФИО",
+                "Дата рождения",
+                "Номер паспорта",
+                "Образование",
+                "Адрес",
+                "Номер телефона",
+                "E-mail",
+                "Дата приёма на работу",
+                "Должность",
+                "Отдел",
+                "Заработная плата"
+        };
+
+        searchTableModel.setColumnIdentifiers(columnsHeader);
+
+        for (int i = 0; i < result.size(); i++) {
+            searchTableModel.insertRow(i, new Object[] {
+                    result.get(i).getID(),
+                    result.get(i).getName(),
+                    result.get(i).getDateOfBirth(),
+                    result.get(i).getPassport(),
+                    result.get(i).getEducation(),
+                    result.get(i).getAdress(),
+                    result.get(i).getPhoneNumber(),
+                    result.get(i).getEmail(),
+                    result.get(i).getDateOfEmployment(),
+                    result.get(i).getPost(),
+                    result.get(i).getDepartment(),
+                    result.get(i).getPersonalSalary()
+            });
+        }
+
+        table.setModel(searchTableModel);
+    }
+
+    // Очистка результатов поиска
+    private void clearSearchResult() {
+        unpick();
+        tfSearch.setText("");
+    }
+
+    // Удаление сотрудника
+    private void deleteEmployee() {
+        int result = JOptionPane.showConfirmDialog(
+                frame,
+                "Удалить сотрудника " + currentEmployee.getName() + "?",
+                "Подтверждение операции",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE
+        );
+
+        if (result == JOptionPane.YES_OPTION) {
+            mapper.deleteEmployee(currentEmployee.getID());
+            JOptionPane.showMessageDialog(
+                    frame,
+                    "Сотрудник " + currentEmployee.getName() + " успешно удалён.",
+                    "Удаление завершено",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+
+            currentEmployee = null;
+            unpick();
+            tfSearch.setText("");
+        }
+
+        if (result == JOptionPane.NO_OPTION) {
+            return;
+        }
     }
 }
