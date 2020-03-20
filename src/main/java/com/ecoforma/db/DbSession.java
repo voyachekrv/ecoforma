@@ -3,6 +3,8 @@ package com.ecoforma.db;
 import com.ecoforma.db.mappers.HRMapper;
 import com.ecoforma.db.mappers.RegistrationDataMapper;
 import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
@@ -32,8 +34,14 @@ public class DbSession {
         dataSource.setURL(DB_URL);
         dataSource.setPassword(DB_PASSWORD);
 
+        HikariConfig config = new HikariConfig();
+        config.setMaximumPoolSize(1);
+        config.setDataSource(dataSource);
+
+        HikariDataSource hikariDataSource = new HikariDataSource(config);
+
         TransactionFactory transactionFactory = new JdbcTransactionFactory();
-        Environment environment = new Environment("development", transactionFactory, dataSource);
+        Environment environment = new Environment("development", transactionFactory, hikariDataSource);
         Configuration configuration = new Configuration(environment);
         configuration.addMapper(RegistrationDataMapper.class);
         configuration.addMapper(HRMapper.class);

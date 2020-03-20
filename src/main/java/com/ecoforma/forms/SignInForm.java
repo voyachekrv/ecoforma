@@ -1,6 +1,8 @@
 package com.ecoforma.forms;
 
+import com.ecoforma.db.DbSession;
 import com.ecoforma.db.mappers.RegistrationDataMapper;
+import org.apache.ibatis.session.SqlSession;
 import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
@@ -129,20 +131,23 @@ public class SignInForm {
 
     // Вход в систему
     private void signIn() {
-        try {
+        String sessionType;
+        try (SqlSession session = DbSession.startSession()) {
             RegistrationDataMapper mapper = session.getMapper(RegistrationDataMapper.class);
-            String sessionType = mapper.getSessionType(tfLogin.getText(), buildClientPassword(tfPassword.getPassword()));
+            sessionType = mapper.getSessionType(tfLogin.getText(), buildClientPassword(tfPassword.getPassword()));
+        }
 
-            if (Objects.isNull(sessionType)) {
-                JOptionPane.showMessageDialog(frame, "Неверный логин или пароль", "Ошибка", JOptionPane.WARNING_MESSAGE);
-                clearTextFields();
-            } else  {
-                frame.setVisible(false);
+        if (Objects.isNull(sessionType)) {
+            JOptionPane.showMessageDialog(frame, "Неверный логин или пароль", "Ошибка", JOptionPane.WARNING_MESSAGE);
+            clearTextFields();
+        } else  {
+            frame.setVisible(false);
+            try {
                 mainForm = new MainForm(sessionType);
-                mainForm.frame.setVisible(true);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(frame, e.getMessage(), "Системная ошибка", JOptionPane.ERROR_MESSAGE);
+            mainForm.frame.setVisible(true);
         }
     }
 }

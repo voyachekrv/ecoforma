@@ -13,7 +13,6 @@ public class App {
 
     public static MainForm mainForm;
     public static SignInForm signInForm;
-    public static SqlSession session = DbSession.startSession();
 
     public static void main(String[] args) {
         // Запуск формы в потоке обработки событий

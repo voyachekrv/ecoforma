@@ -1,7 +1,7 @@
 package com.ecoforma.entities;
 
 public class EmployeeFull {
-    long ID;
+    int ID;
     String name;
     String dateOfBirth;
     String passport;
@@ -14,11 +14,11 @@ public class EmployeeFull {
     String department;
     String personalSalary;
 
-    public long getID() {
+    public int getID() {
         return ID;
     }
 
-    public void setID(long ID) {
+    public void setID(int ID) {
         this.ID = ID;
     }
 
