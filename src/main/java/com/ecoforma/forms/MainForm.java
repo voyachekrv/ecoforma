@@ -115,6 +115,7 @@ public class MainForm {
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setDefaultEditor(Object.class, null);
         table.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        addUnpickEscape();
 
         tableScroll = new JScrollPane();
         tableScroll.setViewportView(table);
@@ -180,43 +181,44 @@ public class MainForm {
         searchGroup.add(rbDepartment);
 
         // Интерфейс изменения данных о сотруднике
-        tfName = initialiseTextField(10, new Rectangle(30, 562, 185, 23));
+        tfName = initialiseTextFieldSave(10, new Rectangle(30, 562, 185, 23));
         frame.getContentPane().add(tfName);
 
         JLabel lName = initialiseLabel("ФИО", new Rectangle (30, 538, 46, 14));
         frame.getContentPane().add(lName);
 
-        tfDateOfBirth = initialiseTextField(10, new Rectangle(222, 562, 185, 23));
+        tfDateOfBirth = initialiseTextFieldSave(10, new Rectangle(222, 562, 185, 23));
         frame.getContentPane().add(tfDateOfBirth);
 
         JLabel lDateOfBirth = initialiseLabel("Дата рождения", new Rectangle (222, 539, 100, 14));
         frame.getContentPane().add(lDateOfBirth);
 
-        tfPassport = initialiseTextField(10, new Rectangle(417, 562, 185, 23));
+        tfPassport = initialiseTextFieldSave(10, new Rectangle(417, 562, 185, 23));
         frame.getContentPane().add(tfPassport);
 
         JLabel lPassport = initialiseLabel("Номер паспорта", new Rectangle (417, 538, 100, 14));
         frame.getContentPane().add(lPassport);
 
-        tfEducation = initialiseTextField(10, new Rectangle(30, 621, 572, 23));
+        tfEducation = initialiseTextFieldSave(10, new Rectangle(30, 621, 572, 23));
+        addSaveKeyCombination(tfEducation);
         frame.getContentPane().add(tfEducation);
 
         JLabel lEducation = initialiseLabel("Образование", new Rectangle (30, 596, 84, 14));
         frame.getContentPane().add(lEducation);
 
-        tfAddress = initialiseTextField(10, new Rectangle(30, 680, 572, 23));
+        tfAddress = initialiseTextFieldSave(10, new Rectangle(30, 680, 572, 23));
         frame.getContentPane().add(tfAddress);
 
         JLabel lAddress = initialiseLabel("Адрес", new Rectangle (30, 655, 46, 14));
         frame.getContentPane().add(lAddress);
 
-        tfPhoneNumber = initialiseTextField(10, new Rectangle(612, 562, 185, 23));
+        tfPhoneNumber = initialiseTextFieldSave(10, new Rectangle(612, 562, 185, 23));
         frame.getContentPane().add(tfPhoneNumber);
 
         JLabel lPhoneNumber = initialiseLabel("Телефон", new Rectangle (612, 539, 83, 14));
         frame.getContentPane().add(lPhoneNumber);
 
-        tfEmail = initialiseTextField(10, new Rectangle(612, 621, 185, 23));
+        tfEmail = initialiseTextFieldSave(10, new Rectangle(612, 621, 185, 23));
         frame.getContentPane().add(tfEmail);
 
         JLabel lEmail = initialiseLabel("E-mail", new Rectangle (612, 596, 46, 14));
@@ -229,7 +231,8 @@ public class MainForm {
         spinnerPersonalSalary.setBounds(612, 680, 185, 23);
         spinnerPersonalSalary.setEnabled(false);
         frame.add(spinnerPersonalSalary);
-        spinnerPersonalSalary.setModel(new SpinnerNumberModel(1, 1, 3999999, 1));
+        spinnerPersonalSalary.setModel(new SpinnerNumberModel(1, 1, 3999999, 100));
+        addSaveKeyCombination(spinnerPersonalSalary);
 
         JLabel lPost = initialiseLabel("Должность", new Rectangle (807, 538, 150, 14));
         frame.getContentPane().add(lPost);
@@ -298,7 +301,7 @@ public class MainForm {
         btnUnpick.addActionListener(actionEvent -> unpick());
 
         // Добавление комбинации ctrl+f для активации формы поиска
-        String ACTION_KEY = "theAction";
+        String ACTION_KEY = "searchAction";
         actionListener = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -391,13 +394,55 @@ public class MainForm {
         return tf;
     }
 
+    // Инициализация текстового поля с добавленной по умолчанию маской ctrl+s
+    @NotNull
+    private JTextField initialiseTextFieldSave(int c, @NotNull Rectangle r) {
+        JTextField tf = new JTextField();
+        tf.setColumns(c);
+        tf.setBounds(r.x, r.y, r.width, r.height);
+        tf.setEnabled(false);
+        addSaveKeyCombination(tf);
+        return tf;
+    }
+
     // Инициализация выпадающего списка
     @NotNull
     private JComboBox initialiseComboBox(String[] m, @NotNull Rectangle r) {
         JComboBox cbbx = new JComboBox(new DefaultComboBoxModel(m));
         cbbx.setBounds(r.x, r.y, r.width, r.height);
         cbbx.setEnabled(false);
+        addSaveKeyCombination(cbbx);
         return cbbx;
+    }
+
+    // Escape для удаления фокуса с таблицы
+    void addUnpickEscape() {
+        table.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                super.keyReleased(e);
+                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                    unpick();
+                }
+            }
+        });
+    }
+
+    // Комбинация ctrl+s для сохранения результатов изменения данных сотрудника
+    private void addSaveKeyCombination(JComponent component) {
+        String ACTION_KEY = "saveAction";
+        actionListener = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                updateEmployee();
+            }
+        };
+        KeyStroke ctrlS = KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK);
+        InputMap inputMap = component.getInputMap(JComponent.WHEN_FOCUSED);
+        inputMap.put(ctrlS, ACTION_KEY);
+        ActionMap actionMap = component.getActionMap();
+        actionMap.put(ACTION_KEY, actionListener);
+        component.setActionMap(actionMap);
     }
 
     // Задание модели таблицы по умолчанию
@@ -509,6 +554,8 @@ public class MainForm {
         table.setRowHeight(30);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setDefaultEditor(Object.class, null);
+        table.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        addUnpickEscape();
         tableScroll.setViewportView(table);
 
         ListSelectionModel selectionModel = table.getSelectionModel();
