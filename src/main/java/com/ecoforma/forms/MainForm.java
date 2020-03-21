@@ -23,8 +23,6 @@ import java.util.Objects;
 
 import static com.ecoforma.App.*;
 
-// TODO: Добавить правильную размерность для всех текстфилдов согласно тому что прописано при создании БД
-
 public class MainForm {
     JFrame frame;
     JToolBar toolBar;
@@ -182,13 +180,13 @@ public class MainForm {
         searchGroup.add(rbDepartment);
 
         // Интерфейс изменения данных о сотруднике
-        tfName = initialiseTextFieldSave(10, new Rectangle(30, 562, 185, 23));
+        tfName = initialiseTextFieldSave(50, new Rectangle(30, 562, 185, 23));
         frame.getContentPane().add(tfName);
 
         JLabel lName = initialiseLabel("ФИО", new Rectangle (30, 538, 46, 14));
         frame.getContentPane().add(lName);
 
-        tfDateOfBirth = initialiseTextFieldSave(10, new Rectangle(222, 562, 185, 23));
+        tfDateOfBirth = initialiseTextFieldSave(20, new Rectangle(222, 562, 185, 23));
         frame.getContentPane().add(tfDateOfBirth);
 
         JLabel lDateOfBirth = initialiseLabel("Дата рождения", new Rectangle (222, 539, 100, 14));
@@ -200,26 +198,26 @@ public class MainForm {
         JLabel lPassport = initialiseLabel("Номер паспорта", new Rectangle (417, 538, 100, 14));
         frame.getContentPane().add(lPassport);
 
-        tfEducation = initialiseTextFieldSave(10, new Rectangle(30, 621, 572, 23));
+        tfEducation = initialiseTextFieldSave(300, new Rectangle(30, 621, 572, 23));
         addSaveKeyCombination(tfEducation);
         frame.getContentPane().add(tfEducation);
 
         JLabel lEducation = initialiseLabel("Образование", new Rectangle (30, 596, 84, 14));
         frame.getContentPane().add(lEducation);
 
-        tfAddress = initialiseTextFieldSave(10, new Rectangle(30, 680, 572, 23));
+        tfAddress = initialiseTextFieldSave(200, new Rectangle(30, 680, 572, 23));
         frame.getContentPane().add(tfAddress);
 
         JLabel lAddress = initialiseLabel("Адрес", new Rectangle (30, 655, 46, 14));
         frame.getContentPane().add(lAddress);
 
-        tfPhoneNumber = initialiseTextFieldSave(10, new Rectangle(612, 562, 185, 23));
+        tfPhoneNumber = initialiseTextFieldSave(12, new Rectangle(612, 562, 185, 23));
         frame.getContentPane().add(tfPhoneNumber);
 
         JLabel lPhoneNumber = initialiseLabel("Телефон", new Rectangle (612, 539, 83, 14));
         frame.getContentPane().add(lPhoneNumber);
 
-        tfEmail = initialiseTextFieldSave(10, new Rectangle(612, 621, 185, 23));
+        tfEmail = initialiseTextFieldSave(70, new Rectangle(612, 621, 185, 23));
         frame.getContentPane().add(tfEmail);
 
         JLabel lEmail = initialiseLabel("E-mail", new Rectangle (612, 596, 46, 14));
@@ -253,13 +251,13 @@ public class MainForm {
             JLabel lLogin = initialiseLabel("Логин", new Rectangle (807, 596, 150, 14));
             frame.getContentPane().add(lLogin);
 
-            tfLogin = initialiseTextFieldSave(10, new Rectangle(807, 621, 185, 23));
+            tfLogin = initialiseTextFieldSave(20, new Rectangle(807, 621, 185, 23));
             frame.getContentPane().add(tfLogin);
 
             JLabel lPassword = initialiseLabel("Пароль", new Rectangle (807, 655, 150, 14));
             frame.getContentPane().add(lPassword);
 
-            tfPassword = initialiseTextFieldSave(10, new Rectangle(807, 680, 185, 23));
+            tfPassword = initialiseTextFieldSave(40, new Rectangle(807, 680, 185, 23));
             frame.getContentPane().add(tfPassword);
 
             JLabel lRole = initialiseLabel("Роль в системе", new Rectangle (1007, 596, 150, 14));
@@ -367,7 +365,7 @@ public class MainForm {
 
     // Инициализация кнопки
     @NotNull
-    private JButton initialiseButton(String t, String i, @NotNull Rectangle r) {
+    public JButton initialiseButton(String t, String i, @NotNull Rectangle r) {
         JButton b = new JButton(t, new ImageIcon(getClass().getResource("/img/" + i + ".png")));
         b.setBounds(r.x, r.y, r.width, r.height);
         b.setFocusPainted(false);
@@ -388,7 +386,7 @@ public class MainForm {
 
     // Инициализция надписи
     @NotNull
-    private JLabel initialiseLabel(String t, @NotNull Rectangle r) {
+    public JLabel initialiseLabel(String t, @NotNull Rectangle r) {
         JLabel l = new JLabel(t);
         l.setBounds(r.x, r.y, r.width, r.height);
         return l;
@@ -396,7 +394,7 @@ public class MainForm {
 
     // Инициализация текстового поля
     @NotNull
-    private JTextField initialiseTextField(int c, @NotNull Rectangle r) {
+    public JTextField initialiseTextField(int c, @NotNull Rectangle r) {
         JTextField tf = new JTextField();
         tf.setColumns(c);
         tf.setBounds(r.x, r.y, r.width, r.height);
@@ -417,7 +415,7 @@ public class MainForm {
 
     // Инициализация выпадающего списка
     @NotNull
-    private JComboBox initialiseComboBox(String[] m, @NotNull Rectangle r) {
+    public JComboBox initialiseComboBox(String[] m, @NotNull Rectangle r) {
         JComboBox cbbx = new JComboBox(new DefaultComboBoxModel(m));
         cbbx.setBounds(r.x, r.y, r.width, r.height);
         cbbx.setEnabled(false);
