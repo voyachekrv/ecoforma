@@ -1,8 +1,8 @@
 package com.ecoforma;
 
-import com.ecoforma.db.DbSession;
-import com.ecoforma.forms.*;
-import org.apache.ibatis.session.SqlSession;
+import com.ecoforma.forms.MainForm;
+import com.ecoforma.forms.NewEmployeeForm;
+import com.ecoforma.forms.SignInForm;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -13,6 +13,7 @@ public class App {
 
     public static MainForm mainForm;
     public static SignInForm signInForm;
+    public static NewEmployeeForm newEmployeeForm;
 
     public static void main(String[] args) {
         // Запуск формы в потоке обработки событий

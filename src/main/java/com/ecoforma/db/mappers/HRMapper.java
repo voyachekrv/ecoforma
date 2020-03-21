@@ -3,9 +3,7 @@ package com.ecoforma.db.mappers;
 import com.ecoforma.entities.Employee;
 import com.ecoforma.entities.EmployeeFull;
 import com.ecoforma.entities.RegistrationData;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import java.util.ArrayList;
 
@@ -57,6 +55,22 @@ public interface HRMapper {
             @Param("personalSalary") int personalSalary
     );
 
-    @Update("UPDATE employee SET name = #{name} WHERE ID = #{ID};")
-    void updateName(@Param("ID") int ID, @Param("name") String name);
+    @Update("UPDATE registrationData SET login = #{login}, password = #{password}, role_ID = #{role_ID} WHERE employee_ID = #{employee_ID}")
+    void updateRegistrationData(
+            @Param("employee_ID") int employee_ID,
+            @Param("login") String login,
+            @Param("password") String password,
+            @Param("role_ID") int role_ID
+    );
+
+    @Insert("INSERT INTO registrationData (employee_ID, login, password, role_ID) VALUES (#{employee_ID}, #{login}, #{password}, #{role_ID});")
+    void insertRegistrationData(
+            @Param("employee_ID") int employee_ID,
+            @Param("login") String login,
+            @Param("password") String password,
+            @Param("role_ID") int role_ID
+    );
+
+    @Delete("DELETE FROM registrationData WHERE employee_ID = #{employee_ID}")
+    void deleteRegistrationData(@Param("employee_ID") int employee_ID);
 }

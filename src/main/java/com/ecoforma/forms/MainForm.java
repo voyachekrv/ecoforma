@@ -21,8 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import static com.ecoforma.App.COMPANY_NAME;
-import static com.ecoforma.App.signInForm;
+import static com.ecoforma.App.*;
 
 public class MainForm {
     JFrame frame;
@@ -252,13 +251,13 @@ public class MainForm {
             JLabel lLogin = initialiseLabel("Логин", new Rectangle (807, 596, 150, 14));
             frame.getContentPane().add(lLogin);
 
-            tfLogin = initialiseTextField(10, new Rectangle(807, 621, 185, 23));
+            tfLogin = initialiseTextFieldSave(10, new Rectangle(807, 621, 185, 23));
             frame.getContentPane().add(tfLogin);
 
             JLabel lPassword = initialiseLabel("Пароль", new Rectangle (807, 655, 150, 14));
             frame.getContentPane().add(lPassword);
 
-            tfPassword = initialiseTextField(10, new Rectangle(807, 680, 185, 23));
+            tfPassword = initialiseTextFieldSave(10, new Rectangle(807, 680, 185, 23));
             frame.getContentPane().add(tfPassword);
 
             JLabel lRole = initialiseLabel("Роль в системе", new Rectangle (1007, 596, 150, 14));
@@ -353,6 +352,15 @@ public class MainForm {
 
         // Обновление данных о сотруднике
         btnAcceptChanges.addActionListener(actionEvent -> updateEmployee());
+
+        btnNewEmployee.addActionListener(actionEvent -> {
+            frame.setEnabled(false);
+            try {
+              newEmployeeForm = new NewEmployeeForm();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     // Инициализация кнопки
@@ -708,6 +716,7 @@ public class MainForm {
         }
     }
 
+    // Обновление данных о сотруднике и его учётной записи в системе
     private void updateEmployee() {
         int result = JOptionPane.showConfirmDialog(
                 frame,
@@ -733,6 +742,26 @@ public class MainForm {
                         cbboxDepartment.getSelectedIndex() + 1,
                         Integer.parseInt(spinnerPersonalSalary.getValue().toString())
                 );
+
+                if (cbAllowSignIn.isSelected() && !(Objects.isNull(currentRegistrationData))) {
+                    mapper.updateRegistrationData(
+                            (int) currentRegistrationData.getEmployee_ID(),
+                            tfLogin.getText(),
+                            tfPassword.getText(),
+                            cbboxRole.getSelectedIndex() + 1
+                    );
+                } else if (cbAllowSignIn.isSelected() && Objects.isNull(currentRegistrationData)) {
+                    mapper.insertRegistrationData(
+                            currentEmployee.getID(),
+                            tfLogin.getText(),
+                            tfPassword.getText(),
+                            cbboxRole.getSelectedIndex() + 1
+                    );
+                } else if (!(cbAllowSignIn.isSelected()) && !(Objects.isNull(currentRegistrationData))) {
+                    mapper.deleteRegistrationData((int) currentRegistrationData.getEmployee_ID());
+                    currentRegistrationData = null;
+                }
+
                 session.commit();
             }
             unpick();
