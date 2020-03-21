@@ -1,6 +1,6 @@
 package com.ecoforma;
 
-import com.ecoforma.forms.MainForm;
+import com.ecoforma.forms.HRForm;
 import com.ecoforma.forms.NewEmployeeForm;
 import com.ecoforma.forms.SignInForm;
 
@@ -11,7 +11,7 @@ import java.io.IOException;
 public class App {
     public static final String COMPANY_NAME = "Экоформа-Пенза"; // Название компании
 
-    public static MainForm mainForm;
+    public static HRForm hrForm;
     public static SignInForm signInForm;
     public static NewEmployeeForm newEmployeeForm;
 

@@ -23,7 +23,7 @@ import java.util.Objects;
 
 import static com.ecoforma.App.*;
 
-public class MainForm {
+public class HRForm {
     JFrame frame;
     JToolBar toolBar;
     JButton btnSignOut;
@@ -62,7 +62,7 @@ public class MainForm {
     Employee currentEmployee;
     RegistrationData currentRegistrationData;
 
-    public MainForm(String department) throws IOException {
+    public HRForm(String department) throws IOException {
         frame = new JFrame(COMPANY_NAME + " - " + department); // Основная панель формы
         frame.setSize(1362, 790); // Установка размеров
         frame.setLocation(323,  144);
@@ -394,7 +394,7 @@ public class MainForm {
 
     // Инициализация текстового поля
     @NotNull
-    public JTextField initialiseTextField(int c, @NotNull Rectangle r) {
+    private JTextField initialiseTextField(int c, @NotNull Rectangle r) {
         JTextField tf = new JTextField();
         tf.setColumns(c);
         tf.setBounds(r.x, r.y, r.width, r.height);
@@ -571,7 +571,7 @@ public class MainForm {
     }
 
     // Перевод полей редактирования сотрудника в неактивное состояние + удаление фокуса с таблицы
-    private void unpick() {
+    public void unpick() {
         removeFocusFromTable();
 
         tfName.setText("");
@@ -699,8 +699,8 @@ public class MainForm {
         if (result == JOptionPane.YES_OPTION) {
             try (SqlSession session = DbSession.startSession()) {
                 HRMapper mapper = session.getMapper(HRMapper.class);
-                mapper.deleteEmployee(currentEmployee.getID());
                 mapper.deleteRegistrationData((int) currentRegistrationData.getEmployee_ID());
+                mapper.deleteEmployee(currentEmployee.getID());
                 session.commit();
             }
 
@@ -725,7 +725,7 @@ public class MainForm {
                 "Изменить данные сотрудника " + currentEmployee.getName() + "?",
                 "Подтверждение операции",
                 JOptionPane.YES_NO_OPTION,
-                JOptionPane.WARNING_MESSAGE
+                JOptionPane.QUESTION_MESSAGE
         );
 
         if (result == JOptionPane.YES_OPTION) {

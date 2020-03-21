@@ -1,7 +1,7 @@
 package com.ecoforma.forms;
 
 import com.ecoforma.db.DbSession;
-import com.ecoforma.db.mappers.RegistrationDataMapper;
+import com.ecoforma.db.mappers.SignInMapper;
 import org.apache.ibatis.session.SqlSession;
 import org.jetbrains.annotations.NotNull;
 
@@ -133,7 +133,7 @@ public class SignInForm {
     private void signIn() {
         String sessionType;
         try (SqlSession session = DbSession.startSession()) {
-            RegistrationDataMapper mapper = session.getMapper(RegistrationDataMapper.class);
+            SignInMapper mapper = session.getMapper(SignInMapper.class);
             sessionType = mapper.getSessionType(tfLogin.getText(), buildClientPassword(tfPassword.getPassword()));
         }
 
@@ -143,11 +143,11 @@ public class SignInForm {
         } else  {
             frame.setVisible(false);
             try {
-                mainForm = new MainForm(sessionType);
+                hrForm = new HRForm(sessionType);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            mainForm.frame.setVisible(true);
+            hrForm.frame.setVisible(true);
         }
     }
 }

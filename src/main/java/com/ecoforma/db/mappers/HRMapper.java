@@ -73,4 +73,28 @@ public interface HRMapper {
 
     @Delete("DELETE FROM registrationData WHERE employee_ID = #{employee_ID}")
     void deleteRegistrationData(@Param("employee_ID") int employee_ID);
+
+    @Insert("INSERT INTO employee (name, dateOfBirth, passport, education, adress, phoneNumber, email, dateOfEmployment, " +
+            "post_ID, department_ID, personalSalary, deleted) VALUES (#{name}, #{dateOfBirth}, #{passport}, #{education}, #{adress}, " +
+            "#{phoneNumber}, #{email}, GETDATE(), #{post_ID}, #{department_ID}, (SELECT salary FROM post WHERE ID = #{post_ID}), 0);")
+    void insertEmployee(
+            @Param("name") String name,
+            @Param("dateOfBirth") String dateOfBirth,
+            @Param("passport") String passport,
+            @Param("education") String education,
+            @Param("adress") String adress,
+            @Param("phoneNumber") String phoneNumber,
+            @Param("email") String email,
+            @Param("post_ID") int post_ID,
+            @Param("department_ID") int department_ID
+    );
+
+    // select top 1 ID from [ecoformaPenza].[dbo].[employee] order by ID desc
+    @Insert("INSERT INTO registrationData (employee_ID, login, password, role_ID) VALUES " +
+            "((SELECT TOP 1 ID FROM employee ORDER BY ID DESC), #{login}, #{password}, #{role_ID});")
+    void insertRegistrationDataWithEmployee(
+            @Param("login") String login,
+            @Param("password") String password,
+            @Param("role_ID") int role_ID
+    );
 }
