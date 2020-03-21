@@ -23,6 +23,8 @@ import java.util.Objects;
 
 import static com.ecoforma.App.*;
 
+// TODO: Добавить правильную размерность для всех текстфилдов согласно тому что прописано при создании БД
+
 public class MainForm {
     JFrame frame;
     JToolBar toolBar;
@@ -76,7 +78,7 @@ public class MainForm {
         displayInterface(department);
     }
 
-    private void displayInterface(String department) {
+    private void displayInterface(@NotNull String department) {
         switch (department) {
             case "Отдел кадров":
                 displayHRInterface();
@@ -437,7 +439,7 @@ public class MainForm {
     }
 
     // Комбинация ctrl+s для сохранения результатов изменения данных сотрудника
-    private void addSaveKeyCombination(JComponent component) {
+    private void addSaveKeyCombination(@NotNull JComponent component) {
         String ACTION_KEY = "saveAction";
         actionListener = new AbstractAction() {
             @Override
@@ -700,6 +702,7 @@ public class MainForm {
             try (SqlSession session = DbSession.startSession()) {
                 HRMapper mapper = session.getMapper(HRMapper.class);
                 mapper.deleteEmployee(currentEmployee.getID());
+                mapper.deleteRegistrationData((int) currentRegistrationData.getEmployee_ID());
                 session.commit();
             }
 
@@ -711,6 +714,7 @@ public class MainForm {
             );
 
             currentEmployee = null;
+            currentRegistrationData = null;
             unpick();
             tfSearch.setText("");
         }
