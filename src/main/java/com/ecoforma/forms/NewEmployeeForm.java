@@ -336,6 +336,10 @@ public class NewEmployeeForm {
                             cbboxDepartment.getSelectedIndex() + 1
                     );
 
+                    if ((cbbxPost.getSelectedIndex() + 1) == mapper.getChiefID()) {
+                        mapper.setChiefWhenInsert(cbboxDepartment.getSelectedIndex() + 1);
+                    }
+
                     if (cbAllowSignIn.isSelected()) {
                         if (checker.checkTextField(tfLogin) && checker.checkTextField(tfPassword)) {
                             mapper.insertRegistrationDataWithEmployee(tfLogin.getText(), tfPassword.getText(), cbbxRole.getSelectedIndex() + 1);

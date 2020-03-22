@@ -761,6 +761,10 @@ public class HRForm {
                             Integer.parseInt(spinnerPersonalSalary.getValue().toString())
                     );
 
+                    if (cbboxPost.getSelectedIndex() + 1 == mapper.getChiefID()) {
+                        mapper.setChiefWhenUpdate(cbboxDepartment.getSelectedIndex() + 1, currentEmployee.getID());
+                    }
+
                     if (cbAllowSignIn.isSelected() && !(Objects.isNull(currentRegistrationData))) {
                         if (checker.checkTextField(tfLogin) && checker.checkTextField(tfPassword)) {
                             mapper.updateRegistrationData(

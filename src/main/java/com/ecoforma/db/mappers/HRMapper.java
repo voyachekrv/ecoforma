@@ -35,6 +35,9 @@ public interface HRMapper {
     @Select("SELECT name FROM role")
     String[] getRoleNames();
 
+    @Select("SELECT ID FROM post WHERE name = 'Начальник отдела'")
+    int getChiefID();
+
     @Update("UPDATE employee SET deleted = 1 WHERE ID = #{ID};")
     void deleteEmployee(@Param("ID") int ID);
 
@@ -63,6 +66,12 @@ public interface HRMapper {
             @Param("role_ID") int role_ID
     );
 
+    @Update("UPDATE department SET employee_ID = #{employee_ID} WHERE ID = #{ID}")
+    void setChiefWhenUpdate(@Param("ID") int ID, @Param("employee_ID") int employee_ID);
+
+    @Update("UPDATE department SET employee_ID = (SELECT TOP 1 ID FROM employee ORDER BY ID DESC) WHERE ID = #{ID}")
+    void setChiefWhenInsert(@Param("ID") int ID);
+
     @Insert("INSERT INTO registrationData (employee_ID, login, password, role_ID) VALUES (#{employee_ID}, #{login}, #{password}, #{role_ID});")
     void insertRegistrationData(
             @Param("employee_ID") int employee_ID,
@@ -89,7 +98,6 @@ public interface HRMapper {
             @Param("department_ID") int department_ID
     );
 
-    // select top 1 ID from [ecoformaPenza].[dbo].[employee] order by ID desc
     @Insert("INSERT INTO registrationData (employee_ID, login, password, role_ID) VALUES " +
             "((SELECT TOP 1 ID FROM employee ORDER BY ID DESC), #{login}, #{password}, #{role_ID});")
     void insertRegistrationDataWithEmployee(

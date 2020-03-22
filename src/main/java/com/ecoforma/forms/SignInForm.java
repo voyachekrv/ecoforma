@@ -105,6 +105,9 @@ public class SignInForm {
 
         // Установка видимости формы
         frame.setVisible(true);
+
+        tfLogin.setText("sklad1");
+        tfPassword.setText("aaa");
     }
 
     // Очистка полей ввода
