@@ -5,6 +5,7 @@ import com.ecoforma.db.mappers.HRMapper;
 import com.ecoforma.entities.Employee;
 import com.ecoforma.entities.EmployeeFull;
 import com.ecoforma.entities.RegistrationData;
+import com.ecoforma.services.Checker;
 import org.apache.ibatis.session.SqlSession;
 import org.jetbrains.annotations.NotNull;
 
@@ -699,7 +700,11 @@ public class HRForm {
         if (result == JOptionPane.YES_OPTION) {
             try (SqlSession session = DbSession.startSession()) {
                 HRMapper mapper = session.getMapper(HRMapper.class);
-                mapper.deleteRegistrationData((int) currentRegistrationData.getEmployee_ID());
+
+                if (cbAllowSignIn.isSelected()) {
+                    mapper.deleteRegistrationData((int) currentRegistrationData.getEmployee_ID());
+                }
+
                 mapper.deleteEmployee(currentEmployee.getID());
                 session.commit();
             }
@@ -710,9 +715,11 @@ public class HRForm {
                     "Удаление завершено",
                     JOptionPane.INFORMATION_MESSAGE
             );
+            if (!(Objects.isNull(currentRegistrationData))) {
+                currentRegistrationData = null;
+            }
 
             currentEmployee = null;
-            currentRegistrationData = null;
             unpick();
             tfSearch.setText("");
         }
@@ -720,6 +727,7 @@ public class HRForm {
 
     // Обновление данных о сотруднике и его учётной записи в системе
     private void updateEmployee() {
+        Checker checker = new Checker();
         int result = JOptionPane.showConfirmDialog(
                 frame,
                 "Изменить данные сотрудника " + currentEmployee.getName() + "?",
@@ -729,44 +737,79 @@ public class HRForm {
         );
 
         if (result == JOptionPane.YES_OPTION) {
-            try (SqlSession session = DbSession.startSession()) {
-                HRMapper mapper = session.getMapper(HRMapper.class);
-                mapper.updateEmployee(
-                        currentEmployee.getID(),
-                        tfName.getText(),
-                        tfDateOfBirth.getText(),
-                        tfPassport.getText(),
-                        tfEducation.getText(),
-                        tfAddress.getText(),
-                        tfPhoneNumber.getText(),
-                        tfEmail.getText(),
-                        cbboxPost.getSelectedIndex() + 1,
-                        cbboxDepartment.getSelectedIndex() + 1,
-                        Integer.parseInt(spinnerPersonalSalary.getValue().toString())
-                );
-
-                if (cbAllowSignIn.isSelected() && !(Objects.isNull(currentRegistrationData))) {
-                    mapper.updateRegistrationData(
-                            (int) currentRegistrationData.getEmployee_ID(),
-                            tfLogin.getText(),
-                            tfPassword.getText(),
-                            cbboxRole.getSelectedIndex() + 1
-                    );
-                } else if (cbAllowSignIn.isSelected() && Objects.isNull(currentRegistrationData)) {
-                    mapper.insertRegistrationData(
+            if (
+                    checker.checkTextField(tfName) &&
+                    checker.checkTextField(tfEducation) &&
+                    checker.checkTextField(tfAddress) &&
+                    checker.checkNumericTextField(tfPassport) &&
+                    checker.checkNumericTextField(tfPhoneNumber) &&
+                    checker.checkDateTextField(tfDateOfBirth)
+            ) {
+                try (SqlSession session = DbSession.startSession()) {
+                    HRMapper mapper = session.getMapper(HRMapper.class);
+                    mapper.updateEmployee(
                             currentEmployee.getID(),
-                            tfLogin.getText(),
-                            tfPassword.getText(),
-                            cbboxRole.getSelectedIndex() + 1
+                            tfName.getText(),
+                            tfDateOfBirth.getText(),
+                            tfPassport.getText(),
+                            tfEducation.getText(),
+                            tfAddress.getText(),
+                            tfPhoneNumber.getText(),
+                            tfEmail.getText(),
+                            cbboxPost.getSelectedIndex() + 1,
+                            cbboxDepartment.getSelectedIndex() + 1,
+                            Integer.parseInt(spinnerPersonalSalary.getValue().toString())
                     );
-                } else if (!(cbAllowSignIn.isSelected()) && !(Objects.isNull(currentRegistrationData))) {
-                    mapper.deleteRegistrationData((int) currentRegistrationData.getEmployee_ID());
-                    currentRegistrationData = null;
-                }
 
-                session.commit();
+                    if (cbAllowSignIn.isSelected() && !(Objects.isNull(currentRegistrationData))) {
+                        if (checker.checkTextField(tfLogin) && checker.checkTextField(tfPassword)) {
+                            mapper.updateRegistrationData(
+                                    (int) currentRegistrationData.getEmployee_ID(),
+                                    tfLogin.getText(),
+                                    tfPassword.getText(),
+                                    cbboxRole.getSelectedIndex() + 1
+                            );
+                        } else {
+                            JOptionPane.showMessageDialog(
+                                    frame,
+                                    "Одно из полей пустое или содержит недопустимое значение.",
+                                    "Ошибка при обновлении",
+                                    JOptionPane.WARNING_MESSAGE
+                            );
+                        }
+                    } else if (cbAllowSignIn.isSelected() && Objects.isNull(currentRegistrationData)) {
+                        if (checker.checkTextField(tfLogin) && checker.checkTextField(tfPassword)) {
+                            mapper.insertRegistrationData(
+                                    currentEmployee.getID(),
+                                    tfLogin.getText(),
+                                    tfPassword.getText(),
+                                    cbboxRole.getSelectedIndex() + 1
+                            );
+                        } else {
+                            JOptionPane.showMessageDialog(
+                                    frame,
+                                    "Одно из полей пустое или содержит недопустимое значение.",
+                                    "Ошибка при обновлении",
+                                    JOptionPane.WARNING_MESSAGE
+                            );
+                        }
+                    } else if (!(cbAllowSignIn.isSelected()) && !(Objects.isNull(currentRegistrationData))) {
+                        mapper.deleteRegistrationData((int) currentRegistrationData.getEmployee_ID());
+                        currentRegistrationData = null;
+                    }
+
+                    session.commit();
+                }
+                unpick();
+            } else {
+                JOptionPane.showMessageDialog(
+                        frame,
+                        "Одно из полей пустое или содержит недопустимое значение.",
+                        "Ошибка при обновлении",
+                        JOptionPane.WARNING_MESSAGE
+                );
             }
-            unpick();
+
         }
     }
 }

@@ -2,6 +2,7 @@ package com.ecoforma.forms;
 
 import com.ecoforma.db.DbSession;
 import com.ecoforma.db.mappers.HRMapper;
+import com.ecoforma.services.Checker;
 import org.apache.ibatis.session.SqlSession;
 import org.jetbrains.annotations.NotNull;
 
@@ -228,7 +229,7 @@ public class NewEmployeeForm {
                     "Отменить добавление сотрудника?",
                     "Подтверждение операции",
                     JOptionPane.YES_NO_OPTION,
-                    JOptionPane.WARNING_MESSAGE
+                    JOptionPane.QUESTION_MESSAGE
             );
 
             if (result == JOptionPane.YES_OPTION) {
@@ -239,9 +240,9 @@ public class NewEmployeeForm {
 
         btnSave.addActionListener(actionEvent -> addEmployee());
 
-        btnGenerateLogin.addActionListener(actionEvent -> tfLogin.setText(generateLogin()));
+        btnGenerateLogin.addActionListener(actionEvent -> tfLogin.setText(generateString((byte) 10, "abcdefghijklmnopqrstuvwxyz")));
 
-        btnGeneratePassword.addActionListener(actionEvent -> tfPassword.setText(generatePassword()));
+        btnGeneratePassword.addActionListener(actionEvent -> tfPassword.setText(generateString((byte) 15, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!№;%:?*()_+=")));
 
         frame.setVisible(true);
     }
@@ -309,56 +310,75 @@ public class NewEmployeeForm {
         );
 
         if (result == JOptionPane.YES_OPTION) {
-            try (SqlSession session = DbSession.startSession()) {
-                HRMapper mapper = session.getMapper(HRMapper.class);
+            Checker checker = new Checker();
+            if (
+                    checker.checkTextField(tfSurname) &&
+                    checker.checkTextField(tfName) &&
+                    checker.checkTextField(tfPatronym) &&
+                    checker.checkDateTextField(tfDateOfBirth) &&
+                    checker.checkNumericTextField(tfPassport) &&
+                    checker.checkTextField(editorEducation, 300) &&
+                    checker.checkTextField(tfAdress) &&
+                    checker.checkNumericTextField(tfPhoneNumber)
+            ) {
+                try (SqlSession session = DbSession.startSession()) {
+                    HRMapper mapper = session.getMapper(HRMapper.class);
 
-                mapper.insertEmployee(
-                        tfSurname.getText()+ " " + tfName.getText() + " " + tfPatronym.getText(),
-                        tfDateOfBirth.getText(),
-                        tfPassport.getText(),
-                        editorEducation.getText(),
-                        tfAdress.getText(),
-                        tfPhoneNumber.getText(),
-                        tfEmail.getText(),
-                        cbbxPost.getSelectedIndex() + 1,
-                        cbboxDepartment.getSelectedIndex() + 1
-                );
+                    mapper.insertEmployee(
+                            tfSurname.getText()+ " " + tfName.getText() + " " + tfPatronym.getText(),
+                            tfDateOfBirth.getText(),
+                            tfPassport.getText(),
+                            editorEducation.getText(),
+                            tfAdress.getText(),
+                            tfPhoneNumber.getText(),
+                            tfEmail.getText(),
+                            cbbxPost.getSelectedIndex() + 1,
+                            cbboxDepartment.getSelectedIndex() + 1
+                    );
 
-                if (cbAllowSignIn.isSelected()) {
-                    mapper.insertRegistrationDataWithEmployee(tfLogin.getText(), tfPassword.getText(), cbbxRole.getSelectedIndex() + 1);
+                    if (cbAllowSignIn.isSelected()) {
+                        if (checker.checkTextField(tfLogin) && checker.checkTextField(tfPassword)) {
+                            mapper.insertRegistrationDataWithEmployee(tfLogin.getText(), tfPassword.getText(), cbbxRole.getSelectedIndex() + 1);
+                        } else {
+                            JOptionPane.showMessageDialog(
+                                    frame,
+                                    "Одно из полей пустое или содержит недопустимое значение.",
+                                    "Ошибка при обновлении",
+                                    JOptionPane.WARNING_MESSAGE
+                            );
+                        }
+                    }
+                    session.commit();
                 }
-                session.commit();
+
+                JOptionPane.showMessageDialog(
+                        frame,
+                        "Сотрудник успешно добавлен.",
+                        "Добавление завершено",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+                frame.setVisible(false);
+                hrForm.frame.setEnabled(true);
+                hrForm.unpick();
+            } else {
+                JOptionPane.showMessageDialog(
+                        frame,
+                        "Одно из полей пустое или содержит недопустимое значение.",
+                        "Ошибка при обновлении",
+                        JOptionPane.WARNING_MESSAGE
+                );
             }
 
-            JOptionPane.showMessageDialog(
-                    frame,
-                    "Сотрудник успешно добавлен.",
-                    "Добавление завершено",
-                    JOptionPane.INFORMATION_MESSAGE
-            );
-            frame.setVisible(false);
-            hrForm.frame.setEnabled(true);
-            hrForm.unpick();
         }
     }
 
-    private String generateLogin() {
-        String[] syllable_1 = new String[] { "Ald", "Aeld", "Alf", "Aelf", "Alh", "Aelh", "Athel", "Aethel", "Beo", "Beor", "Berh", "Brih", "Briht", "Cad", "Cead", "Cen", "Coel", "Cuth", "Cyne", "Ed", "Ead", "El", "Eal", "Eld", "Eg", "Ecg", "Eorp", "God", "Guth", "Har", "Hwaet", "Leo", "Leof", "Oft", "Ot", "Oth", "Os", "Osw", "Peht", "Pleg", "Rad", "Raed", "Sig", "Sige", "Si", "Sihr", "Tat", "Tath", "Tost", "Ut", "Uht", "Ul", "Ulf", "Wal", "Walth", "Wer", "Wit", "Wiht", "Wil", "Wulf" };
-
-        String[] syllable_2 = new String[] { "gar", "heah", "here", "bald", "war", "weard", "wulf", "dred", "red", "stan", "wold", "tric", "ric", "wald", "mon", "wal", "walla", "wealh", "frith", "gyth", "rum", "bert", "berht", "gar", "win", "wine", "wiu", "for", "mund", "thoef", "eof", "had", "erth", "ferth", "thin", "er", "ther", "tar", "thar", "wig", "wicg", "mer", "floed", "ith", "hild", "run", "drun", "ny" };
-
-        return (syllable_1[(int) Math.round(Math.random()*(60 - 1))] + syllable_2[(int) Math.round(Math.random()*(48 - 1))]);
-    }
-
-    private String generatePassword() {
-        final int LENGTH = 25;
-        StringBuilder password = new StringBuilder();
-        String symbols = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!№;%:?*()_+=";
-
-        for (int i = 0; i < LENGTH; i++) {
-            password.append(symbols.charAt((int) Math.floor(Math.random() * symbols.length())));
+    @NotNull
+    private String generateString(byte length, String symbols) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            builder.append(symbols.charAt((int) Math.floor(Math.random() * symbols.length())));
         }
 
-        return password.toString();
+        return builder.toString();
     }
 }

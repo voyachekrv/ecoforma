@@ -69,9 +69,6 @@ public class SignInForm {
         passwordPanel.add(new JLabel("Пароль"));
         passwordPanel.add(tfPassword);
 
-        tfLogin.setText("kadr");
-        tfPassword.setText("abc");
-
         // Компоновка кнопки подтверждения входа
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridBagLayout());
