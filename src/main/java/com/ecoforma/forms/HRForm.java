@@ -6,10 +6,10 @@ import com.ecoforma.entities.Employee;
 import com.ecoforma.entities.EmployeeFull;
 import com.ecoforma.entities.RegistrationData;
 import com.ecoforma.services.Checker;
+import com.ecoforma.services.Initializer;
 import org.apache.ibatis.session.SqlSession;
 import org.jetbrains.annotations.NotNull;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.table.DefaultTableModel;
@@ -57,57 +57,27 @@ public class HRForm {
             "Отдел",
             "Заработная плата"
     };
-
-    String currentSession;
-    Insets insets;
+    Initializer initializer;
     Employee currentEmployee;
     RegistrationData currentRegistrationData;
 
+
     public HRForm(String department) throws IOException {
-        frame = new JFrame(COMPANY_NAME + " - " + department); // Основная панель формы
-        frame.setSize(1362, 790); // Установка размеров
-        frame.setLocation(323,  144);
-        frame.setResizable(false);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Установка операции закрытия окна приложения
-        frame.setIconImage(ImageIO.read(getClass().getResource("/img/logo1.png")));
-        frame.setLayout(null);
-        currentSession = department;
-        insets = frame.getInsets();
+        initializer = new Initializer();
 
-        displayInterface(department);
-    }
+        frame = initializer.newFrame(COMPANY_NAME + " - " + department, new Rectangle(323,  144, 1362, 790), JFrame.EXIT_ON_CLOSE);
 
-    private void displayInterface(@NotNull String department) {
-        switch (department) {
-            case "Отдел кадров":
-                displayHRInterface();
-                break;
-            default:
-                JOptionPane.showMessageDialog(frame, "Для данной роли не доступен интерфейс", "Системная ошибка", JOptionPane.ERROR_MESSAGE);
-                frame.setVisible(false);
-                signInForm.frame.setVisible(true);
-                break;
-        }
-    }
-
-    // Отображение интерфейса отдела кадров
-    private void displayHRInterface() {
         // Кнопка выхода из системы
 
-        toolBar = new JToolBar();
-        toolBar.setFloatable(false);
-        toolBar.setBounds(0, 0, 1346, 44);
+        toolBar = initializer.newToolBar(0, 0, 1346, 44);
         frame.getContentPane().add(toolBar);
 
-        btnSignOut = initialiseButton("Выход из системы", "icon-logout", new Rectangle(0, 0, 1346, 44));
-        btnSignOut.setEnabled(true);
+        btnSignOut = initializer.newButtonEnabled("Выход из системы", "icon-logout", new Rectangle(0, 0, 1346, 44));
         toolBar.add(btnSignOut);
 
         // Таблица со списком сотрудников фирмы
 
-        JPanel tablePanel = new JPanel();
-        tablePanel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
-        tablePanel.setBounds(10, 98, 1326, 430);
+        JPanel tablePanel = initializer.newPanelBevelTable(10, 98, 1326, 430);
         frame.getContentPane().add(tablePanel);
 
         table = new JTable(setInitialTableModel());
@@ -125,48 +95,45 @@ public class HRForm {
 
         // Интерфейс поиска
 
-        tfSearch = initialiseTextField(50, new Rectangle(10, 64, 128, 23));
-        tfSearch.setEnabled(true);
+        tfSearch = initializer.newTextFieldEnabled(50, new Rectangle(10, 64, 128, 23));
         frame.getContentPane().add(tfSearch);
 
-        btnSearch = initialiseButton("Поиск", "icon-search", new Rectangle(145, 64, 90, 23));
-        btnSearch.setEnabled(true);
+        btnSearch = initializer.newButtonEnabled("Поиск", "icon-search", new Rectangle(145, 64, 90, 23));
         frame.getContentPane().add(btnSearch);
 
-        btnStopSearch = initialiseButton(null, "icon-close", new Rectangle(237, 64, 24, 23));
-        btnStopSearch.setEnabled(true);
+        btnStopSearch = initializer.newButtonEnabled(null, "icon-close", new Rectangle(237, 64, 24, 23));
         btnStopSearch.setToolTipText("Очистка результов поиска");
         frame.getContentPane().add(btnStopSearch);
 
-        JLabel lSearchOptions = initialiseLabel("Критерии поиска:", new Rectangle (267, 70, 105, 14));
+        JLabel lSearchOptions = initializer.newLabel("Критерии поиска:", new Rectangle (267, 70, 105, 14));
         frame.getContentPane().add(lSearchOptions);
 
-        rbID = initialiseRadioButton("Табельный номер", "employee.ID", new Rectangle(370, 66, 135, 23));
+        rbID = initializer.newRadioButton("Табельный номер", "employee.ID", new Rectangle(370, 66, 135, 23));
         frame.getContentPane().add(rbID);
 
-        rbName = initialiseRadioButton("Имя", "employee.name", new Rectangle(506, 66, 55, 23));
+        rbName = initializer.newRadioButton("Имя", "employee.name", new Rectangle(506, 66, 55, 23));
         rbName.setSelected(true);
         frame.getContentPane().add(rbName);
 
-        rbPassport = initialiseRadioButton("Номер паспорта", "employee.passport", new Rectangle(557, 66, 119, 23));
+        rbPassport = initializer.newRadioButton("Номер паспорта", "employee.passport", new Rectangle(557, 66, 119, 23));
         frame.getContentPane().add(rbPassport);
 
-        rbEducation = initialiseRadioButton("Образование", "employee.education", new Rectangle(675, 66, 106, 23));
+        rbEducation = initializer.newRadioButton("Образование", "employee.education", new Rectangle(675, 66, 106, 23));
         frame.getContentPane().add(rbEducation);
 
-        rbAdress = initialiseRadioButton("Адрес", "employee.adress", new Rectangle(777, 66, 67, 23));
+        rbAdress = initializer.newRadioButton("Адрес", "employee.adress", new Rectangle(777, 66, 67, 23));
         frame.getContentPane().add(rbAdress);
 
-        rbPhoneNumber = initialiseRadioButton("Номер телефона", "employee.phoneNumber", new Rectangle(840, 66, 125, 23));
+        rbPhoneNumber = initializer.newRadioButton("Номер телефона", "employee.phoneNumber", new Rectangle(840, 66, 125, 23));
         frame.getContentPane().add(rbPhoneNumber);
 
-        rbEmail = initialiseRadioButton("E-mail", "employee.email", new Rectangle(970, 66, 67, 23));
+        rbEmail = initializer.newRadioButton("E-mail", "employee.email", new Rectangle(970, 66, 67, 23));
         frame.getContentPane().add(rbEmail);
 
-        rbPost = initialiseRadioButton("Должность", "post.name", new Rectangle(1035, 66, 96, 23));
+        rbPost = initializer.newRadioButton("Должность", "post.name", new Rectangle(1035, 66, 96, 23));
         frame.getContentPane().add(rbPost);
 
-        rbDepartment = initialiseRadioButton("Отдел", "department.name", new Rectangle(1130, 66, 67, 23));
+        rbDepartment = initializer.newRadioButton("Отдел", "department.name", new Rectangle(1130, 66, 67, 23));
         frame.getContentPane().add(rbDepartment);
 
         ButtonGroup searchGroup = new ButtonGroup();
@@ -181,50 +148,56 @@ public class HRForm {
         searchGroup.add(rbDepartment);
 
         // Интерфейс изменения данных о сотруднике
-        tfName = initialiseTextFieldSave(50, new Rectangle(30, 562, 185, 23));
+        tfName = initializer.newTextFieldDisabled(50, new Rectangle(30, 562, 185, 23));
+        addSaveKeyCombination(tfName);
         frame.getContentPane().add(tfName);
 
-        JLabel lName = initialiseLabel("ФИО", new Rectangle (30, 538, 46, 14));
+        JLabel lName = initializer.newLabel("ФИО", new Rectangle (30, 538, 46, 14));
         frame.getContentPane().add(lName);
 
-        tfDateOfBirth = initialiseTextFieldSave(20, new Rectangle(222, 562, 185, 23));
+        tfDateOfBirth = initializer.newTextFieldDisabled(20, new Rectangle(222, 562, 185, 23));
+        addSaveKeyCombination(tfDateOfBirth);
         frame.getContentPane().add(tfDateOfBirth);
 
-        JLabel lDateOfBirth = initialiseLabel("Дата рождения", new Rectangle (222, 539, 100, 14));
+        JLabel lDateOfBirth = initializer.newLabel("Дата рождения", new Rectangle (222, 539, 100, 14));
         frame.getContentPane().add(lDateOfBirth);
 
-        tfPassport = initialiseTextFieldSave(10, new Rectangle(417, 562, 185, 23));
+        tfPassport = initializer.newTextFieldDisabled(10, new Rectangle(417, 562, 185, 23));
+        addSaveKeyCombination(tfPassport);
         frame.getContentPane().add(tfPassport);
 
-        JLabel lPassport = initialiseLabel("Номер паспорта", new Rectangle (417, 538, 100, 14));
+        JLabel lPassport = initializer.newLabel("Номер паспорта", new Rectangle (417, 538, 100, 14));
         frame.getContentPane().add(lPassport);
 
-        tfEducation = initialiseTextFieldSave(300, new Rectangle(30, 621, 572, 23));
+        tfEducation = initializer.newTextFieldDisabled(300, new Rectangle(30, 621, 572, 23));
         addSaveKeyCombination(tfEducation);
         frame.getContentPane().add(tfEducation);
 
-        JLabel lEducation = initialiseLabel("Образование", new Rectangle (30, 596, 84, 14));
+        JLabel lEducation = initializer.newLabel("Образование", new Rectangle (30, 596, 84, 14));
         frame.getContentPane().add(lEducation);
 
-        tfAddress = initialiseTextFieldSave(200, new Rectangle(30, 680, 572, 23));
+        tfAddress = initializer.newTextFieldDisabled(200, new Rectangle(30, 680, 572, 23));
+        addSaveKeyCombination(tfAddress);
         frame.getContentPane().add(tfAddress);
 
-        JLabel lAddress = initialiseLabel("Адрес", new Rectangle (30, 655, 46, 14));
+        JLabel lAddress = initializer.newLabel("Адрес", new Rectangle (30, 655, 46, 14));
         frame.getContentPane().add(lAddress);
 
-        tfPhoneNumber = initialiseTextFieldSave(12, new Rectangle(612, 562, 185, 23));
+        tfPhoneNumber = initializer.newTextFieldDisabled(12, new Rectangle(612, 562, 185, 23));
+        addSaveKeyCombination(tfPhoneNumber);
         frame.getContentPane().add(tfPhoneNumber);
 
-        JLabel lPhoneNumber = initialiseLabel("Телефон", new Rectangle (612, 539, 83, 14));
+        JLabel lPhoneNumber = initializer.newLabel("Телефон", new Rectangle (612, 539, 83, 14));
         frame.getContentPane().add(lPhoneNumber);
 
-        tfEmail = initialiseTextFieldSave(70, new Rectangle(612, 621, 185, 23));
+        tfEmail = initializer.newTextFieldDisabled(70, new Rectangle(612, 621, 185, 23));
+        addSaveKeyCombination(tfEmail);
         frame.getContentPane().add(tfEmail);
 
-        JLabel lEmail = initialiseLabel("E-mail", new Rectangle (612, 596, 46, 14));
+        JLabel lEmail = initializer.newLabel("E-mail", new Rectangle (612, 596, 46, 14));
         frame.getContentPane().add(lEmail);
 
-        JLabel lPersonalSalary = initialiseLabel("Заработная плата", new Rectangle (612, 655, 150, 14));
+        JLabel lPersonalSalary = initializer.newLabel("Заработная плата", new Rectangle (612, 655, 150, 14));
         frame.getContentPane().add(lPersonalSalary);
 
         spinnerPersonalSalary = new JSpinner();
@@ -234,60 +207,61 @@ public class HRForm {
         spinnerPersonalSalary.setModel(new SpinnerNumberModel(1, 1, 3999999, 100));
         addSaveKeyCombination(spinnerPersonalSalary);
 
-        JLabel lPost = initialiseLabel("Должность", new Rectangle (807, 538, 150, 14));
+        JLabel lPost = initializer.newLabel("Должность", new Rectangle (807, 538, 150, 14));
         frame.getContentPane().add(lPost);
 
         try (SqlSession session = DbSession.startSession()) {
             HRMapper mapper = session.getMapper(HRMapper.class);
 
-            cbboxPost = initialiseComboBox(mapper.getPostNames(), new Rectangle(807, 562, 185, 23));
+            cbboxPost = initializer.newComboBox(mapper.getPostNames(), new Rectangle(807, 562, 185, 23));
+            addSaveKeyCombination(cbboxPost);
             frame.getContentPane().add(cbboxPost);
 
-            JLabel lDepartment = initialiseLabel("Отдел", new Rectangle (1007, 538, 150, 14));
+            JLabel lDepartment = initializer.newLabel("Отдел", new Rectangle (1007, 538, 150, 14));
             frame.getContentPane().add(lDepartment);
 
-            cbboxDepartment = initialiseComboBox(mapper.getDepartmentNames(), new Rectangle(1007, 562, 220, 23));
+            cbboxDepartment = initializer.newComboBox(mapper.getDepartmentNames(), new Rectangle(1007, 562, 220, 23));
+            addSaveKeyCombination(cbboxDepartment);
             frame.getContentPane().add(cbboxDepartment);
 
-            JLabel lLogin = initialiseLabel("Логин", new Rectangle (807, 596, 150, 14));
+            JLabel lLogin = initializer.newLabel("Логин", new Rectangle (807, 596, 150, 14));
             frame.getContentPane().add(lLogin);
 
-            tfLogin = initialiseTextFieldSave(20, new Rectangle(807, 621, 185, 23));
+            tfLogin = initializer.newTextFieldDisabled(20, new Rectangle(807, 621, 185, 23));
+            addSaveKeyCombination(tfLogin);
             frame.getContentPane().add(tfLogin);
 
-            JLabel lPassword = initialiseLabel("Пароль", new Rectangle (807, 655, 150, 14));
+            JLabel lPassword = initializer.newLabel("Пароль", new Rectangle (807, 655, 150, 14));
             frame.getContentPane().add(lPassword);
 
-            tfPassword = initialiseTextFieldSave(40, new Rectangle(807, 680, 185, 23));
+            tfPassword = initializer.newTextFieldDisabled(40, new Rectangle(807, 680, 185, 23));
+            addSaveKeyCombination(tfPassword);
             frame.getContentPane().add(tfPassword);
 
-            JLabel lRole = initialiseLabel("Роль в системе", new Rectangle (1007, 596, 150, 14));
+            JLabel lRole = initializer.newLabel("Роль в системе", new Rectangle (1007, 596, 150, 14));
             frame.getContentPane().add(lRole);
 
-            cbboxRole = initialiseComboBox(mapper.getRoleNames(), new Rectangle(1007, 621, 220, 23));
+            cbboxRole = initializer.newComboBox(mapper.getRoleNames(), new Rectangle(1007, 621, 220, 23));
+            addSaveKeyCombination(cbboxRole);
             frame.getContentPane().add(cbboxRole);
         }
 
-        cbAllowSignIn = new JCheckBox("Позволить регистрироваться в системе");
-        cbAllowSignIn.setBounds(1007, 680, 270, 23);
-        cbAllowSignIn.setFocusPainted(false);
+        cbAllowSignIn = initializer.newCheckBoxDisabled("Позволить регистрироваться в системе", new Rectangle(1007, 680, 270, 23));
         cbAllowSignIn.setSelected(false);
-        cbAllowSignIn.setEnabled(false);
         frame.getContentPane().add(cbAllowSignIn);
 
         // Кнопки внизу панели редактирования сотрудника
 
-        btnAcceptChanges = initialiseButton("Подтвердить изменения", "icon-accept", new Rectangle(30, 714, 210, 30));
+        btnAcceptChanges = initializer.newButton("Подтвердить изменения", "icon-accept", new Rectangle(30, 714, 210, 30));
         frame.add(btnAcceptChanges);
 
-        btnDeleteEmployee = initialiseButton("Удалить сотрудника", "icon-delete", new Rectangle(250, 714, 185, 30));
+        btnDeleteEmployee = initializer.newButton("Удалить сотрудника", "icon-delete", new Rectangle(250, 714, 185, 30));
         frame.getContentPane().add(btnDeleteEmployee);
 
-        btnUnpick = initialiseButton("Снять выбор", "icon-unfocus", new Rectangle(445, 714, 140, 30));
+        btnUnpick = initializer.newButton("Снять выбор", "icon-unfocus", new Rectangle(445, 714, 140, 30));
         frame.getContentPane().add(btnUnpick);
 
-        btnNewEmployee = initialiseButton("Новый сотрудник","icon-add", new Rectangle(595, 714, 170, 30));
-        btnNewEmployee.setEnabled(true);
+        btnNewEmployee = initializer.newButtonEnabled("Новый сотрудник","icon-add", new Rectangle(595, 714, 170, 30));
         frame.getContentPane().add(btnNewEmployee);
 
         // Выход из системы
@@ -364,66 +338,6 @@ public class HRForm {
         });
     }
 
-    // Инициализация кнопки
-    @NotNull
-    public JButton initialiseButton(String t, String i, @NotNull Rectangle r) {
-        JButton b = new JButton(t, new ImageIcon(getClass().getResource("/img/" + i + ".png")));
-        b.setBounds(r.x, r.y, r.width, r.height);
-        b.setFocusPainted(false);
-        b.setEnabled(false);
-        return b;
-    }
-
-    // Инициализация радиокнопки
-    @NotNull
-    private JRadioButton initialiseRadioButton(String t, String c, @NotNull Rectangle r) {
-        JRadioButton rb = new JRadioButton(t);
-        rb.setFocusPainted(false);
-        rb.setBounds(r.x, r.y, r.width, r.height);
-        rb.setActionCommand(c);
-        rb.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        return rb;
-    }
-
-    // Инициализция надписи
-    @NotNull
-    public JLabel initialiseLabel(String t, @NotNull Rectangle r) {
-        JLabel l = new JLabel(t);
-        l.setBounds(r.x, r.y, r.width, r.height);
-        return l;
-    }
-
-    // Инициализация текстового поля
-    @NotNull
-    private JTextField initialiseTextField(int c, @NotNull Rectangle r) {
-        JTextField tf = new JTextField();
-        tf.setColumns(c);
-        tf.setBounds(r.x, r.y, r.width, r.height);
-        tf.setEnabled(false);
-        return tf;
-    }
-
-    // Инициализация текстового поля с добавленной по умолчанию маской ctrl+s
-    @NotNull
-    private JTextField initialiseTextFieldSave(int c, @NotNull Rectangle r) {
-        JTextField tf = new JTextField();
-        tf.setColumns(c);
-        tf.setBounds(r.x, r.y, r.width, r.height);
-        tf.setEnabled(false);
-        addSaveKeyCombination(tf);
-        return tf;
-    }
-
-    // Инициализация выпадающего списка
-    @NotNull
-    public JComboBox initialiseComboBox(String[] m, @NotNull Rectangle r) {
-        JComboBox cbbx = new JComboBox(new DefaultComboBoxModel(m));
-        cbbx.setBounds(r.x, r.y, r.width, r.height);
-        cbbx.setEnabled(false);
-        addSaveKeyCombination(cbbx);
-        return cbbx;
-    }
-
     // Escape для удаления фокуса с таблицы
     void addUnpickEscape() {
         table.addKeyListener(new KeyAdapter() {
@@ -488,7 +402,6 @@ public class HRForm {
 
     // Выход из системы
     private void signOut() {
-        currentSession = null;
         frame.setVisible(false);
         signInForm.frame.setVisible(true);
     }

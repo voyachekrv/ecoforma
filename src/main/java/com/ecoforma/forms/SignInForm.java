@@ -143,11 +143,22 @@ public class SignInForm {
         } else  {
             frame.setVisible(false);
             try {
-                hrForm = new HRForm(sessionType);
+                switch (sessionType) {
+                    case "Отдел кадров":
+                        hrForm = new HRForm(sessionType);
+                        hrForm.frame.setVisible(true);
+                        break;
+                    case "Склад":
+                        storeForm = new StoreForm(sessionType);
+                        break;
+                    default:
+                        JOptionPane.showMessageDialog(frame, "Для данной роли не доступен интерфейс", "Системная ошибка", JOptionPane.ERROR_MESSAGE);
+                        frame.setVisible(true);
+                        break;
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            hrForm.frame.setVisible(true);
         }
     }
 }
