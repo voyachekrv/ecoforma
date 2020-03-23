@@ -17,7 +17,7 @@ import static com.ecoforma.App.*;
 
 // Форма регистрации в систем
 public class SignInForm {
-    JFrame frame;
+    public JFrame frame;
     private JTextField tfLogin; // Поле для ввода логина
     private JPasswordField tfPassword; // Поле для ввода пароля
 
@@ -149,7 +149,8 @@ public class SignInForm {
                         hrForm.frame.setVisible(true);
                         break;
                     case "Склад":
-                        storeForm = new StoreForm(sessionType);
+                        storeForm = new StoreForm(tfLogin.getText(), buildClientPassword(tfPassword.getPassword()));
+                        storeForm.frame.setVisible(true);
                         break;
                     default:
                         JOptionPane.showMessageDialog(frame, "Для данной роли не доступен интерфейс", "Системная ошибка", JOptionPane.ERROR_MESSAGE);

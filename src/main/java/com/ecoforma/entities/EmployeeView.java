@@ -1,18 +1,18 @@
 package com.ecoforma.entities;
 
-public class EmployeeFull {
-    int ID;
-    String name;
-    String dateOfBirth;
-    String passport;
-    String education;
-    String adress;
-    String phoneNumber;
-    String email;
-    String dateOfEmployment;
-    String post;
-    String department;
-    String personalSalary;
+public class EmployeeView {
+    private int ID;
+    private String name;
+    private String dateOfBirth;
+    private String passport;
+    private String education;
+    private String adress;
+    private String phoneNumber;
+    private String email;
+    private String dateOfEmployment;
+    private String post;
+    private String department;
+    private String personalSalary;
 
     public int getID() {
         return ID;

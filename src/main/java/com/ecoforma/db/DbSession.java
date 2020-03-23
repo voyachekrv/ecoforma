@@ -2,6 +2,7 @@ package com.ecoforma.db;
 
 import com.ecoforma.db.mappers.HRMapper;
 import com.ecoforma.db.mappers.SignInMapper;
+import com.ecoforma.db.mappers.StoreMapper;
 import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -45,6 +46,7 @@ public class DbSession {
         Configuration configuration = new Configuration(environment);
         configuration.addMapper(SignInMapper.class);
         configuration.addMapper(HRMapper.class);
+        configuration.addMapper(StoreMapper.class);
         sqlSessionFactory = new SqlSessionFactoryBuilder().build(configuration);
     }
 

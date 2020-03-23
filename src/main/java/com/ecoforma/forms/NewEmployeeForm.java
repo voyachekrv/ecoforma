@@ -18,28 +18,28 @@ import static com.ecoforma.App.hrForm;
 
 public class NewEmployeeForm {
     JFrame frame;
-    JTextField tfSurname;
-    JTextField tfName;
-    JTextField tfPatronym;
-    JTextField tfDateOfBirth;
-    JTextField tfPassport;
-    JTextField tfAdress;
-    JTextField tfPhoneNumber;
-    JTextField tfEmail;
-    JTextField tfLogin;
-    JTextField tfPassword;
-    JEditorPane editorEducation;
-    JCheckBox cbNoEmail;
-    JComboBox cbbxPost;
-    JComboBox cbboxDepartment;
-    JComboBox cbbxRole;
-    JCheckBox cbAllowSignIn;
-    JButton btnGenerateLogin;
-    JButton btnGeneratePassword;
-    JButton btnCancel;
-    JButton btnSave;
+    private JTextField tfSurname;
+    private JTextField tfName;
+    private JTextField tfPatronym;
+    private JTextField tfDateOfBirth;
+    private JTextField tfPassport;
+    private JTextField tfAdress;
+    private JTextField tfPhoneNumber;
+    private JTextField tfEmail;
+    private JTextField tfLogin;
+    private JTextField tfPassword;
+    private JEditorPane editorEducation;
+    private JCheckBox cbNoEmail;
+    private JComboBox cbbxPost;
+    private JComboBox cbboxDepartment;
+    private JComboBox cbbxRole;
+    private JCheckBox cbAllowSignIn;
+    private JButton btnGenerateLogin;
+    private JButton btnGeneratePassword;
+    private JButton btnCancel;
+    private JButton btnSave;
 
-    Initializer initializer;
+    private Initializer initializer;
 
     NewEmployeeForm() throws IOException {
         initializer = new Initializer();

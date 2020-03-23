@@ -1,7 +1,7 @@
 package com.ecoforma.db.mappers;
 
 import com.ecoforma.entities.Employee;
-import com.ecoforma.entities.EmployeeFull;
+import com.ecoforma.entities.EmployeeView;
 import com.ecoforma.entities.RegistrationData;
 import org.apache.ibatis.annotations.*;
 
@@ -12,7 +12,7 @@ public interface HRMapper {
             "employee.adress, employee.phoneNumber, employee.email, employee.dateOfEmployment, post.name AS 'post', department.name AS 'department', " +
             "employee.personalSalary FROM employee JOIN post ON employee.post_ID = post.ID " +
             "JOIN department ON employee.department_ID = department.ID WHERE employee.deleted = 0;")
-    ArrayList<EmployeeFull> getAllEmployees();
+    ArrayList<EmployeeView> getAllEmployees();
 
     @Select("SELECT * FROM employee WHERE (ID = #{ID} AND deleted = 0);")
     Employee getEmployeeByID(@Param("ID") long ID);
@@ -27,7 +27,7 @@ public interface HRMapper {
             "employee.phoneNumber, employee.email, employee.dateOfEmployment, post.name AS 'post', department.name AS 'department', " +
             "employee.personalSalary FROM employee JOIN post ON employee.post_ID = post.ID JOIN department ON employee.department_ID = department.ID " +
             "WHERE (${column} LIKE ${query} AND employee.deleted = 0);")
-    ArrayList<EmployeeFull> findEmployee(@Param("column") String column, @Param("query") String query);
+    ArrayList<EmployeeView> findEmployee(@Param("column") String column, @Param("query") String query);
 
     @Select("SELECT * FROM registrationData WHERE employee_ID = #{employeeID}")
     RegistrationData getRegistrationData(@Param("employeeID") long employeeID);

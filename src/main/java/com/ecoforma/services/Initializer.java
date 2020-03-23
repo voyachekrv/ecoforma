@@ -7,12 +7,13 @@ import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.io.IOException;
 
 public class Initializer {
     @NotNull
-    public JFrame newFrame(String t, Rectangle r, int operation) throws IOException {
+    public JFrame newFrame(String t, @NotNull Rectangle r, int operation) throws IOException {
         JFrame f = new JFrame(t);
         f.setSize(r.width, r.height); // Установка размеров
         f.setLocation(r.x,  r.y);
@@ -21,6 +22,58 @@ public class Initializer {
         f.setDefaultCloseOperation(operation); // Установка операции закрытия окна приложения
         f.getContentPane().setLayout(null);
         return f;
+    }
+
+    @NotNull
+    public JPanel newPanelDefault(int x, int y, int width, int height) {
+        JPanel p = new JPanel();
+        p.setLayout(null);
+        p.setBounds(x, y, width, height);
+        return p;
+    }
+
+    @NotNull
+    public JPanel newPanelEtched(int x, int y, int width, int height) {
+        JPanel p = new JPanel();
+        p.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+        p.setBounds(x, y, width, height);
+        p.setLayout(null);
+        return p;
+    }
+
+    @NotNull
+    public JPanel newPanelBevel(int x, int y, int width, int height) {
+        JPanel p = new JPanel();
+        p.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+        p.setBounds(x, y, width, height);
+        p.setLayout(null);
+        return p;
+    }
+
+    @NotNull
+    public JPanel newPanelBevelTable(int x, int y, int width, int height) {
+        JPanel p = new JPanel();
+        p.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+        p.setBounds(x, y, width, height);
+        return p;
+    }
+
+    @NotNull
+    public JPanel newPanelTitled(String t, @NotNull Rectangle r) {
+        JPanel p = new JPanel();
+        p.setBorder(new TitledBorder(null, t, TitledBorder.LEADING, TitledBorder.TOP, null, null));
+        p.setBounds(r.x, r.y, r.width, r.height);
+        p.setLayout(null);
+        return p;
+    }
+
+    @NotNull
+    public JScrollPane newTableScroll(JTable table, int width, int height) {
+        JScrollPane tableScroll = new JScrollPane();
+        tableScroll.setViewportView(table);
+        tableScroll.setPreferredSize(new Dimension(width, height));
+        tableScroll.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        return tableScroll;
     }
 
     @NotNull
@@ -127,45 +180,20 @@ public class Initializer {
     }
 
     @NotNull
-    public JPanel newPanelEtched(int x, int y, int width, int height) {
-        JPanel p = new JPanel();
-        p.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-        p.setBounds(x, y, width, height);
-        p.setLayout(null);
-        return p;
-    }
-
-    @NotNull
-    public JPanel newPanelBevel(int x, int y, int width, int height) {
-        JPanel p = new JPanel();
-        p.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
-        p.setBounds(x, y, width, height);
-        p.setLayout(null);
-        return p;
-    }
-
-    @NotNull
-    public JPanel newPanelBevelTable(int x, int y, int width, int height) {
-        JPanel p = new JPanel();
-        p.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
-        p.setBounds(x, y, width, height);
-        return p;
-    }
-
-    @NotNull
-    public JPanel newPanelTitled(String t, @NotNull Rectangle r) {
-        JPanel p = new JPanel();
-        p.setBorder(new TitledBorder(null, t, TitledBorder.LEADING, TitledBorder.TOP, null, null));
-        p.setBounds(r.x, r.y, r.width, r.height);
-        p.setLayout(null);
-        return p;
-    }
-
-    @NotNull
     public JToolBar newToolBar(int x, int y, int width, int height) {
         JToolBar tb = new JToolBar();
         tb.setFloatable(false);
         tb.setBounds(x, y, width, height);
         return tb;
+    }
+
+    @NotNull
+    public JTable newTable(DefaultTableModel tableModel) {
+        JTable table = new JTable(tableModel);
+        table.setRowHeight(30);
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.setDefaultEditor(Object.class, null);
+        table.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        return table;
     }
 }

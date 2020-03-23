@@ -1,11 +1,11 @@
 package com.ecoforma.entities;
 
 public class RegistrationData {
-    long ID;
-    long employee_ID;
-    String login;
-    String password;
-    int role_ID;
+    private long ID;
+    private long employee_ID;
+    private String login;
+    private String password;
+    private int role_ID;
 
     public long getID() {
         return ID;

@@ -3,15 +3,15 @@ package com.ecoforma.forms;
 import com.ecoforma.db.DbSession;
 import com.ecoforma.db.mappers.HRMapper;
 import com.ecoforma.entities.Employee;
-import com.ecoforma.entities.EmployeeFull;
+import com.ecoforma.entities.EmployeeView;
 import com.ecoforma.entities.RegistrationData;
 import com.ecoforma.services.Checker;
+import com.ecoforma.services.CommonActivity;
 import com.ecoforma.services.Initializer;
 import org.apache.ibatis.session.SqlSession;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -26,24 +26,24 @@ import static com.ecoforma.App.*;
 
 public class HRForm {
     JFrame frame;
-    JToolBar toolBar;
-    JButton btnSignOut;
-    JTextField tfSearch;
-    JRadioButton rbID, rbName, rbPassport, rbEducation, rbAdress, rbPhoneNumber, rbEmail, rbPost, rbDepartment;
-    JButton btnSearch, btnStopSearch;
-    JScrollPane tableScroll;
-    JTable table;
-    JTextField tfName, tfDateOfBirth, tfPassport, tfEducation, tfAddress, tfPhoneNumber, tfEmail;
-    JSpinner spinnerPersonalSalary;
-    JComboBox cbboxPost, cbboxDepartment;
-    JTextField tfLogin, tfPassword;
-    JComboBox cbboxRole;
-    JCheckBox cbAllowSignIn;
-    JButton btnAcceptChanges, btnDeleteEmployee, btnUnpick, btnNewEmployee;
+    private JToolBar toolBar;
+    private JButton btnSignOut;
+    private JTextField tfSearch;
+    private JRadioButton rbID, rbName, rbPassport, rbEducation, rbAdress, rbPhoneNumber, rbEmail, rbPost, rbDepartment;
+    private JButton btnSearch, btnStopSearch;
+    private JScrollPane tableScroll;
+    private JTable table;
+    private JTextField tfName, tfDateOfBirth, tfPassport, tfEducation, tfAddress, tfPhoneNumber, tfEmail;
+    private JSpinner spinnerPersonalSalary;
+    private JComboBox cbboxPost, cbboxDepartment;
+    private JTextField tfLogin, tfPassword;
+    private JComboBox cbboxRole;
+    private JCheckBox cbAllowSignIn;
+    private JButton btnAcceptChanges, btnDeleteEmployee, btnUnpick, btnNewEmployee;
 
-    Action actionListener;
-    DefaultTableModel initialTableModel;
-    String[] columnsHeader = new String[] {
+    private Action actionListener;
+    private DefaultTableModel initialTableModel;
+    private String[] columnsHeader = new String[] {
             "Табельный номер",
             "ФИО",
             "Дата рождения",
@@ -57,13 +57,16 @@ public class HRForm {
             "Отдел",
             "Заработная плата"
     };
-    Initializer initializer;
-    Employee currentEmployee;
-    RegistrationData currentRegistrationData;
+
+    private Initializer initializer;
+    private CommonActivity activity;
+    private Employee currentEmployee;
+    private RegistrationData currentRegistrationData;
 
 
-    public HRForm(String department) throws IOException {
+    HRForm(String department) throws IOException {
         initializer = new Initializer();
+        activity = new CommonActivity();
 
         frame = initializer.newFrame(COMPANY_NAME + " - " + department, new Rectangle(323,  144, 1362, 790), JFrame.EXIT_ON_CLOSE);
 
@@ -80,17 +83,10 @@ public class HRForm {
         JPanel tablePanel = initializer.newPanelBevelTable(10, 98, 1326, 430);
         frame.getContentPane().add(tablePanel);
 
-        table = new JTable(setInitialTableModel());
-        table.setRowHeight(30);
-        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        table.setDefaultEditor(Object.class, null);
-        table.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        table = initializer.newTable(setInitialTableModel());
         addUnpickEscape();
 
-        tableScroll = new JScrollPane();
-        tableScroll.setViewportView(table);
-        tableScroll.setPreferredSize(new Dimension(1300, 420));
-        tableScroll.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        tableScroll = initializer.newTableScroll(table, 1300, 420);
         tablePanel.add(tableScroll);
 
         // Интерфейс поиска
@@ -265,7 +261,7 @@ public class HRForm {
         frame.getContentPane().add(btnNewEmployee);
 
         // Выход из системы
-        btnSignOut.addActionListener(actionEvent -> signOut());
+        btnSignOut.addActionListener(actionEvent -> activity.signOut(frame));
 
         // Добавление сотрудника в поля для редактирования
         ListSelectionModel selectionModel = table.getSelectionModel();
@@ -375,7 +371,7 @@ public class HRForm {
 
         try (SqlSession session = DbSession.startSession()) {
             HRMapper mapper = session.getMapper(HRMapper.class);
-            ArrayList<EmployeeFull> employees = mapper.getAllEmployees();
+            ArrayList<EmployeeView> employees = mapper.getAllEmployees();
 
             for (int i = 0; i < employees.size(); i++) {
                 initialTableModel.insertRow(i, new Object[] {
@@ -393,17 +389,9 @@ public class HRForm {
                         employees.get(i).getPersonalSalary()
                 });
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
         return initialTableModel;
-    }
-
-    // Выход из системы
-    private void signOut() {
-        frame.setVisible(false);
-        signInForm.frame.setVisible(true);
     }
 
     // Помещение значений данных о сотруднике в поля редактирования
@@ -472,14 +460,9 @@ public class HRForm {
     private void removeFocusFromTable() {
         tableScroll.setViewportView(null);
 
-        table = new JTable(setInitialTableModel());
-        table.setRowHeight(30);
-        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        table.setDefaultEditor(Object.class, null);
-        table.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        table = initializer.newTable(setInitialTableModel());
         addUnpickEscape();
         tableScroll.setViewportView(table);
-
         ListSelectionModel selectionModel = table.getSelectionModel();
         selectionModel.addListSelectionListener(listSelectionEvent -> prepareToEdit());
     }
@@ -560,7 +543,7 @@ public class HRForm {
 
         try (SqlSession session = DbSession.startSession()) {
             HRMapper mapper = session.getMapper(HRMapper.class);
-            ArrayList<EmployeeFull> result = mapper.findEmployee(column, query);
+            ArrayList<EmployeeView> result = mapper.findEmployee(column, query);
 
             if (result.size() == 0) {
                 JOptionPane.showMessageDialog(frame,
