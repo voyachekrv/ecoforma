@@ -5,18 +5,18 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 
 public class Checker {
-    public boolean checkTextField(@NotNull JTextField tf) {
-        return tf.getText().length() <= tf.getColumns() && !(tf.getText().equals(""));
+    public boolean checkTextField(@NotNull String text, int length) {
+        return text.length() <= length && !(text.equals(""));
     }
 
-    public boolean checkTextField(@NotNull JEditorPane editorPane, int length) {
+    /*public boolean checkTextField(@NotNull JEditorPane editorPane, int length) {
         return editorPane.getText().length() <= length && !(editorPane.getText().equals(""));
-    }
+    }*/
 
-    public boolean checkNumericTextField(@NotNull JTextField tf) {
-        if (checkTextField(tf)) {
+    public boolean checkNumericTextField(@NotNull String text, int length) {
+        if (checkTextField(text, length)) {
             try {
-                Long.parseLong(tf.getText());
+                Long.parseLong(text);
             } catch(NumberFormatException | NullPointerException e) {
                 return false;
             }
@@ -26,9 +26,9 @@ public class Checker {
         }
     }
 
-    public boolean checkDateTextField(@NotNull JTextField tf) {
-        if (checkTextField(tf)) {
-            String[] date = tf.getText().split("-");
+    public boolean checkDateTextField(@NotNull String text) {
+        if (checkTextField(text, 10)) {
+            String[] date = text.split("-");
             int numericMonth;
             int numericDay;
 

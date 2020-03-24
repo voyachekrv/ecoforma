@@ -28,7 +28,7 @@ public class NewEmployeeForm {
     private JTextField tfEmail;
     private JTextField tfLogin;
     private JTextField tfPassword;
-    private JEditorPane editorEducation;
+    private JTextArea textAreaEducation;
     private JCheckBox cbNoEmail;
     private JComboBox cbbxPost;
     private JComboBox cbboxDepartment;
@@ -88,23 +88,16 @@ public class NewEmployeeForm {
         JPanel panelEducation = initializer.newPanelTitled("Сведения об образовании", new Rectangle(10, 177, 744, 203));
         panel.add(panelEducation);
 
-        editorEducation = new JEditorPane();
-        editorEducation.setBounds(10, 21, 724, 171);
-        editorEducation.setFont(new Font("Default", Font.PLAIN, 14));
-        String ACTION_KEY = "saveAction";
-        Action actionListener = new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                tfAdress.requestFocus();
-            }
-        };
-        KeyStroke ctrlS = KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK);
-        InputMap inputMap = editorEducation.getInputMap(JComponent.WHEN_FOCUSED);
-        inputMap.put(ctrlS, ACTION_KEY);
-        ActionMap actionMap = editorEducation.getActionMap();
-        actionMap.put(ACTION_KEY, actionListener);
-        editorEducation.setActionMap(actionMap);
-        panelEducation.add(editorEducation);
+        textAreaEducation = initializer.newTextAreaBigFont(
+                10, 21, 724, 171,
+                new AbstractAction() {
+                    @Override
+                    public void actionPerformed(ActionEvent actionEvent) {
+                        tfAdress.requestFocus();
+                    }
+                });
+
+        panelEducation.add(textAreaEducation);
 
         JPanel panelContactData = initializer.newPanelEtched(10, 391, 744, 131);
         panel.add(panelContactData);
@@ -127,8 +120,8 @@ public class NewEmployeeForm {
         JLabel lEmail = initializer.newLabel("E-mail", new Rectangle(10, 68, 230, 20));
         panelContactData.add(lEmail);
 
-        JLabel lphoneNumber = initializer.newLabel("Номер телефона", new Rectangle(381, 68, 230, 20));
-        panelContactData.add(lphoneNumber);
+        JLabel lPhoneNumber = initializer.newLabel("Номер телефона", new Rectangle(381, 68, 230, 20));
+        panelContactData.add(lPhoneNumber);
 
         try (SqlSession session = DbSession.startSession()) {
             HRMapper mapper = session.getMapper(HRMapper.class);
@@ -248,14 +241,14 @@ public class NewEmployeeForm {
         if (result == JOptionPane.YES_OPTION) {
             Checker checker = new Checker();
             if (
-                    checker.checkTextField(tfSurname) &&
-                    checker.checkTextField(tfName) &&
-                    checker.checkTextField(tfPatronym) &&
-                    checker.checkDateTextField(tfDateOfBirth) &&
-                    checker.checkNumericTextField(tfPassport) &&
-                    checker.checkTextField(editorEducation, 300) &&
-                    checker.checkTextField(tfAdress) &&
-                    checker.checkNumericTextField(tfPhoneNumber)
+                    checker.checkTextField(tfSurname.getText(), tfSurname.getColumns()) &&
+                    checker.checkTextField(tfName.getText(), tfName.getColumns()) &&
+                    checker.checkTextField(tfPatronym.getText(), tfPatronym.getColumns()) &&
+                    checker.checkDateTextField(tfDateOfBirth.getText()) &&
+                    checker.checkNumericTextField(tfPassport.getText(), tfPassport.getColumns()) &&
+                    checker.checkTextField(textAreaEducation.getText(), 300) &&
+                    checker.checkTextField(tfAdress.getText(), tfAdress.getColumns()) &&
+                    checker.checkNumericTextField(tfPhoneNumber.getText(), tfPhoneNumber.getColumns())
             ) {
                 try (SqlSession session = DbSession.startSession()) {
                     HRMapper mapper = session.getMapper(HRMapper.class);
@@ -264,7 +257,7 @@ public class NewEmployeeForm {
                             tfSurname.getText()+ " " + tfName.getText() + " " + tfPatronym.getText(),
                             tfDateOfBirth.getText(),
                             tfPassport.getText(),
-                            editorEducation.getText(),
+                            textAreaEducation.getText(),
                             tfAdress.getText(),
                             tfPhoneNumber.getText(),
                             tfEmail.getText(),
@@ -277,7 +270,10 @@ public class NewEmployeeForm {
                     }
 
                     if (cbAllowSignIn.isSelected()) {
-                        if (checker.checkTextField(tfLogin) && checker.checkTextField(tfPassword)) {
+                        if (
+                                checker.checkTextField(tfLogin.getText(), tfLogin.getColumns()) &&
+                                checker.checkTextField(tfPassword.getText(), tfPassword.getColumns())
+                        ) {
                             mapper.insertRegistrationDataWithEmployee(tfLogin.getText(), tfPassword.getText(), cbbxRole.getSelectedIndex() + 1);
                         } else {
                             JOptionPane.showMessageDialog(

@@ -196,11 +196,11 @@ public class HRForm {
         JLabel lPersonalSalary = initializer.newLabel("Заработная плата", new Rectangle (612, 655, 150, 14));
         frame.getContentPane().add(lPersonalSalary);
 
-        spinnerPersonalSalary = new JSpinner();
-        spinnerPersonalSalary.setBounds(612, 680, 185, 23);
-        spinnerPersonalSalary.setEnabled(false);
+        spinnerPersonalSalary = initializer.newSpinnerNumericDisabled(
+                new SpinnerNumberModel(1, 1, 3999999, 100),
+                new Rectangle(612, 680, 185, 23)
+        );
         frame.add(spinnerPersonalSalary);
-        spinnerPersonalSalary.setModel(new SpinnerNumberModel(1, 1, 3999999, 100));
         addSaveKeyCombination(spinnerPersonalSalary);
 
         JLabel lPost = initializer.newLabel("Должность", new Rectangle (807, 538, 150, 14));
@@ -634,12 +634,12 @@ public class HRForm {
 
         if (result == JOptionPane.YES_OPTION) {
             if (
-                    checker.checkTextField(tfName) &&
-                    checker.checkTextField(tfEducation) &&
-                    checker.checkTextField(tfAddress) &&
-                    checker.checkNumericTextField(tfPassport) &&
-                    checker.checkNumericTextField(tfPhoneNumber) &&
-                    checker.checkDateTextField(tfDateOfBirth)
+                    checker.checkTextField(tfName.getText(), tfName.getColumns()) &&
+                    checker.checkTextField(tfEducation.getText(), tfEducation.getColumns()) &&
+                    checker.checkTextField(tfAddress.getText(), tfAddress.getColumns()) &&
+                    checker.checkNumericTextField(tfPassport.getText(), tfPassport.getColumns()) &&
+                    checker.checkNumericTextField(tfPhoneNumber.getText(), tfPhoneNumber.getColumns()) &&
+                    checker.checkDateTextField(tfDateOfBirth.getText())
             ) {
                 try (SqlSession session = DbSession.startSession()) {
                     HRMapper mapper = session.getMapper(HRMapper.class);
@@ -662,7 +662,10 @@ public class HRForm {
                     }
 
                     if (cbAllowSignIn.isSelected() && !(Objects.isNull(currentRegistrationData))) {
-                        if (checker.checkTextField(tfLogin) && checker.checkTextField(tfPassword)) {
+                        if (
+                                checker.checkTextField(tfLogin.getText(), tfLogin.getColumns()) &&
+                                checker.checkTextField(tfPassword.getText(), tfPassword.getColumns())
+                        ) {
                             mapper.updateRegistrationData(
                                     (int) currentRegistrationData.getEmployee_ID(),
                                     tfLogin.getText(),
@@ -678,7 +681,10 @@ public class HRForm {
                             );
                         }
                     } else if (cbAllowSignIn.isSelected() && Objects.isNull(currentRegistrationData)) {
-                        if (checker.checkTextField(tfLogin) && checker.checkTextField(tfPassword)) {
+                        if (
+                                checker.checkTextField(tfLogin.getText(), tfLogin.getColumns()) &&
+                                checker.checkTextField(tfPassword.getText(), tfPassword.getColumns())
+                        ) {
                             mapper.insertRegistrationData(
                                     currentEmployee.getID(),
                                     tfLogin.getText(),

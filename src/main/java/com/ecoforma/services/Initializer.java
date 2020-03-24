@@ -9,6 +9,8 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 
 public class Initializer {
@@ -148,7 +150,6 @@ public class Initializer {
         JTextField tf = new JTextField();
         tf.setColumns(c);
         tf.setBounds(r.x, r.y, r.width, r.height);
-        tf.setFont(new Font("Default", Font.PLAIN, 14));
         return tf;
     }
 
@@ -195,5 +196,62 @@ public class Initializer {
         table.setDefaultEditor(Object.class, null);
         table.setCursor(new Cursor(Cursor.HAND_CURSOR));
         return table;
+    }
+
+    @NotNull
+    public JSpinner newSpinnerNumericDisabled(SpinnerNumberModel model, @NotNull Rectangle r) {
+        JSpinner spinner = new JSpinner();
+        spinner.setBounds(r.x, r.y, r.width, r.height);
+        spinner.setModel(model);
+        spinner.setEnabled(false);
+        return spinner;
+    }
+
+    @NotNull
+    public JSpinner newSpinnerNumericEnabled(SpinnerNumberModel model, @NotNull Rectangle r) {
+        JSpinner spinner = new JSpinner();
+        spinner.setBounds(r.x, r.y, r.width, r.height);
+        spinner.setModel(model);
+        return spinner;
+    }
+
+    @NotNull
+    public JTextArea newTextAreaEnabled(int x, int y, int width, int height, int rows, int cols) {
+        JTextArea textArea = new JTextArea();
+        textArea.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+        textArea.setBounds(x, y, width, height);
+        textArea.setRows(rows);
+        textArea.setColumns(cols);
+        return textArea;
+    }
+
+    @NotNull
+    public JTextArea newTextAreaDisabled(int x, int y, int width, int height, int rows, int cols) {
+        JTextArea textArea = new JTextArea();
+        textArea.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+        textArea.setBounds(x, y, width, height);
+        textArea.setEnabled(false);
+        textArea.setRows(rows);
+        textArea.setColumns(cols);
+        return textArea;
+    }
+
+    @NotNull
+    public JTextArea newTextAreaBigFont(int x, int y, int width, int height, Action action) {
+        JTextArea textArea = new JTextArea();
+        textArea.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+        textArea.setBounds(x, y, width, height);
+        textArea.setFont(new Font("Default", Font.PLAIN, 14));
+        textArea.setColumns(100);
+        textArea.setRows(30);
+
+        String ACTION_KEY = "saveAction";
+        KeyStroke ctrlS = KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK);
+        InputMap inputMap = textArea.getInputMap(JComponent.WHEN_FOCUSED);
+        inputMap.put(ctrlS, ACTION_KEY);
+        ActionMap actionMap = textArea.getActionMap();
+        actionMap.put(ACTION_KEY, action);
+        textArea.setActionMap(actionMap);
+        return textArea;
     }
 }

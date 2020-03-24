@@ -1,8 +1,17 @@
 package com.ecoforma.entities;
 
 public class StoreView {
+    private int ID;
     private String name;
     private int count;
+
+    public int getID() {
+        return ID;
+    }
+
+    public void setID(int ID) {
+        this.ID = ID;
+    }
 
     public String getName() {
         return name;
