@@ -2,16 +2,10 @@ package com.ecoforma.services;
 
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
-
 public class Checker {
     public boolean checkTextField(@NotNull String text, int length) {
         return text.length() <= length && !(text.equals(""));
     }
-
-    /*public boolean checkTextField(@NotNull JEditorPane editorPane, int length) {
-        return editorPane.getText().length() <= length && !(editorPane.getText().equals(""));
-    }*/
 
     public boolean checkNumericTextField(@NotNull String text, int length) {
         if (checkTextField(text, length)) {

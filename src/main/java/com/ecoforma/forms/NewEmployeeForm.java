@@ -279,7 +279,7 @@ public class NewEmployeeForm {
                             JOptionPane.showMessageDialog(
                                     frame,
                                     "Одно из полей пустое или содержит недопустимое значение.",
-                                    "Ошибка при обновлении",
+                                    "Ошибка при добавлении",
                                     JOptionPane.WARNING_MESSAGE
                             );
                         }

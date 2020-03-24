@@ -3,13 +3,12 @@ package com.ecoforma.forms;
 import com.ecoforma.db.DbSession;
 import com.ecoforma.db.mappers.StoreMapper;
 import com.ecoforma.entities.*;
+import com.ecoforma.services.Checker;
 import com.ecoforma.services.CommonActivity;
 import com.ecoforma.services.Initializer;
 import org.apache.ibatis.session.SqlSession;
-import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -25,7 +24,7 @@ public class StoreForm {
     private JButton btnSignOut;
     private JTable tableProduct, tableStore;
     private JTextField tfSearchInProducts, tfSearchInStore;
-    private JButton btnSearchInProducts, btnSearchInStore;
+    private JButton btnSearchInProducts, btnSearchInStore, btnClearSearchProducts, btnClearSearchStore;
     private JRadioButton rbName, rbCategory;
     private JTextField tfName;
     private JSpinner spinnerCost;
@@ -37,11 +36,12 @@ public class StoreForm {
     private JButton btnAcceptIncrease, btnAcceptDecrease, btnAcceptMove, btnDeleteFromStore;
     private JScrollPane tableProductScroll, tableStoreScroll;
 
-    private Initializer initializer;
-
     private DefaultTableModel initialTableProductModel, initialTableStoreModel;
     private String[] tableProductHeader = new String[] { "Код товара", "Название", "Категория", "Стоимость" };
     private String[] tableStoreHeader = new String[] { "Код записи о хранении", "Название", "Количество" };
+
+    private Initializer initializer;
+    private Checker checker;
 
     private Store currentStore;
     private Product currentProduct;
@@ -49,6 +49,8 @@ public class StoreForm {
 
     StoreForm(String login, String password) throws IOException {
         initializer = new Initializer();
+        checker = new Checker();
+
         CommonActivity activity = new CommonActivity();
 
         try (SqlSession session = DbSession.startSession()) {
@@ -100,14 +102,18 @@ public class StoreForm {
         tfSearchInProducts = initializer.newTextFieldEnabled(20, new Rectangle(20, 482, 189, 23));
         frame.add(tfSearchInProducts);
 
-        btnSearchInProducts = initializer.newButtonEnabled("Поиск", new Rectangle(219, 482, 89, 23));
+        btnSearchInProducts = initializer.newButtonEnabled("Поиск", "icon-search", new Rectangle(219, 482, 93, 23));
         frame.add(btnSearchInProducts);
 
-        rbName = initializer.newRadioButton("Имя", "product.name", new Rectangle(312, 482, 56, 23));
+        btnClearSearchProducts = initializer.newButtonEnabled(null, "icon-close", new Rectangle(320, 482, 24, 23));
+        btnClearSearchProducts.setToolTipText("Очистка результов поиска");
+        frame.add(btnClearSearchProducts);
+
+        rbName = initializer.newRadioButton("Имя", "product.name", new Rectangle(352, 482, 56, 23));
         rbName.setSelected(true);
         frame.add(rbName);
 
-        rbCategory = initializer.newRadioButton("Категория", "product.category_ID", new Rectangle(370, 482, 96, 23));
+        rbCategory = initializer.newRadioButton("Категория", "productCategory.name", new Rectangle(412, 482, 96, 23));
         frame.add(rbCategory);
 
         ButtonGroup searchGroup = new ButtonGroup();
@@ -117,8 +123,12 @@ public class StoreForm {
         tfSearchInStore = initializer.newTextFieldEnabled(20, new Rectangle(680, 482, 189, 23));
         frame.add(tfSearchInStore);
 
-        btnSearchInStore = initializer.newButtonEnabled("Поиск", new Rectangle(879, 480, 89, 23));
+        btnSearchInStore = initializer.newButtonEnabled("Поиск", "icon-search", new Rectangle(879, 480, 93, 23));
         frame.add(btnSearchInStore);
+
+        btnClearSearchStore = initializer.newButtonEnabled(null, "icon-close", new Rectangle(980, 480, 24, 23));
+        btnClearSearchStore.setToolTipText("Очистка результов поиска");
+        frame.add(btnClearSearchStore);
 
         JPanel panelEditProduct = initializer.newPanelEtched(20, 516, 650, 220);
         frame.add(panelEditProduct);
@@ -215,6 +225,40 @@ public class StoreForm {
         selectionModelStore.addListSelectionListener(listSelectionEvent -> prepareToEditStore());
 
         btnSignOut.addActionListener(actionEvent -> activity.signOut(frame));
+
+        btnInsertProduct.addActionListener(actionEvent -> insertProductToCatalogue());
+
+        btnUpdateProduct.addActionListener(actionEvent -> updateProduct());
+
+        btnDeleteFromProduct.addActionListener(actionEvent -> deleteFromProduct());
+
+        btnAddToStore.addActionListener(actionEvent -> addToStore());
+
+        btnDeleteFromStore.addActionListener(actionEvent -> deleteFromStore());
+
+        btnAcceptIncrease.addActionListener(actionEvent -> increaseProduct());
+
+        btnAcceptDecrease.addActionListener(actionEvent -> decreaseProduct());
+
+        btnAcceptMove.addActionListener(actionEvent -> moveToOtherStore());
+
+        btnSearchInProducts.addActionListener(actionEvent -> searchInProducts());
+
+        btnSearchInStore.addActionListener(actionEvent -> searchInStore());
+
+        tfSearchInProducts.addActionListener(actionEvent -> searchInProducts());
+
+        tfSearchInStore.addActionListener(actionEvent -> searchInStore());
+
+        btnClearSearchProducts.addActionListener(actionEvent -> {
+            unpickProduct();
+            tfSearchInProducts.setText("");
+        });
+
+        btnClearSearchStore.addActionListener(actionEvent -> {
+            unpickStore();
+            tfSearchInStore.setText("");
+        });
     }
 
     private DefaultTableModel setInitialTableProductModel() {
@@ -374,5 +418,354 @@ public class StoreForm {
         });
     }
 
+    private void insertProductToCatalogue() {
+        int result = JOptionPane.showConfirmDialog(
+                frame,
+                "Добавить новый товар " + tfName.getText() + "?",
+                "Подтверждение операции",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE
+        );
 
+        if (result == JOptionPane.YES_OPTION) {
+            ArrayList<Product> productsWithThisName;
+            try (SqlSession session = DbSession.startSession()) {
+                StoreMapper mapper = session.getMapper(StoreMapper.class);
+                productsWithThisName = mapper.getProductsByName(tfName.getText());
+            }
+
+            if (productsWithThisName.size() != 0) {
+                JOptionPane.showMessageDialog(
+                        frame,
+                        "Товар с таким именем уже существует в базе данных.",
+                        "Ошибка при добавлении",
+                        JOptionPane.WARNING_MESSAGE
+                );
+            } else if (
+                    checker.checkTextField(tfName.getText(), tfName.getColumns()) &&
+                            checker.checkTextField(textAreaCharacteristics.getText(), 1000)
+            ) {
+                try (SqlSession session = DbSession.startSession()) {
+                    StoreMapper mapper = session.getMapper(StoreMapper.class);
+                    mapper.insertProduct(
+                            tfName.getText(),
+                            textAreaCharacteristics.getText(),
+                            (Integer) spinnerCost.getValue(),
+                            cbbxCategory.getSelectedIndex() + 1
+                    );
+                    session.commit();
+                }
+                JOptionPane.showMessageDialog(
+                        frame,
+                        "Товар успешно добавлен.",
+                        "Добавление завершено",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+                unpickProduct();
+            } else {
+                JOptionPane.showMessageDialog(
+                        frame,
+                        "Одно из полей пустое или содержит недопустимое значение.",
+                        "Ошибка при добавлении",
+                        JOptionPane.WARNING_MESSAGE
+                );
+            }
+        }
+    }
+
+    private void updateProduct() {
+        if (
+                checker.checkTextField(tfName.getText(), tfName.getColumns()) &&
+                checker.checkTextField(textAreaCharacteristics.getText(), 1000)
+        ) {
+            try (SqlSession session = DbSession.startSession()) {
+                StoreMapper mapper = session.getMapper(StoreMapper.class);
+
+                mapper.updateProduct(
+                        currentProduct.getID(),
+                        tfName.getText(),
+                        textAreaCharacteristics.getText(),
+                        (Integer) spinnerCost.getValue(),
+                        cbbxCategory.getSelectedIndex() + 1
+                );
+
+                session.commit();
+            }
+            unpickProduct();
+            unpickStore();
+        } else {
+            JOptionPane.showMessageDialog(
+                    frame,
+                    "Одно из полей пустое или содержит недопустимое значение.",
+                    "Ошибка при обновлении",
+                    JOptionPane.WARNING_MESSAGE
+            );
+        }
+    }
+
+    private void deleteFromProduct() {
+        int result = JOptionPane.showConfirmDialog(
+                frame,
+                "Вы уверены, что хотите удалить " + currentProduct.getName() + "?",
+                "Подтверждение операции",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE
+        );
+
+        if (result == JOptionPane.YES_OPTION) {
+            try (SqlSession session = DbSession.startSession()) {
+                StoreMapper mapper = session.getMapper(StoreMapper.class);
+                mapper.deleteProduct(currentProduct.getID());
+                session.commit();
+            }
+
+            JOptionPane.showMessageDialog(
+                    frame,
+                    "Товар успешно удалён.",
+                    "Удаление завершено",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+            currentProduct = null;
+            unpickProduct();
+        }
+    }
+
+    private void addToStore() {
+        ArrayList<ProductToStore> currentProductOnStore;
+        try (SqlSession session = DbSession.startSession()) {
+            StoreMapper mapper = session.getMapper(StoreMapper.class);
+            currentProductOnStore = mapper.getProductToStore(currentProduct.getID(), currentStore.getID());
+        }
+
+        if (currentProductOnStore.size() != 0) {
+            JOptionPane.showMessageDialog(
+                    frame,
+                    "Товар уже существует на складе.",
+                    "Ошибка при добавлении",
+                    JOptionPane.WARNING_MESSAGE
+            );
+        } else {
+            try (SqlSession session = DbSession.startSession()) {
+                StoreMapper mapper = session.getMapper(StoreMapper.class);
+                mapper.insertProductToStore(currentStore.getID(), currentProduct.getID(), 1);
+                session.commit();
+            }
+
+            JOptionPane.showMessageDialog(
+                    frame,
+                    "Товар добавлен на склад.",
+                    "Добавление завершено",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+            unpickStore();
+        }
+    }
+
+    private void deleteFromStore() {
+        int result = JOptionPane.showConfirmDialog(
+                frame,
+                "Вы уверены, что хотите удалить запись о хранении?",
+                "Подтверждение операции",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE
+        );
+
+        if (result == JOptionPane.YES_OPTION) {
+            try (SqlSession session = DbSession.startSession()) {
+                StoreMapper mapper = session.getMapper(StoreMapper.class);
+                mapper.deleteProductFromStore(currentProductToStore.getID());
+                session.commit();
+            }
+            JOptionPane.showMessageDialog(
+                    frame,
+                    "Запись удалена.",
+                    "Удаление завершено",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+            unpickStore();
+        }
+    }
+
+    private void increaseProduct() {
+        currentProductToStore.setCount(currentProductToStore.getCount() + (int) spinnerIncreaseProduct.getValue());
+
+        try (SqlSession session = DbSession.startSession()) {
+            StoreMapper mapper = session.getMapper(StoreMapper.class);
+            mapper.updateCount(currentProductToStore.getID(), currentProductToStore.getCount());
+            session.commit();
+        }
+        removeFocusFromTableStore();
+        spinnerIncreaseProduct.setValue(0);
+    }
+
+    private void decreaseProduct() {
+        if ((currentProductToStore.getCount() - (int) spinnerDecreaseProduct.getValue() < 0)) {
+            JOptionPane.showMessageDialog(
+                    frame,
+                    "Вы не можете отпустить такое количество товаров.",
+                    "Ошибка при изменении",
+                    JOptionPane.WARNING_MESSAGE
+            );
+        } else {
+            currentProductToStore.setCount(currentProductToStore.getCount() - (int) spinnerDecreaseProduct.getValue());
+
+            try (SqlSession session = DbSession.startSession()) {
+                StoreMapper mapper = session.getMapper(StoreMapper.class);
+                mapper.updateCount(currentProductToStore.getID(), currentProductToStore.getCount());
+                session.commit();
+            }
+            removeFocusFromTableStore();
+            spinnerDecreaseProduct.setValue(0);
+        }
+    }
+
+    private void moveToOtherStore() {
+        int result = JOptionPane.showConfirmDialog(
+                frame,
+                "Вы уверены, что хотите переместить товар?",
+                "Подтверждение операции",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE
+        );
+
+        if (result == JOptionPane.YES_OPTION) {
+            if ((currentProductToStore.getCount() - (int) spinnerMoveProduct.getValue() < 0)) {
+                JOptionPane.showMessageDialog(
+                        frame,
+                        "Вы не можете отпустить такое количество товаров.",
+                        "Ошибка при изменении",
+                        JOptionPane.WARNING_MESSAGE
+                );
+                return;
+            }
+
+            if ((int) spinnerMoveProduct.getValue() > 0) {
+                ArrayList<ProductToStore> productsInOtherStory;
+
+                try (SqlSession session = DbSession.startSession()) {
+                    StoreMapper mapper = session.getMapper(StoreMapper.class);
+                    productsInOtherStory = mapper.getProductToStore(
+                            currentProductToStore.getProduct_ID(),
+                            mapper.getStoreIDByName(cbbxOtherStores.getSelectedItem().toString())
+                    );
+                }
+
+                if (productsInOtherStory.size() != 0) {
+                    try (SqlSession session = DbSession.startSession()) {
+                        StoreMapper mapper = session.getMapper(StoreMapper.class);
+                        mapper.updateCount(
+                                productsInOtherStory.get(0).getID(),
+                                productsInOtherStory.get(0).getCount() + (int) spinnerMoveProduct.getValue()
+                        );
+                        mapper.updateCount(currentProductToStore.getID(), currentProductToStore.getCount() - (int) spinnerMoveProduct.getValue());
+                        session.commit();
+                    }
+                } else {
+                    try (SqlSession session = DbSession.startSession()) {
+                        StoreMapper mapper = session.getMapper(StoreMapper.class);
+                        mapper.insertProductToStore(
+                                mapper.getStoreIDByName(cbbxOtherStores.getSelectedItem().toString()),
+                                currentProductToStore.getProduct_ID(),
+                                (int) spinnerMoveProduct.getValue()
+                        );
+                        mapper.updateCount(currentProductToStore.getID(), currentProductToStore.getCount() - (int) spinnerMoveProduct.getValue());
+                        session.commit();
+                    }
+                }
+                JOptionPane.showMessageDialog(
+                        frame,
+                        "Товар перемещён.",
+                        "Добавление завершено",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+            } else {
+                JOptionPane.showMessageDialog(
+                        frame,
+                        "Вы не можете переместить со склада 0 единиц товара.",
+                        "Ошибка при изменении",
+                        JOptionPane.WARNING_MESSAGE
+                );
+            }
+            unpickStore();
+        }
+    }
+
+    private void searchInProducts() {
+        unpickProduct();
+
+        String column = "";
+        String query = "'%" + tfSearchInProducts.getText() + "%'";
+        String option = "";
+
+        ArrayList<ProductView> result;
+
+        if (rbName.isSelected()) {
+            column = rbName.getActionCommand();
+            option = rbName.getText();
+        } else if (rbCategory.isSelected()) {
+            column = rbCategory.getActionCommand();
+            option = rbCategory.getText();
+        }
+
+        try (SqlSession session = DbSession.startSession()) {
+            StoreMapper mapper = session.getMapper(StoreMapper.class);
+            result = mapper.searchProductView(column, query);
+        }
+
+        if (result.size() == 0) {
+            JOptionPane.showMessageDialog(frame,
+                    "По запросу \"" + tfSearchInProducts.getText() + "\" по критерию \"" + option +
+                            "\" ничего не найдено.\nПопробуйте уточнить запрос или изменить критерий поиска.", "Не найдено",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+            tfSearchInProducts.setText("");
+        } else {
+            DefaultTableModel searchTableModel = new DefaultTableModel();
+            searchTableModel.setColumnIdentifiers(tableProductHeader);
+
+            for (int i = 0; i < result.size(); i++) {
+                searchTableModel.insertRow(i, new Object[]{
+                        result.get(i).getID(),
+                        result.get(i).getName(),
+                        result.get(i).getCategory(),
+                        result.get(i).getCost()
+                });
+            }
+            tableProduct.setModel(searchTableModel);
+        }
+    }
+
+    private void searchInStore() {
+        unpickStore();
+
+        String query = "'%" + tfSearchInStore.getText() + "%'";
+
+        ArrayList<StoreView> result;
+
+        try (SqlSession session = DbSession.startSession()) {
+            StoreMapper mapper = session.getMapper(StoreMapper.class);
+            result = mapper.searchStoreView(currentStore.getID(), query);
+        }
+
+        if (result.size() == 0) {
+            JOptionPane.showMessageDialog(frame,
+                    "По запросу \"" + tfSearchInStore.getText() +
+                            "\" ничего не найдено.\nПопробуйте уточнить запрос.", "Не найдено",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+            tfSearchInProducts.setText("");
+        } else {
+            DefaultTableModel searchTableModel = new DefaultTableModel();
+            searchTableModel.setColumnIdentifiers(tableStoreHeader);
+
+            for (int i = 0; i < result.size(); i++) {
+                searchTableModel.insertRow(i, new Object[]{
+                        result.get(i).getID(),
+                        result.get(i).getName(),
+                        result.get(i).getCount()
+                });
+            }
+            tableStore.setModel(searchTableModel);
+        }
+    }
 }
