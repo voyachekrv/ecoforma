@@ -1,9 +1,6 @@
 package com.ecoforma;
 
-import com.ecoforma.forms.HRForm;
-import com.ecoforma.forms.NewEmployeeForm;
-import com.ecoforma.forms.SignInForm;
-import com.ecoforma.forms.StoreForm;
+import com.ecoforma.forms.*;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -16,6 +13,7 @@ public class App {
     public static HRForm hrForm;
     public static NewEmployeeForm newEmployeeForm;
     public static StoreForm storeForm;
+    public static SaleForm saleForm;
 
     public static void main(String[] args) {
         // Запуск формы в потоке обработки событий

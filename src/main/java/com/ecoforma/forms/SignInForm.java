@@ -1,8 +1,6 @@
 package com.ecoforma.forms;
 
-import com.ecoforma.db.DbSession;
-import com.ecoforma.db.mappers.SignInMapper;
-import org.apache.ibatis.session.SqlSession;
+import com.ecoforma.db.services.SignInService;
 import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
@@ -21,8 +19,11 @@ public class SignInForm {
     private JTextField tfLogin; // Поле для ввода логина
     private JPasswordField tfPassword; // Поле для ввода пароля
 
+    private SignInService dbService;
+
     public SignInForm() throws IOException {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Размеры окна
+        dbService = new SignInService();
 
         // Форма
         frame = new JFrame(COMPANY_NAME + " - Вход в систему"); // Основная панель формы
@@ -106,8 +107,8 @@ public class SignInForm {
         // Установка видимости формы
         frame.setVisible(true);
 
-        tfLogin.setText("sklad1");
-        tfPassword.setText("aaa");
+        tfLogin.setText("kassa");
+        tfPassword.setText("kkk");
     }
 
     // Очистка полей ввода
@@ -131,11 +132,7 @@ public class SignInForm {
 
     // Вход в систему
     private void signIn() {
-        String sessionType;
-        try (SqlSession session = DbSession.startSession()) {
-            SignInMapper mapper = session.getMapper(SignInMapper.class);
-            sessionType = mapper.getSessionType(tfLogin.getText(), buildClientPassword(tfPassword.getPassword()));
-        }
+        String sessionType = dbService.getSessionType(tfLogin.getText(), buildClientPassword(tfPassword.getPassword()));
 
         if (Objects.isNull(sessionType)) {
             JOptionPane.showMessageDialog(frame, "Неверный логин или пароль", "Ошибка", JOptionPane.WARNING_MESSAGE);
@@ -151,6 +148,10 @@ public class SignInForm {
                     case "Склад":
                         storeForm = new StoreForm(tfLogin.getText(), buildClientPassword(tfPassword.getPassword()));
                         storeForm.frame.setVisible(true);
+                        break;
+                    case "Отдел продаж":
+                        saleForm = new SaleForm(sessionType);
+                        saleForm.frame.setVisible(true);
                         break;
                     default:
                         JOptionPane.showMessageDialog(frame, "Для данной роли не доступен интерфейс", "Системная ошибка", JOptionPane.ERROR_MESSAGE);

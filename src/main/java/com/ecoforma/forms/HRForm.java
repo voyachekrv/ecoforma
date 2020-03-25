@@ -6,8 +6,6 @@ import com.ecoforma.entities.Employee;
 import com.ecoforma.entities.EmployeeView;
 import com.ecoforma.entities.RegistrationData;
 import com.ecoforma.services.Checker;
-import com.ecoforma.services.CommonActivity;
-import com.ecoforma.services.Initializer;
 import org.apache.ibatis.session.SqlSession;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,12 +20,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import static com.ecoforma.App.*;
+import static com.ecoforma.App.COMPANY_NAME;
+import static com.ecoforma.App.newEmployeeForm;
 
 public class HRForm {
-    JFrame frame;
-    private JToolBar toolBar;
-    private JButton btnSignOut;
+    CompanyFrame frame;
     private JTextField tfSearch;
     private JRadioButton rbID, rbName, rbPassport, rbEducation, rbAdress, rbPhoneNumber, rbEmail, rbPost, rbDepartment;
     private JButton btnSearch, btnStopSearch;
@@ -58,78 +55,65 @@ public class HRForm {
             "Заработная плата"
     };
 
-    private Initializer initializer;
-    private CommonActivity activity;
     private Employee currentEmployee;
     private RegistrationData currentRegistrationData;
 
 
     HRForm(String department) throws IOException {
-        initializer = new Initializer();
-        activity = new CommonActivity();
-
-        frame = initializer.newFrame(COMPANY_NAME + " - " + department, new Rectangle(323,  144, 1362, 790), JFrame.EXIT_ON_CLOSE);
-
-        // Кнопка выхода из системы
-
-        toolBar = initializer.newToolBar(0, 0, 1346, 44);
-        frame.getContentPane().add(toolBar);
-
-        btnSignOut = initializer.newButtonEnabled("Выход из системы", "icon-logout", new Rectangle(0, 0, 1346, 44));
-        toolBar.add(btnSignOut);
+        frame = new CompanyFrame(COMPANY_NAME + " - " + department);
 
         // Таблица со списком сотрудников фирмы
 
-        JPanel tablePanel = initializer.newPanelBevelTable(10, 98, 1326, 430);
+        JPanel tablePanel = frame.initializer.newPanelBevelTable(10, 98, 1326, 430);
         frame.getContentPane().add(tablePanel);
 
-        table = initializer.newTable(setInitialTableModel());
+        table = frame.initializer.newTable(setInitialTableModel());
         addUnpickEscape();
 
-        tableScroll = initializer.newTableScroll(table, 1300, 420);
+        tableScroll = frame.initializer.newTableScroll(table, 1300, 420);
         tablePanel.add(tableScroll);
 
         // Интерфейс поиска
 
-        tfSearch = initializer.newTextFieldEnabled(50, new Rectangle(10, 64, 128, 23));
+        tfSearch = frame.initializer.newTextFieldEnabled(50, new Rectangle(10, 64, 128, 23));
         frame.getContentPane().add(tfSearch);
 
-        btnSearch = initializer.newButtonEnabled("Поиск", "icon-search", new Rectangle(145, 64, 90, 23));
+        btnSearch = frame.initializer.newButtonEnabled("Поиск", "icon-search", new Rectangle(145, 64, 90, 23));
         frame.getContentPane().add(btnSearch);
 
-        btnStopSearch = initializer.newButtonEnabled(null, "icon-close", new Rectangle(237, 64, 24, 23));
+        btnStopSearch = frame.initializer.newButtonEnabled(null, "icon-close", new Rectangle(237, 64, 24, 23));
         btnStopSearch.setToolTipText("Очистка результов поиска");
         frame.getContentPane().add(btnStopSearch);
 
-        JLabel lSearchOptions = initializer.newLabel("Критерии поиска:", new Rectangle (267, 70, 105, 14));
+        JLabel lSearchOptions = frame.initializer.newLabel("Критерии поиска:", new Rectangle (267, 70, 105, 14));
         frame.getContentPane().add(lSearchOptions);
 
-        rbID = initializer.newRadioButton("Табельный номер", "employee.ID", new Rectangle(370, 66, 135, 23));
+        rbID = frame.initializer.newRadioButton("Табельный номер", "employee.ID", new Rectangle(370, 66, 135, 23));
         frame.getContentPane().add(rbID);
 
-        rbName = initializer.newRadioButton("Имя", "employee.name", new Rectangle(506, 66, 55, 23));
+        rbName = frame.initializer.newRadioButton("Имя", "employee.name", new Rectangle(506, 66, 55, 23));
         rbName.setSelected(true);
         frame.getContentPane().add(rbName);
 
-        rbPassport = initializer.newRadioButton("Номер паспорта", "employee.passport", new Rectangle(557, 66, 119, 23));
+        rbPassport = frame.initializer.newRadioButton("Номер паспорта", "employee.passport", new Rectangle(557, 66, 119, 23));
         frame.getContentPane().add(rbPassport);
 
-        rbEducation = initializer.newRadioButton("Образование", "employee.education", new Rectangle(675, 66, 106, 23));
+        rbEducation = frame.initializer.newRadioButton("Образование", "employee.education", new Rectangle(675, 66, 106, 23));
         frame.getContentPane().add(rbEducation);
 
-        rbAdress = initializer.newRadioButton("Адрес", "employee.adress", new Rectangle(777, 66, 67, 23));
+        rbAdress = frame.initializer.newRadioButton("Адрес", "employee.adress", new Rectangle(777, 66, 67, 23));
         frame.getContentPane().add(rbAdress);
 
-        rbPhoneNumber = initializer.newRadioButton("Номер телефона", "employee.phoneNumber", new Rectangle(840, 66, 125, 23));
+        rbPhoneNumber = frame.initializer.newRadioButton("Номер телефона", "employee.phoneNumber", new Rectangle(840, 66, 125, 23));
         frame.getContentPane().add(rbPhoneNumber);
 
-        rbEmail = initializer.newRadioButton("E-mail", "employee.email", new Rectangle(970, 66, 67, 23));
+        rbEmail = frame.initializer.newRadioButton("E-mail", "employee.email", new Rectangle(970, 66, 67, 23));
         frame.getContentPane().add(rbEmail);
 
-        rbPost = initializer.newRadioButton("Должность", "post.name", new Rectangle(1035, 66, 96, 23));
+        rbPost = frame.initializer.newRadioButton("Должность", "post.name", new Rectangle(1035, 66, 96, 23));
         frame.getContentPane().add(rbPost);
 
-        rbDepartment = initializer.newRadioButton("Отдел", "department.name", new Rectangle(1130, 66, 67, 23));
+        rbDepartment = frame.initializer.newRadioButton("Отдел", "department.name", new Rectangle(1130, 66, 67, 23));
         frame.getContentPane().add(rbDepartment);
 
         ButtonGroup searchGroup = new ButtonGroup();
@@ -144,124 +128,124 @@ public class HRForm {
         searchGroup.add(rbDepartment);
 
         // Интерфейс изменения данных о сотруднике
-        tfName = initializer.newTextFieldDisabled(50, new Rectangle(30, 562, 185, 23));
+        tfName = frame.initializer.newTextFieldDisabled(50, new Rectangle(30, 562, 185, 23));
         addSaveKeyCombination(tfName);
         frame.getContentPane().add(tfName);
 
-        JLabel lName = initializer.newLabel("ФИО", new Rectangle (30, 538, 46, 14));
+        JLabel lName = frame.initializer.newLabel("ФИО", new Rectangle (30, 538, 46, 14));
         frame.getContentPane().add(lName);
 
-        tfDateOfBirth = initializer.newTextFieldDisabled(20, new Rectangle(222, 562, 185, 23));
+        tfDateOfBirth = frame.initializer.newTextFieldDisabled(20, new Rectangle(222, 562, 185, 23));
         addSaveKeyCombination(tfDateOfBirth);
         frame.getContentPane().add(tfDateOfBirth);
 
-        JLabel lDateOfBirth = initializer.newLabel("Дата рождения", new Rectangle (222, 539, 100, 14));
+        JLabel lDateOfBirth = frame.initializer.newLabel("Дата рождения", new Rectangle (222, 539, 100, 14));
         frame.getContentPane().add(lDateOfBirth);
 
-        tfPassport = initializer.newTextFieldDisabled(10, new Rectangle(417, 562, 185, 23));
+        tfPassport = frame.initializer.newTextFieldDisabled(10, new Rectangle(417, 562, 185, 23));
         addSaveKeyCombination(tfPassport);
         frame.getContentPane().add(tfPassport);
 
-        JLabel lPassport = initializer.newLabel("Номер паспорта", new Rectangle (417, 538, 100, 14));
+        JLabel lPassport = frame.initializer.newLabel("Номер паспорта", new Rectangle (417, 538, 100, 14));
         frame.getContentPane().add(lPassport);
 
-        tfEducation = initializer.newTextFieldDisabled(300, new Rectangle(30, 621, 572, 23));
+        tfEducation = frame.initializer.newTextFieldDisabled(300, new Rectangle(30, 621, 572, 23));
         addSaveKeyCombination(tfEducation);
         frame.getContentPane().add(tfEducation);
 
-        JLabel lEducation = initializer.newLabel("Образование", new Rectangle (30, 596, 84, 14));
+        JLabel lEducation = frame.initializer.newLabel("Образование", new Rectangle (30, 596, 84, 14));
         frame.getContentPane().add(lEducation);
 
-        tfAddress = initializer.newTextFieldDisabled(200, new Rectangle(30, 680, 572, 23));
+        tfAddress = frame.initializer.newTextFieldDisabled(200, new Rectangle(30, 680, 572, 23));
         addSaveKeyCombination(tfAddress);
         frame.getContentPane().add(tfAddress);
 
-        JLabel lAddress = initializer.newLabel("Адрес", new Rectangle (30, 655, 46, 14));
+        JLabel lAddress = frame.initializer.newLabel("Адрес", new Rectangle (30, 655, 46, 14));
         frame.getContentPane().add(lAddress);
 
-        tfPhoneNumber = initializer.newTextFieldDisabled(12, new Rectangle(612, 562, 185, 23));
+        tfPhoneNumber = frame.initializer.newTextFieldDisabled(12, new Rectangle(612, 562, 185, 23));
         addSaveKeyCombination(tfPhoneNumber);
         frame.getContentPane().add(tfPhoneNumber);
 
-        JLabel lPhoneNumber = initializer.newLabel("Телефон", new Rectangle (612, 539, 83, 14));
+        JLabel lPhoneNumber = frame.initializer.newLabel("Телефон", new Rectangle (612, 539, 83, 14));
         frame.getContentPane().add(lPhoneNumber);
 
-        tfEmail = initializer.newTextFieldDisabled(70, new Rectangle(612, 621, 185, 23));
+        tfEmail = frame.initializer.newTextFieldDisabled(70, new Rectangle(612, 621, 185, 23));
         addSaveKeyCombination(tfEmail);
         frame.getContentPane().add(tfEmail);
 
-        JLabel lEmail = initializer.newLabel("E-mail", new Rectangle (612, 596, 46, 14));
+        JLabel lEmail = frame.initializer.newLabel("E-mail", new Rectangle (612, 596, 46, 14));
         frame.getContentPane().add(lEmail);
 
-        JLabel lPersonalSalary = initializer.newLabel("Заработная плата", new Rectangle (612, 655, 150, 14));
+        JLabel lPersonalSalary = frame.initializer.newLabel("Заработная плата", new Rectangle (612, 655, 150, 14));
         frame.getContentPane().add(lPersonalSalary);
 
-        spinnerPersonalSalary = initializer.newSpinnerNumericDisabled(
+        spinnerPersonalSalary = frame.initializer.newSpinnerNumericDisabled(
                 new SpinnerNumberModel(1, 1, 3999999, 100),
                 new Rectangle(612, 680, 185, 23)
         );
         frame.add(spinnerPersonalSalary);
         addSaveKeyCombination(spinnerPersonalSalary);
 
-        JLabel lPost = initializer.newLabel("Должность", new Rectangle (807, 538, 150, 14));
+        JLabel lPost = frame.initializer.newLabel("Должность", new Rectangle (807, 538, 150, 14));
         frame.getContentPane().add(lPost);
 
         try (SqlSession session = DbSession.startSession()) {
             HRMapper mapper = session.getMapper(HRMapper.class);
 
-            cbboxPost = initializer.newComboBox(mapper.getPostNames(), new Rectangle(807, 562, 185, 23));
+            cbboxPost = frame.initializer.newComboBox(mapper.getPostNames(), new Rectangle(807, 562, 185, 23));
             addSaveKeyCombination(cbboxPost);
             frame.getContentPane().add(cbboxPost);
 
-            JLabel lDepartment = initializer.newLabel("Отдел", new Rectangle (1007, 538, 150, 14));
+            JLabel lDepartment = frame.initializer.newLabel("Отдел", new Rectangle (1007, 538, 150, 14));
             frame.getContentPane().add(lDepartment);
 
-            cbboxDepartment = initializer.newComboBox(mapper.getDepartmentNames(), new Rectangle(1007, 562, 220, 23));
+            cbboxDepartment = frame.initializer.newComboBox(mapper.getDepartmentNames(), new Rectangle(1007, 562, 220, 23));
             addSaveKeyCombination(cbboxDepartment);
             frame.getContentPane().add(cbboxDepartment);
 
-            JLabel lLogin = initializer.newLabel("Логин", new Rectangle (807, 596, 150, 14));
+            JLabel lLogin = frame.initializer.newLabel("Логин", new Rectangle (807, 596, 150, 14));
             frame.getContentPane().add(lLogin);
 
-            tfLogin = initializer.newTextFieldDisabled(20, new Rectangle(807, 621, 185, 23));
+            tfLogin = frame.initializer.newTextFieldDisabled(20, new Rectangle(807, 621, 185, 23));
             addSaveKeyCombination(tfLogin);
             frame.getContentPane().add(tfLogin);
 
-            JLabel lPassword = initializer.newLabel("Пароль", new Rectangle (807, 655, 150, 14));
+            JLabel lPassword = frame.initializer.newLabel("Пароль", new Rectangle (807, 655, 150, 14));
             frame.getContentPane().add(lPassword);
 
-            tfPassword = initializer.newTextFieldDisabled(40, new Rectangle(807, 680, 185, 23));
+            tfPassword = frame.initializer.newTextFieldDisabled(40, new Rectangle(807, 680, 185, 23));
             addSaveKeyCombination(tfPassword);
             frame.getContentPane().add(tfPassword);
 
-            JLabel lRole = initializer.newLabel("Роль в системе", new Rectangle (1007, 596, 150, 14));
+            JLabel lRole = frame.initializer.newLabel("Роль в системе", new Rectangle (1007, 596, 150, 14));
             frame.getContentPane().add(lRole);
 
-            cbboxRole = initializer.newComboBox(mapper.getRoleNames(), new Rectangle(1007, 621, 220, 23));
+            cbboxRole = frame.initializer.newComboBox(mapper.getRoleNames(), new Rectangle(1007, 621, 220, 23));
             addSaveKeyCombination(cbboxRole);
             frame.getContentPane().add(cbboxRole);
         }
 
-        cbAllowSignIn = initializer.newCheckBoxDisabled("Позволить регистрироваться в системе", new Rectangle(1007, 680, 270, 23));
+        cbAllowSignIn = frame.initializer.newCheckBoxDisabled("Позволить регистрироваться в системе", new Rectangle(1007, 680, 270, 23));
         cbAllowSignIn.setSelected(false);
         frame.getContentPane().add(cbAllowSignIn);
 
         // Кнопки внизу панели редактирования сотрудника
 
-        btnAcceptChanges = initializer.newButton("Подтвердить изменения", "icon-accept", new Rectangle(30, 714, 210, 30));
+        btnAcceptChanges = frame.initializer.newButton("Подтвердить изменения", "icon-accept", new Rectangle(30, 714, 210, 30));
         frame.add(btnAcceptChanges);
 
-        btnDeleteEmployee = initializer.newButton("Удалить сотрудника", "icon-delete", new Rectangle(250, 714, 185, 30));
+        btnDeleteEmployee = frame.initializer.newButton("Удалить сотрудника", "icon-delete", new Rectangle(250, 714, 185, 30));
         frame.getContentPane().add(btnDeleteEmployee);
 
-        btnUnpick = initializer.newButton("Снять выбор", "icon-unfocus", new Rectangle(445, 714, 140, 30));
+        btnUnpick = frame.initializer.newButton("Снять выбор", "icon-unfocus", new Rectangle(445, 714, 140, 30));
         frame.getContentPane().add(btnUnpick);
 
-        btnNewEmployee = initializer.newButtonEnabled("Новый сотрудник","icon-add", new Rectangle(595, 714, 170, 30));
+        btnNewEmployee = frame.initializer.newButtonEnabled("Новый сотрудник","icon-add", new Rectangle(595, 714, 170, 30));
         frame.getContentPane().add(btnNewEmployee);
 
         // Выход из системы
-        btnSignOut.addActionListener(actionEvent -> activity.signOut(frame));
+        //btnSignOut.addActionListener(actionEvent -> activity.signOut(frame));
 
         // Добавление сотрудника в поля для редактирования
         ListSelectionModel selectionModel = table.getSelectionModel();
@@ -460,7 +444,7 @@ public class HRForm {
     private void removeFocusFromTable() {
         tableScroll.setViewportView(null);
 
-        table = initializer.newTable(setInitialTableModel());
+        table = frame.initializer.newTable(setInitialTableModel());
         addUnpickEscape();
         tableScroll.setViewportView(table);
         ListSelectionModel selectionModel = table.getSelectionModel();
