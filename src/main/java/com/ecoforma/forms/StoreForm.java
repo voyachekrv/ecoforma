@@ -20,7 +20,6 @@ import static com.ecoforma.App.COMPANY_NAME;
 
 public class StoreForm {
     JFrame frame;
-    private JToolBar toolBar;
     private JButton btnSignOut;
     private JTable tableProduct, tableStore;
     private JTextField tfSearchInProducts, tfSearchInStore;
@@ -60,7 +59,7 @@ public class StoreForm {
 
         frame = initializer.newFrame(COMPANY_NAME + " - " + currentStore.getName(), new Rectangle(323,  144, 1362, 790), JFrame.EXIT_ON_CLOSE);
 
-        toolBar = initializer.newToolBar(0, 0, 1346, 44);
+        JToolBar toolBar = initializer.newToolBar(0, 0, 1346, 44);
         frame.getContentPane().add(toolBar);
 
         btnSignOut = initializer.newButtonEnabled("Выход из системы", "icon-logout", new Rectangle(0, 0, 1346, 44));
@@ -158,16 +157,16 @@ public class StoreForm {
         textAreaCharacteristics.setToolTipText("Описание характеристик товара");
         panelEditProduct.add(textAreaCharacteristics);
 
-        btnAddToStore = initializer.newButton("На склад", new Rectangle(12, 183, 146, 26));
+        btnAddToStore = initializer.newButton("На склад", "icon-move", new Rectangle(12, 183, 146, 26));
         panelEditProduct.add(btnAddToStore);
 
-        btnInsertProduct = initializer.newButtonEnabled("В каталог", new Rectangle(169, 183, 142, 26));
+        btnInsertProduct = initializer.newButtonEnabled("В каталог", "icon-add", new Rectangle(169, 183, 142, 26));
         panelEditProduct.add(btnInsertProduct);
 
-        btnUpdateProduct = initializer.newButton("Изменить товар", new Rectangle(323, 183, 135, 26));
+        btnUpdateProduct = initializer.newButton("Изменить", "icon-unfocus", new Rectangle(323, 183, 135, 26));
         panelEditProduct.add(btnUpdateProduct);
 
-        btnDeleteFromProduct = initializer.newButton("Удалить из каталога", new Rectangle(470, 183, 168, 26));
+        btnDeleteFromProduct = initializer.newButton("Удалить", "icon-delete", new Rectangle(470, 183, 168, 26));
         panelEditProduct.add(btnDeleteFromProduct);
 
         JLabel lIncreaseProduct = initializer.newLabel("Добавить товар, ед.", new Rectangle(680, 517, 146, 20));
@@ -188,13 +187,13 @@ public class StoreForm {
         );
         frame.add(spinnerDecreaseProduct);
 
-        btnAcceptIncrease = initializer.newButton("Подтвердить действие", new Rectangle(680, 549, 288, 26));
+        btnAcceptIncrease = initializer.newButton("Подтвердить действие", "icon-accept", new Rectangle(680, 549, 288, 26));
         frame.add(btnAcceptIncrease);
 
-        btnAcceptDecrease = initializer.newButton("Подтвердить действие", new Rectangle(986, 549, 288, 26));
+        btnAcceptDecrease = initializer.newButton("Подтвердить действие", "icon-accept", new Rectangle(986, 549, 288, 26));
         frame.add(btnAcceptDecrease);
 
-        btnDeleteFromStore = initializer.newButton("Удалить запись о хранении", new Rectangle(986, 607, 288, 26));
+        btnDeleteFromStore = initializer.newButton("Удалить запись о хранении", "icon-delete", new Rectangle(986, 607, 288, 26));
         frame.add(btnDeleteFromStore);
 
         JLabel lMoveToOtherStore = initializer.newLabel("Переместить на склад:", new Rectangle(680, 587, 288, 16));
@@ -215,7 +214,7 @@ public class StoreForm {
         );
         frame.add(spinnerMoveProduct);
 
-        btnAcceptMove = initializer.newButton("Подтвердить действие", new Rectangle(680, 683, 288, 26));
+        btnAcceptMove = initializer.newButton("Подтвердить действие", "icon-accept", new Rectangle(680, 683, 288, 26));
         frame.add(btnAcceptMove);
 
         ListSelectionModel selectionModelProduct = tableProduct.getSelectionModel();
@@ -594,7 +593,7 @@ public class StoreForm {
             mapper.updateCount(currentProductToStore.getID(), currentProductToStore.getCount());
             session.commit();
         }
-        removeFocusFromTableStore();
+        unpickStore();
         spinnerIncreaseProduct.setValue(0);
     }
 
@@ -614,7 +613,7 @@ public class StoreForm {
                 mapper.updateCount(currentProductToStore.getID(), currentProductToStore.getCount());
                 session.commit();
             }
-            removeFocusFromTableStore();
+            unpickStore();
             spinnerDecreaseProduct.setValue(0);
         }
     }
