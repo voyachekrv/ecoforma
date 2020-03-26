@@ -1,6 +1,6 @@
 package com.ecoforma;
 
-import com.ecoforma.forms.*;
+import com.ecoforma.frontend.forms.*;
 
 import javax.swing.*;
 import java.io.IOException;

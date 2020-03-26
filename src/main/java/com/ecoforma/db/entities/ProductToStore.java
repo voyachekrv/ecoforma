@@ -1,11 +1,11 @@
-package com.ecoforma.entities;
+package com.ecoforma.db.entities;
 
 public class ProductToStore {
-    int ID;
-    int store_ID;
-    int product_ID;
-    int count;
-    byte deleted;
+    private int ID;
+    private int store_ID;
+    private int product_ID;
+    private int count;
+    private byte deleted;
 
     public int getID() {
         return ID;

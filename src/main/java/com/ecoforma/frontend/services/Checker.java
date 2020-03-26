@@ -1,4 +1,4 @@
-package com.ecoforma.services;
+package com.ecoforma.frontend.services;
 
 import org.jetbrains.annotations.NotNull;
 

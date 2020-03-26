@@ -1,6 +1,6 @@
-package com.ecoforma.forms;
+package com.ecoforma.frontend;
 
-import com.ecoforma.services.Initializer;
+import com.ecoforma.frontend.services.Initializer;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -15,7 +15,7 @@ import static com.ecoforma.App.signInForm;
 public class CompanyFrame extends JFrame {
     public Initializer initializer;
 
-    CompanyFrame(String title) throws IOException {
+    public CompanyFrame(String title) throws IOException {
         initializer = new Initializer();
 
         this.setTitle(COMPANY_NAME + " - " + title);
@@ -29,7 +29,7 @@ public class CompanyFrame extends JFrame {
         JToolBar toolBar = initializer.newToolBar(0, 0, 1346, 44);
         this.getContentPane().add(toolBar);
 
-        JButton btnSignOut = initializer.newButtonEnabled("Выход из системы", "icon-logout", new Rectangle(0, 0, 1346, 44));
+        JButton btnSignOut = initializer.newButtonEnabled("Выход из системы", "icon-logout", new Rectangle(0, 0, 1350, 44));
         toolBar.add(btnSignOut);
 
         btnSignOut.addActionListener(actionEvent -> signOut());

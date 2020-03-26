@@ -1,10 +1,8 @@
-package com.ecoforma.forms;
+package com.ecoforma.frontend.forms;
 
-import com.ecoforma.db.DbSession;
-import com.ecoforma.db.mappers.HRMapper;
-import com.ecoforma.services.Checker;
-import com.ecoforma.services.Initializer;
-import org.apache.ibatis.session.SqlSession;
+import com.ecoforma.db.services.HRService;
+import com.ecoforma.frontend.services.Checker;
+import com.ecoforma.frontend.services.Initializer;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -39,8 +37,11 @@ public class NewEmployeeForm {
 
     private Initializer initializer;
 
+    private HRService dbService;
+
     NewEmployeeForm() throws IOException {
         initializer = new Initializer();
+        dbService = new HRService();
 
         frame = initializer.newFrame("Новый сотрудник",  new Rectangle(598,  144, 800, 790), JFrame.DO_NOTHING_ON_CLOSE);
 
@@ -121,17 +122,13 @@ public class NewEmployeeForm {
         JLabel lPhoneNumber = initializer.newLabel("Номер телефона", new Rectangle(381, 68, 230, 20));
         panelContactData.add(lPhoneNumber);
 
-        try (SqlSession session = DbSession.startSession()) {
-            HRMapper mapper = session.getMapper(HRMapper.class);
+        cbbxPost = initializer.newComboBox(dbService.getPostNames(), new Rectangle(176, 533, 200, 22));
+        cbbxPost.setEnabled(true);
+        panel.add(cbbxPost);
 
-            cbbxPost = initializer.newComboBox(mapper.getPostNames(), new Rectangle(176, 533, 200, 22));
-            cbbxPost.setEnabled(true);
-            panel.add(cbbxPost);
-
-            cbboxDepartment = initializer.newComboBox(mapper.getDepartmentNames(), new Rectangle(452, 533, 200, 22));
-            cbboxDepartment.setEnabled(true);
-            panel.add(cbboxDepartment);
-        }
+        cbboxDepartment = initializer.newComboBox(dbService.getDepartmentNames(), new Rectangle(452, 533, 200, 22));
+        cbboxDepartment.setEnabled(true);
+        panel.add(cbboxDepartment);
 
         JLabel lAppointAs = initializer.newLabel("Назначить на должность: ", new Rectangle(10, 534, 157, 20));
         panel.add(lAppointAs);
@@ -154,11 +151,8 @@ public class NewEmployeeForm {
         btnGeneratePassword = initializer.newButton("Создать", new Rectangle(453, 60, 89, 23));
         panelSignIn.add(btnGeneratePassword);
 
-        try (SqlSession session = DbSession.startSession()) {
-            HRMapper mapper = session.getMapper(HRMapper.class);
-            cbbxRole = initializer.newComboBox(mapper.getRoleNames(), new Rectangle(552, 60, 182, 22));
-            panelSignIn.add(cbbxRole);
-        }
+        cbbxRole = initializer.newComboBox(dbService.getRoleNames(), new Rectangle(552, 60, 182, 22));
+        panelSignIn.add(cbbxRole);
 
         JLabel lLogin = initializer.newLabel("Логин", new Rectangle(10, 37, 162, 20));
         panelSignIn.add(lLogin);
@@ -248,41 +242,36 @@ public class NewEmployeeForm {
                     checker.checkTextField(tfAdress.getText(), tfAdress.getColumns()) &&
                     checker.checkNumericTextField(tfPhoneNumber.getText(), tfPhoneNumber.getColumns())
             ) {
-                try (SqlSession session = DbSession.startSession()) {
-                    HRMapper mapper = session.getMapper(HRMapper.class);
+                dbService.insertEmployee(
+                    tfSurname.getText()+ " " + tfName.getText() + " " + tfPatronym.getText(),
+                    tfDateOfBirth.getText(),
+                    tfPassport.getText(),
+                    textAreaEducation.getText(),
+                    tfAdress.getText(),
+                    tfPhoneNumber.getText(),
+                    tfEmail.getText(),
+                    cbbxPost.getSelectedIndex() + 1,
+                    cbboxDepartment.getSelectedIndex() + 1
+                );
 
-                    mapper.insertEmployee(
-                            tfSurname.getText()+ " " + tfName.getText() + " " + tfPatronym.getText(),
-                            tfDateOfBirth.getText(),
-                            tfPassport.getText(),
-                            textAreaEducation.getText(),
-                            tfAdress.getText(),
-                            tfPhoneNumber.getText(),
-                            tfEmail.getText(),
-                            cbbxPost.getSelectedIndex() + 1,
-                            cbboxDepartment.getSelectedIndex() + 1
-                    );
+                if ((cbbxPost.getSelectedIndex() + 1) == dbService.getChiefID()) {
+                    dbService.setChiefWhenInsert(cbboxDepartment.getSelectedIndex() + 1);
+                }
 
-                    if ((cbbxPost.getSelectedIndex() + 1) == mapper.getChiefID()) {
-                        mapper.setChiefWhenInsert(cbboxDepartment.getSelectedIndex() + 1);
+                if (cbAllowSignIn.isSelected()) {
+                    if (
+                            checker.checkTextField(tfLogin.getText(), tfLogin.getColumns()) &&
+                            checker.checkTextField(tfPassword.getText(), tfPassword.getColumns())
+                    ) {
+                        dbService.insertRegistrationDataWithEmployee(tfLogin.getText(), tfPassword.getText(), cbbxRole.getSelectedIndex() + 1);
+                    } else {
+                        JOptionPane.showMessageDialog(
+                                frame,
+                                "Одно из полей пустое или содержит недопустимое значение.",
+                                "Ошибка при добавлении",
+                                JOptionPane.WARNING_MESSAGE
+                        );
                     }
-
-                    if (cbAllowSignIn.isSelected()) {
-                        if (
-                                checker.checkTextField(tfLogin.getText(), tfLogin.getColumns()) &&
-                                checker.checkTextField(tfPassword.getText(), tfPassword.getColumns())
-                        ) {
-                            mapper.insertRegistrationDataWithEmployee(tfLogin.getText(), tfPassword.getText(), cbbxRole.getSelectedIndex() + 1);
-                        } else {
-                            JOptionPane.showMessageDialog(
-                                    frame,
-                                    "Одно из полей пустое или содержит недопустимое значение.",
-                                    "Ошибка при добавлении",
-                                    JOptionPane.WARNING_MESSAGE
-                            );
-                        }
-                    }
-                    session.commit();
                 }
 
                 JOptionPane.showMessageDialog(
@@ -302,7 +291,6 @@ public class NewEmployeeForm {
                         JOptionPane.WARNING_MESSAGE
                 );
             }
-
         }
     }
 

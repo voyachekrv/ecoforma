@@ -1,4 +1,4 @@
-package com.ecoforma.forms;
+package com.ecoforma.frontend.forms;
 
 import com.ecoforma.db.services.SignInService;
 import org.jetbrains.annotations.NotNull;

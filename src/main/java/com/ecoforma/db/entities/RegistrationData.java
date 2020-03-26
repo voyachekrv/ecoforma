@@ -1,25 +1,25 @@
-package com.ecoforma.entities;
+package com.ecoforma.db.entities;
 
 public class RegistrationData {
-    private long ID;
-    private long employee_ID;
+    private int ID;
+    private int employee_ID;
     private String login;
     private String password;
     private int role_ID;
 
-    public long getID() {
+    public int getID() {
         return ID;
     }
 
-    public void setID(long ID) {
+    public void setID(int ID) {
         this.ID = ID;
     }
 
-    public long getEmployee_ID() {
+    public int getEmployee_ID() {
         return employee_ID;
     }
 
-    public void setEmployee_ID(long employee_ID) {
+    public void setEmployee_ID(int employee_ID) {
         this.employee_ID = employee_ID;
     }
 

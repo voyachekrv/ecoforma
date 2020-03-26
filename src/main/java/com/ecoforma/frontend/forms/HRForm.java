@@ -1,12 +1,11 @@
-package com.ecoforma.forms;
+package com.ecoforma.frontend.forms;
 
-import com.ecoforma.db.DbSession;
-import com.ecoforma.db.mappers.HRMapper;
-import com.ecoforma.entities.Employee;
-import com.ecoforma.entities.EmployeeView;
-import com.ecoforma.entities.RegistrationData;
-import com.ecoforma.services.Checker;
-import org.apache.ibatis.session.SqlSession;
+import com.ecoforma.db.services.HRService;
+import com.ecoforma.db.entities.Employee;
+import com.ecoforma.db.entities.EmployeeView;
+import com.ecoforma.db.entities.RegistrationData;
+import com.ecoforma.frontend.CompanyFrame;
+import com.ecoforma.frontend.services.Checker;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -27,7 +26,6 @@ public class HRForm {
     CompanyFrame frame;
     private JTextField tfSearch;
     private JRadioButton rbID, rbName, rbPassport, rbEducation, rbAdress, rbPhoneNumber, rbEmail, rbPost, rbDepartment;
-    private JButton btnSearch, btnStopSearch;
     private JScrollPane tableScroll;
     private JTable table;
     private JTextField tfName, tfDateOfBirth, tfPassport, tfEducation, tfAddress, tfPhoneNumber, tfEmail;
@@ -36,10 +34,11 @@ public class HRForm {
     private JTextField tfLogin, tfPassword;
     private JComboBox cbboxRole;
     private JCheckBox cbAllowSignIn;
-    private JButton btnAcceptChanges, btnDeleteEmployee, btnUnpick, btnNewEmployee;
+    private JButton btnAcceptChanges;
+    private JButton btnDeleteEmployee;
+    private JButton btnUnpick;
 
     private Action actionListener;
-    private DefaultTableModel initialTableModel;
     private String[] columnsHeader = new String[] {
             "Табельный номер",
             "ФИО",
@@ -58,8 +57,11 @@ public class HRForm {
     private Employee currentEmployee;
     private RegistrationData currentRegistrationData;
 
+    private HRService dbService;
 
     HRForm(String department) throws IOException {
+        dbService = new HRService();
+
         frame = new CompanyFrame(COMPANY_NAME + " - " + department);
 
         // Таблица со списком сотрудников фирмы
@@ -78,10 +80,10 @@ public class HRForm {
         tfSearch = frame.initializer.newTextFieldEnabled(50, new Rectangle(10, 64, 128, 23));
         frame.getContentPane().add(tfSearch);
 
-        btnSearch = frame.initializer.newButtonEnabled("Поиск", "icon-search", new Rectangle(145, 64, 90, 23));
+        JButton btnSearch = frame.initializer.newButtonEnabled("Поиск", "icon-search", new Rectangle(145, 64, 90, 23));
         frame.getContentPane().add(btnSearch);
 
-        btnStopSearch = frame.initializer.newButtonEnabled(null, "icon-close", new Rectangle(237, 64, 24, 23));
+        JButton btnStopSearch = frame.initializer.newButtonEnabled(null, "icon-close", new Rectangle(237, 64, 24, 23));
         btnStopSearch.setToolTipText("Очистка результов поиска");
         frame.getContentPane().add(btnStopSearch);
 
@@ -190,41 +192,37 @@ public class HRForm {
         JLabel lPost = frame.initializer.newLabel("Должность", new Rectangle (807, 538, 150, 14));
         frame.getContentPane().add(lPost);
 
-        try (SqlSession session = DbSession.startSession()) {
-            HRMapper mapper = session.getMapper(HRMapper.class);
+        cbboxPost = frame.initializer.newComboBox(dbService.getPostNames(), new Rectangle(807, 562, 185, 23));
+        addSaveKeyCombination(cbboxPost);
+        frame.getContentPane().add(cbboxPost);
 
-            cbboxPost = frame.initializer.newComboBox(mapper.getPostNames(), new Rectangle(807, 562, 185, 23));
-            addSaveKeyCombination(cbboxPost);
-            frame.getContentPane().add(cbboxPost);
+        JLabel lDepartment = frame.initializer.newLabel("Отдел", new Rectangle (1007, 538, 150, 14));
+        frame.getContentPane().add(lDepartment);
 
-            JLabel lDepartment = frame.initializer.newLabel("Отдел", new Rectangle (1007, 538, 150, 14));
-            frame.getContentPane().add(lDepartment);
+        cbboxDepartment = frame.initializer.newComboBox(dbService.getDepartmentNames(), new Rectangle(1007, 562, 220, 23));
+        addSaveKeyCombination(cbboxDepartment);
+        frame.getContentPane().add(cbboxDepartment);
 
-            cbboxDepartment = frame.initializer.newComboBox(mapper.getDepartmentNames(), new Rectangle(1007, 562, 220, 23));
-            addSaveKeyCombination(cbboxDepartment);
-            frame.getContentPane().add(cbboxDepartment);
+        JLabel lLogin = frame.initializer.newLabel("Логин", new Rectangle (807, 596, 150, 14));
+        frame.getContentPane().add(lLogin);
 
-            JLabel lLogin = frame.initializer.newLabel("Логин", new Rectangle (807, 596, 150, 14));
-            frame.getContentPane().add(lLogin);
+        tfLogin = frame.initializer.newTextFieldDisabled(20, new Rectangle(807, 621, 185, 23));
+        addSaveKeyCombination(tfLogin);
+        frame.getContentPane().add(tfLogin);
 
-            tfLogin = frame.initializer.newTextFieldDisabled(20, new Rectangle(807, 621, 185, 23));
-            addSaveKeyCombination(tfLogin);
-            frame.getContentPane().add(tfLogin);
+        JLabel lPassword = frame.initializer.newLabel("Пароль", new Rectangle (807, 655, 150, 14));
+        frame.getContentPane().add(lPassword);
 
-            JLabel lPassword = frame.initializer.newLabel("Пароль", new Rectangle (807, 655, 150, 14));
-            frame.getContentPane().add(lPassword);
+        tfPassword = frame.initializer.newTextFieldDisabled(40, new Rectangle(807, 680, 185, 23));
+        addSaveKeyCombination(tfPassword);
+        frame.getContentPane().add(tfPassword);
 
-            tfPassword = frame.initializer.newTextFieldDisabled(40, new Rectangle(807, 680, 185, 23));
-            addSaveKeyCombination(tfPassword);
-            frame.getContentPane().add(tfPassword);
+        JLabel lRole = frame.initializer.newLabel("Роль в системе", new Rectangle (1007, 596, 150, 14));
+        frame.getContentPane().add(lRole);
 
-            JLabel lRole = frame.initializer.newLabel("Роль в системе", new Rectangle (1007, 596, 150, 14));
-            frame.getContentPane().add(lRole);
-
-            cbboxRole = frame.initializer.newComboBox(mapper.getRoleNames(), new Rectangle(1007, 621, 220, 23));
-            addSaveKeyCombination(cbboxRole);
-            frame.getContentPane().add(cbboxRole);
-        }
+        cbboxRole = frame.initializer.newComboBox(dbService.getRoleNames(), new Rectangle(1007, 621, 220, 23));
+        addSaveKeyCombination(cbboxRole);
+        frame.getContentPane().add(cbboxRole);
 
         cbAllowSignIn = frame.initializer.newCheckBoxDisabled("Позволить регистрироваться в системе", new Rectangle(1007, 680, 270, 23));
         cbAllowSignIn.setSelected(false);
@@ -241,11 +239,10 @@ public class HRForm {
         btnUnpick = frame.initializer.newButton("Снять выбор", "icon-unfocus", new Rectangle(445, 714, 140, 30));
         frame.getContentPane().add(btnUnpick);
 
-        btnNewEmployee = frame.initializer.newButtonEnabled("Новый сотрудник","icon-add", new Rectangle(595, 714, 170, 30));
+        JButton btnNewEmployee = frame.initializer.newButtonEnabled("Новый сотрудник", "icon-add", new Rectangle(595, 714, 170, 30));
         frame.getContentPane().add(btnNewEmployee);
 
         // Выход из системы
-        //btnSignOut.addActionListener(actionEvent -> activity.signOut(frame));
 
         // Добавление сотрудника в поля для редактирования
         ListSelectionModel selectionModel = table.getSelectionModel();
@@ -350,29 +347,26 @@ public class HRForm {
 
     // Задание модели таблицы по умолчанию
     private DefaultTableModel setInitialTableModel() {
-        initialTableModel = new DefaultTableModel();
+        DefaultTableModel initialTableModel = new DefaultTableModel();
         initialTableModel.setColumnIdentifiers(columnsHeader);
 
-        try (SqlSession session = DbSession.startSession()) {
-            HRMapper mapper = session.getMapper(HRMapper.class);
-            ArrayList<EmployeeView> employees = mapper.getAllEmployees();
+        ArrayList<EmployeeView> employees = dbService.getAllEmployees();
 
-            for (int i = 0; i < employees.size(); i++) {
-                initialTableModel.insertRow(i, new Object[] {
-                        employees.get(i).getID(),
-                        employees.get(i).getName(),
-                        employees.get(i).getDateOfBirth(),
-                        employees.get(i).getPassport(),
-                        employees.get(i).getEducation(),
-                        employees.get(i).getAdress(),
-                        employees.get(i).getPhoneNumber(),
-                        employees.get(i).getEmail(),
-                        employees.get(i).getDateOfEmployment(),
-                        employees.get(i).getPost(),
-                        employees.get(i).getDepartment(),
-                        employees.get(i).getPersonalSalary()
-                });
-            }
+        for (int i = 0; i < employees.size(); i++) {
+            initialTableModel.insertRow(i, new Object[] {
+                    employees.get(i).getID(),
+                    employees.get(i).getName(),
+                    employees.get(i).getDateOfBirth(),
+                    employees.get(i).getPassport(),
+                    employees.get(i).getEducation(),
+                    employees.get(i).getAdress(),
+                    employees.get(i).getPhoneNumber(),
+                    employees.get(i).getEmail(),
+                    employees.get(i).getDateOfEmployment(),
+                    employees.get(i).getPost(),
+                    employees.get(i).getDepartment(),
+                    employees.get(i).getPersonalSalary()
+            });
         }
 
         return initialTableModel;
@@ -380,63 +374,59 @@ public class HRForm {
 
     // Помещение значений данных о сотруднике в поля редактирования
     private void prepareToEdit() {
-        try (SqlSession session = DbSession.startSession()) {
-            HRMapper mapper = session.getMapper(HRMapper.class);
+        int rowIndex = table.getSelectedRow();
+        currentEmployee = dbService.getEmployeeByID(Integer.parseInt(table.getModel().getValueAt(rowIndex, 0).toString()));
 
-            int rowIndex = table.getSelectedRow();
-            currentEmployee = mapper.getEmployeeByID(Integer.parseInt(table.getModel().getValueAt(rowIndex, 0).toString()));
+        tfName.setText(currentEmployee.getName());
+        tfDateOfBirth.setText(currentEmployee.getDateOfBirth());
+        tfEmail.setText(currentEmployee.getEmail());
+        tfAddress.setText(currentEmployee.getAdress());
+        tfEducation.setText(currentEmployee.getEducation());
+        tfPassport.setText(currentEmployee.getPassport());
+        spinnerPersonalSalary.setValue(currentEmployee.getPersonalSalary());
+        tfPhoneNumber.setText(currentEmployee.getPhoneNumber());
 
-            tfName.setText(currentEmployee.getName());
-            tfDateOfBirth.setText(currentEmployee.getDateOfBirth());
-            tfEmail.setText(currentEmployee.getEmail());
-            tfAddress.setText(currentEmployee.getAdress());
-            tfEducation.setText(currentEmployee.getEducation());
-            tfPassport.setText(currentEmployee.getPassport());
-            spinnerPersonalSalary.setValue(currentEmployee.getPersonalSalary());
-            tfPhoneNumber.setText(currentEmployee.getPhoneNumber());
+        cbboxPost.setSelectedIndex(currentEmployee.getPost_ID() - 1);
+        cbboxDepartment.setSelectedIndex(currentEmployee.getDepartment_ID() - 1);
 
-            cbboxPost.setSelectedIndex(currentEmployee.getPost_ID() - 1);
-            cbboxDepartment.setSelectedIndex(currentEmployee.getDepartment_ID() - 1);
+        tfName.setEnabled(true);
+        tfDateOfBirth.setEnabled(true);
+        tfEmail.setEnabled(true);
+        tfAddress.setEnabled(true);
+        tfEducation.setEnabled(true);
+        tfPassport.setEnabled(true);
+        spinnerPersonalSalary.setEnabled(true);
+        tfPhoneNumber.setEnabled(true);
 
-            tfName.setEnabled(true);
-            tfDateOfBirth.setEnabled(true);
-            tfEmail.setEnabled(true);
-            tfAddress.setEnabled(true);
-            tfEducation.setEnabled(true);
-            tfPassport.setEnabled(true);
-            spinnerPersonalSalary.setEnabled(true);
-            tfPhoneNumber.setEnabled(true);
+        cbboxPost.setEnabled(true);
+        cbboxDepartment.setEnabled(true);
 
-            cbboxPost.setEnabled(true);
-            cbboxDepartment.setEnabled(true);
+        btnAcceptChanges.setEnabled(true);
+        btnDeleteEmployee.setEnabled(true);
+        btnUnpick.setEnabled(true);
 
-            btnAcceptChanges.setEnabled(true);
-            btnDeleteEmployee.setEnabled(true);
-            btnUnpick.setEnabled(true);
+        cbAllowSignIn.setEnabled(true);
 
-            cbAllowSignIn.setEnabled(true);
+        currentRegistrationData = dbService.getRegistrationData(currentEmployee.getID());
 
-            currentRegistrationData = mapper.getRegistrationData(currentEmployee.getID());
+        if (!(Objects.isNull(currentRegistrationData))) {
+            tfLogin.setEnabled(true);
+            tfPassword.setEnabled(true);
+            cbboxRole.setEnabled(true);
 
-            if (!(Objects.isNull(currentRegistrationData))) {
-                tfLogin.setEnabled(true);
-                tfPassword.setEnabled(true);
-                cbboxRole.setEnabled(true);
+            cbAllowSignIn.setSelected(true);
+            tfLogin.setText(currentRegistrationData.getLogin());
+            tfPassword.setText(currentRegistrationData.getPassword());
+            cbboxRole.setSelectedIndex(currentRegistrationData.getRole_ID() - 1);
+        } else {
+            tfLogin.setText("");
+            tfPassword.setText("");
+            cbboxRole.setSelectedIndex(0);
+            cbAllowSignIn.setSelected(false);
 
-                cbAllowSignIn.setSelected(true);
-                tfLogin.setText(currentRegistrationData.getLogin());
-                tfPassword.setText(currentRegistrationData.getPassword());
-                cbboxRole.setSelectedIndex(currentRegistrationData.getRole_ID() - 1);
-            } else {
-                tfLogin.setText("");
-                tfPassword.setText("");
-                cbboxRole.setSelectedIndex(0);
-                cbAllowSignIn.setSelected(false);
-
-                tfLogin.setEnabled(false);
-                tfPassword.setEnabled(false);
-                cbboxRole.setEnabled(false);
-            }
+            tfLogin.setEnabled(false);
+            tfPassword.setEnabled(false);
+            cbboxRole.setEnabled(false);
         }
     }
 
@@ -525,39 +515,36 @@ public class HRForm {
             option = rbDepartment.getText();
         }
 
-        try (SqlSession session = DbSession.startSession()) {
-            HRMapper mapper = session.getMapper(HRMapper.class);
-            ArrayList<EmployeeView> result = mapper.findEmployee(column, query);
+        ArrayList<EmployeeView> result = dbService.findEmployee(column, query);
 
-            if (result.size() == 0) {
-                JOptionPane.showMessageDialog(frame,
-                        "По запросу \"" + tfSearch.getText() + "\" по критерию \"" + option +
-                                "\" ничего не найдено.\nПопробуйте уточнить запрос или изменить критерий поиска.", "Не найдено",
-                        JOptionPane.INFORMATION_MESSAGE
-                );
-                tfSearch.setText("");
-            } else {
-                DefaultTableModel searchTableModel = new DefaultTableModel();
-                searchTableModel.setColumnIdentifiers(columnsHeader);
+        if (result.size() == 0) {
+            JOptionPane.showMessageDialog(frame,
+                    "По запросу \"" + tfSearch.getText() + "\" по критерию \"" + option +
+                            "\" ничего не найдено.\nПопробуйте уточнить запрос или изменить критерий поиска.", "Не найдено",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+            tfSearch.setText("");
+        } else {
+            DefaultTableModel searchTableModel = new DefaultTableModel();
+            searchTableModel.setColumnIdentifiers(columnsHeader);
 
-                for (int i = 0; i < result.size(); i++) {
-                    searchTableModel.insertRow(i, new Object[] {
-                            result.get(i).getID(),
-                            result.get(i).getName(),
-                            result.get(i).getDateOfBirth(),
-                            result.get(i).getPassport(),
-                            result.get(i).getEducation(),
-                            result.get(i).getAdress(),
-                            result.get(i).getPhoneNumber(),
-                            result.get(i).getEmail(),
-                            result.get(i).getDateOfEmployment(),
-                            result.get(i).getPost(),
-                            result.get(i).getDepartment(),
-                            result.get(i).getPersonalSalary()
-                    });
-                }
-                table.setModel(searchTableModel);
+            for (int i = 0; i < result.size(); i++) {
+                searchTableModel.insertRow(i, new Object[] {
+                        result.get(i).getID(),
+                        result.get(i).getName(),
+                        result.get(i).getDateOfBirth(),
+                        result.get(i).getPassport(),
+                        result.get(i).getEducation(),
+                        result.get(i).getAdress(),
+                        result.get(i).getPhoneNumber(),
+                        result.get(i).getEmail(),
+                        result.get(i).getDateOfEmployment(),
+                        result.get(i).getPost(),
+                        result.get(i).getDepartment(),
+                        result.get(i).getPersonalSalary()
+                });
             }
+            table.setModel(searchTableModel);
         }
     }
 
@@ -578,16 +565,12 @@ public class HRForm {
         );
 
         if (result == JOptionPane.YES_OPTION) {
-            try (SqlSession session = DbSession.startSession()) {
-                HRMapper mapper = session.getMapper(HRMapper.class);
 
-                if (cbAllowSignIn.isSelected()) {
-                    mapper.deleteRegistrationData((int) currentRegistrationData.getEmployee_ID());
-                }
-
-                mapper.deleteEmployee(currentEmployee.getID());
-                session.commit();
+            if (cbAllowSignIn.isSelected()) {
+                dbService.deleteRegistrationData(currentRegistrationData.getEmployee_ID());
             }
+
+            dbService.deleteEmployee(currentEmployee.getID());
 
             JOptionPane.showMessageDialog(
                     frame,
@@ -625,71 +608,66 @@ public class HRForm {
                     checker.checkNumericTextField(tfPhoneNumber.getText(), tfPhoneNumber.getColumns()) &&
                     checker.checkDateTextField(tfDateOfBirth.getText())
             ) {
-                try (SqlSession session = DbSession.startSession()) {
-                    HRMapper mapper = session.getMapper(HRMapper.class);
-                    mapper.updateEmployee(
-                            currentEmployee.getID(),
-                            tfName.getText(),
-                            tfDateOfBirth.getText(),
-                            tfPassport.getText(),
-                            tfEducation.getText(),
-                            tfAddress.getText(),
-                            tfPhoneNumber.getText(),
-                            tfEmail.getText(),
-                            cbboxPost.getSelectedIndex() + 1,
-                            cbboxDepartment.getSelectedIndex() + 1,
-                            Integer.parseInt(spinnerPersonalSalary.getValue().toString())
-                    );
+                dbService.updateEmployee(
+                        currentEmployee.getID(),
+                        tfName.getText(),
+                        tfDateOfBirth.getText(),
+                        tfPassport.getText(),
+                        tfEducation.getText(),
+                        tfAddress.getText(),
+                        tfPhoneNumber.getText(),
+                        tfEmail.getText(),
+                        cbboxPost.getSelectedIndex() + 1,
+                        cbboxDepartment.getSelectedIndex() + 1,
+                        Integer.parseInt(spinnerPersonalSalary.getValue().toString())
+                );
 
-                    if (cbboxPost.getSelectedIndex() + 1 == mapper.getChiefID()) {
-                        mapper.setChiefWhenUpdate(cbboxDepartment.getSelectedIndex() + 1, currentEmployee.getID());
-                    }
-
-                    if (cbAllowSignIn.isSelected() && !(Objects.isNull(currentRegistrationData))) {
-                        if (
-                                checker.checkTextField(tfLogin.getText(), tfLogin.getColumns()) &&
-                                checker.checkTextField(tfPassword.getText(), tfPassword.getColumns())
-                        ) {
-                            mapper.updateRegistrationData(
-                                    (int) currentRegistrationData.getEmployee_ID(),
-                                    tfLogin.getText(),
-                                    tfPassword.getText(),
-                                    cbboxRole.getSelectedIndex() + 1
-                            );
-                        } else {
-                            JOptionPane.showMessageDialog(
-                                    frame,
-                                    "Одно из полей пустое или содержит недопустимое значение.",
-                                    "Ошибка при обновлении",
-                                    JOptionPane.WARNING_MESSAGE
-                            );
-                        }
-                    } else if (cbAllowSignIn.isSelected() && Objects.isNull(currentRegistrationData)) {
-                        if (
-                                checker.checkTextField(tfLogin.getText(), tfLogin.getColumns()) &&
-                                checker.checkTextField(tfPassword.getText(), tfPassword.getColumns())
-                        ) {
-                            mapper.insertRegistrationData(
-                                    currentEmployee.getID(),
-                                    tfLogin.getText(),
-                                    tfPassword.getText(),
-                                    cbboxRole.getSelectedIndex() + 1
-                            );
-                        } else {
-                            JOptionPane.showMessageDialog(
-                                    frame,
-                                    "Одно из полей пустое или содержит недопустимое значение.",
-                                    "Ошибка при обновлении",
-                                    JOptionPane.WARNING_MESSAGE
-                            );
-                        }
-                    } else if (!(cbAllowSignIn.isSelected()) && !(Objects.isNull(currentRegistrationData))) {
-                        mapper.deleteRegistrationData((int) currentRegistrationData.getEmployee_ID());
-                        currentRegistrationData = null;
-                    }
-
-                    session.commit();
+                if (cbboxPost.getSelectedIndex() + 1 == dbService.getChiefID()) {
+                    dbService.setChiefWhenUpdate(cbboxDepartment.getSelectedIndex() + 1, currentEmployee.getID());
                 }
+
+                if (cbAllowSignIn.isSelected() && !(Objects.isNull(currentRegistrationData))) {
+                    if (
+                            checker.checkTextField(tfLogin.getText(), tfLogin.getColumns()) &&
+                            checker.checkTextField(tfPassword.getText(), tfPassword.getColumns())
+                    ) {
+                        dbService.updateRegistrationData(
+                                currentRegistrationData.getEmployee_ID(),
+                                tfLogin.getText(),
+                                tfPassword.getText(),
+                                cbboxRole.getSelectedIndex() + 1
+                        );
+                    } else {
+                        JOptionPane.showMessageDialog(
+                                frame,
+                                "Одно из полей пустое или содержит недопустимое значение.",
+                                "Ошибка при обновлении",
+                                JOptionPane.WARNING_MESSAGE
+                        );
+                    }
+                } else if (cbAllowSignIn.isSelected() && Objects.isNull(currentRegistrationData)) {
+                    if (
+                            checker.checkTextField(tfLogin.getText(), tfLogin.getColumns()) && checker.checkTextField(tfPassword.getText(), tfPassword.getColumns())
+                    ) {
+                        dbService.insertRegistrationData(
+                                currentEmployee.getID(),
+                                tfLogin.getText(),
+                                tfPassword.getText(),
+                                cbboxRole.getSelectedIndex() + 1
+                        );
+                    } else {
+                        JOptionPane.showMessageDialog(
+                                frame,
+                                "Одно из полей пустое или содержит недопустимое значение.",
+                                "Ошибка при обновлении",
+                                JOptionPane.WARNING_MESSAGE
+                        );
+                    }
+                } else if (!(cbAllowSignIn.isSelected()) && !(Objects.isNull(currentRegistrationData))) {
+                    dbService.deleteRegistrationData(currentRegistrationData.getEmployee_ID());
+                    currentRegistrationData = null;
+                }
+
                 unpick();
             } else {
                 JOptionPane.showMessageDialog(
@@ -699,7 +677,6 @@ public class HRForm {
                         JOptionPane.WARNING_MESSAGE
                 );
             }
-
         }
     }
 }

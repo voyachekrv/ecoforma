@@ -1,10 +1,9 @@
-package com.ecoforma.forms;
+package com.ecoforma.frontend.forms;
 
-import com.ecoforma.db.DbSession;
-import com.ecoforma.db.mappers.StoreMapper;
-import com.ecoforma.entities.*;
-import com.ecoforma.services.Checker;
-import org.apache.ibatis.session.SqlSession;
+import com.ecoforma.db.entities.*;
+import com.ecoforma.db.services.StoreService;
+import com.ecoforma.frontend.CompanyFrame;
+import com.ecoforma.frontend.services.Checker;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -13,12 +12,12 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class StoreForm {
     CompanyFrame frame;
     private JTable tableProduct, tableStore;
     private JTextField tfSearchInProducts, tfSearchInStore;
-    private JButton btnSearchInProducts, btnSearchInStore, btnClearSearchProducts, btnClearSearchStore;
     private JRadioButton rbName, rbCategory;
     private JTextField tfName;
     private JSpinner spinnerCost;
@@ -30,23 +29,22 @@ public class StoreForm {
     private JButton btnAcceptIncrease, btnAcceptDecrease, btnAcceptMove, btnDeleteFromStore;
     private JScrollPane tableProductScroll, tableStoreScroll;
 
-    private DefaultTableModel initialTableProductModel, initialTableStoreModel;
     private String[] tableProductHeader = new String[] { "Код товара", "Название", "Категория", "Стоимость" };
     private String[] tableStoreHeader = new String[] { "Код записи о хранении", "Название", "Количество" };
 
     private Checker checker;
+
+    private StoreService dbService;
 
     private Store currentStore;
     private Product currentProduct;
     private ProductToStore currentProductToStore;
 
     StoreForm(String login, String password) throws IOException {
+        dbService = new StoreService();
         checker = new Checker();
 
-        try (SqlSession session = DbSession.startSession()) {
-            StoreMapper mapper = session.getMapper(StoreMapper.class);
-            currentStore = mapper.getStore(login, password);
-        }
+        currentStore = dbService.getStore(login, password);
 
         frame = new CompanyFrame(currentStore.getName());
 
@@ -86,10 +84,10 @@ public class StoreForm {
         tfSearchInProducts = frame.initializer.newTextFieldEnabled(20, new Rectangle(20, 482, 189, 23));
         frame.add(tfSearchInProducts);
 
-        btnSearchInProducts = frame.initializer.newButtonEnabled("Поиск", "icon-search", new Rectangle(219, 482, 93, 23));
+        JButton btnSearchInProducts = frame.initializer.newButtonEnabled("Поиск", "icon-search", new Rectangle(219, 482, 93, 23));
         frame.add(btnSearchInProducts);
 
-        btnClearSearchProducts = frame.initializer.newButtonEnabled(null, "icon-close", new Rectangle(320, 482, 24, 23));
+        JButton btnClearSearchProducts = frame.initializer.newButtonEnabled(null, "icon-close", new Rectangle(320, 482, 24, 23));
         btnClearSearchProducts.setToolTipText("Очистка результов поиска");
         frame.add(btnClearSearchProducts);
 
@@ -107,10 +105,10 @@ public class StoreForm {
         tfSearchInStore = frame.initializer.newTextFieldEnabled(20, new Rectangle(680, 482, 189, 23));
         frame.add(tfSearchInStore);
 
-        btnSearchInStore = frame.initializer.newButtonEnabled("Поиск", "icon-search", new Rectangle(879, 480, 93, 23));
+        JButton btnSearchInStore = frame.initializer.newButtonEnabled("Поиск", "icon-search", new Rectangle(879, 480, 93, 23));
         frame.add(btnSearchInStore);
 
-        btnClearSearchStore = frame.initializer.newButtonEnabled(null, "icon-close", new Rectangle(980, 480, 24, 23));
+        JButton btnClearSearchStore = frame.initializer.newButtonEnabled(null, "icon-close", new Rectangle(980, 480, 24, 23));
         btnClearSearchStore.setToolTipText("Очистка результов поиска");
         frame.add(btnClearSearchStore);
 
@@ -128,15 +126,12 @@ public class StoreForm {
         spinnerCost.setToolTipText("Стоимость товара");
         panelEditProduct.add(spinnerCost);
 
-        try (SqlSession session = DbSession.startSession()) {
-            StoreMapper mapper = session.getMapper(StoreMapper.class);
-            cbbxCategory = frame.initializer.newComboBox(
-                    mapper.getCategories(), new Rectangle(414, 11, 224, 25)
-            );
-            cbbxCategory.setToolTipText("Категория товара");
-            cbbxCategory.setEnabled(true);
-            panelEditProduct.add(cbbxCategory);
-        }
+        cbbxCategory = frame.initializer.newComboBox(
+                dbService.getCategories(), new Rectangle(414, 11, 224, 25)
+        );
+        cbbxCategory.setToolTipText("Категория товара");
+        cbbxCategory.setEnabled(true);
+        panelEditProduct.add(cbbxCategory);
 
         textAreaCharacteristics = frame.initializer.newTextAreaEnabled(12, 41, 626, 133, 100, 20);
         textAreaCharacteristics.setToolTipText("Описание характеристик товара");
@@ -184,11 +179,11 @@ public class StoreForm {
         JLabel lMoveToOtherStore = frame.initializer.newLabel("Переместить на склад:", new Rectangle(680, 587, 288, 16));
         frame.add(lMoveToOtherStore);
 
-        try (SqlSession session = DbSession.startSession()) {
-            StoreMapper mapper = session.getMapper(StoreMapper.class);
-            cbbxOtherStores = frame.initializer.newComboBox(mapper.getStoresBesides(currentStore.getID()), new Rectangle(680, 608, 288, 25));
-            frame.add(cbbxOtherStores);
-        }
+        cbbxOtherStores = frame.initializer.newComboBox(
+                dbService.getStoresBesides(currentStore.getID()),
+                new Rectangle(680, 608, 288, 25)
+        );
+        frame.add(cbbxOtherStores);
 
         JLabel lQuantityMove = frame.initializer.newLabel("В количестве, ед.", new Rectangle(680, 645, 124, 26));
         frame.add(lQuantityMove);
@@ -244,53 +239,43 @@ public class StoreForm {
     }
 
     private DefaultTableModel setInitialTableProductModel() {
-        initialTableProductModel = new DefaultTableModel();
+        DefaultTableModel initialTableProductModel = new DefaultTableModel();
         initialTableProductModel.setColumnIdentifiers(tableProductHeader);
 
-        try (SqlSession session = DbSession.startSession()) {
-            StoreMapper mapper = session.getMapper(StoreMapper.class);
-            ArrayList<ProductView> products = mapper.getProductView();
+        ArrayList<ProductView> products = dbService.getProductView();
 
-            for (int i = 0; i < products.size(); i++) {
-                initialTableProductModel.insertRow(i, new Object[] {
-                        products.get(i).getID(),
-                        products.get(i).getName(),
-                        products.get(i).getCategory(),
-                        products.get(i).getCost()
-                });
-            }
+        for (int i = 0; i < products.size(); i++) {
+            initialTableProductModel.insertRow(i, new Object[] {
+                    products.get(i).getID(),
+                    products.get(i).getName(),
+                    products.get(i).getCategory(),
+                    products.get(i).getCost()
+            });
         }
 
         return initialTableProductModel;
     }
 
     private DefaultTableModel setInitialTableStoreModel() {
-        initialTableStoreModel = new DefaultTableModel();
+        DefaultTableModel initialTableStoreModel = new DefaultTableModel();
         initialTableStoreModel.setColumnIdentifiers(tableStoreHeader);
 
-        try (SqlSession session = DbSession.startSession()) {
-            StoreMapper mapper = session.getMapper(StoreMapper.class);
-            ArrayList<StoreView> productsOnThisStore = mapper.getStoreView(currentStore.getID());
+        ArrayList<StoreView> productsOnThisStore = dbService.getStoreView(currentStore.getID());
 
-            for (int i = 0; i < productsOnThisStore.size(); i++) {
-                initialTableStoreModel.insertRow(i, new Object[] {
-                        productsOnThisStore.get(i).getID(),
-                        productsOnThisStore.get(i).getName(),
-                        productsOnThisStore.get(i).getCount()
-                });
-            }
+        for (int i = 0; i < productsOnThisStore.size(); i++) {
+            initialTableStoreModel.insertRow(i, new Object[] {
+                    productsOnThisStore.get(i).getID(),
+                    productsOnThisStore.get(i).getName(),
+                    productsOnThisStore.get(i).getCount()
+            });
         }
 
         return initialTableStoreModel;
     }
 
     private void prepareToEditProduct() {
-        try (SqlSession session = DbSession.startSession()) {
-            StoreMapper mapper = session.getMapper(StoreMapper.class);
-
-            int rowIndex = tableProduct.getSelectedRow();
-            currentProduct = mapper.getProductByID(Integer.parseInt(tableProduct.getModel().getValueAt(rowIndex, 0).toString()));
-        }
+        int rowIndex = tableProduct.getSelectedRow();
+        currentProduct = dbService.getProductByID(Integer.parseInt(tableProduct.getModel().getValueAt(rowIndex, 0).toString()));
 
         tfName.setText(currentProduct.getName());
         spinnerCost.setValue(currentProduct.getCost());
@@ -304,12 +289,8 @@ public class StoreForm {
     }
 
     private void prepareToEditStore() {
-        try (SqlSession session = DbSession.startSession()) {
-            StoreMapper mapper = session.getMapper(StoreMapper.class);
-
-            int rowIndex = tableStore.getSelectedRow();
-            currentProductToStore = mapper.getProductToStoreByID(Integer.parseInt(tableStore.getModel().getValueAt(rowIndex, 0).toString()));
-        }
+        int rowIndex = tableStore.getSelectedRow();
+        currentProductToStore = dbService.getProductToStoreByID(Integer.parseInt(tableStore.getModel().getValueAt(rowIndex, 0).toString()));
 
         spinnerIncreaseProduct.setEnabled(true);
         spinnerDecreaseProduct.setEnabled(true);
@@ -410,11 +391,7 @@ public class StoreForm {
         );
 
         if (result == JOptionPane.YES_OPTION) {
-            ArrayList<Product> productsWithThisName;
-            try (SqlSession session = DbSession.startSession()) {
-                StoreMapper mapper = session.getMapper(StoreMapper.class);
-                productsWithThisName = mapper.getProductsByName(tfName.getText());
-            }
+            ArrayList<Product> productsWithThisName = dbService.getProductsByName(tfName.getText());
 
             if (productsWithThisName.size() != 0) {
                 JOptionPane.showMessageDialog(
@@ -425,18 +402,15 @@ public class StoreForm {
                 );
             } else if (
                     checker.checkTextField(tfName.getText(), tfName.getColumns()) &&
-                            checker.checkTextField(textAreaCharacteristics.getText(), 1000)
+                    checker.checkTextField(textAreaCharacteristics.getText(), 1000)
             ) {
-                try (SqlSession session = DbSession.startSession()) {
-                    StoreMapper mapper = session.getMapper(StoreMapper.class);
-                    mapper.insertProduct(
-                            tfName.getText(),
-                            textAreaCharacteristics.getText(),
-                            (Integer) spinnerCost.getValue(),
-                            cbbxCategory.getSelectedIndex() + 1
-                    );
-                    session.commit();
-                }
+                dbService.insertProduct(
+                        tfName.getText(),
+                        textAreaCharacteristics.getText(),
+                        (Integer) spinnerCost.getValue(),
+                        cbbxCategory.getSelectedIndex() + 1
+                );
+
                 JOptionPane.showMessageDialog(
                         frame,
                         "Товар успешно добавлен.",
@@ -460,19 +434,14 @@ public class StoreForm {
                 checker.checkTextField(tfName.getText(), tfName.getColumns()) &&
                 checker.checkTextField(textAreaCharacteristics.getText(), 1000)
         ) {
-            try (SqlSession session = DbSession.startSession()) {
-                StoreMapper mapper = session.getMapper(StoreMapper.class);
+            dbService.updateProduct(
+                    currentProduct.getID(),
+                    tfName.getText(),
+                    textAreaCharacteristics.getText(),
+                    (Integer) spinnerCost.getValue(),
+                    cbbxCategory.getSelectedIndex() + 1
+            );
 
-                mapper.updateProduct(
-                        currentProduct.getID(),
-                        tfName.getText(),
-                        textAreaCharacteristics.getText(),
-                        (Integer) spinnerCost.getValue(),
-                        cbbxCategory.getSelectedIndex() + 1
-                );
-
-                session.commit();
-            }
             unpickProduct();
             unpickStore();
         } else {
@@ -495,10 +464,14 @@ public class StoreForm {
         );
 
         if (result == JOptionPane.YES_OPTION) {
-            try (SqlSession session = DbSession.startSession()) {
-                StoreMapper mapper = session.getMapper(StoreMapper.class);
-                mapper.deleteProduct(currentProduct.getID());
-                session.commit();
+            dbService.deleteProduct(currentProduct.getID());
+
+            ArrayList<ProductToStore> productInStores = dbService.getProductToStore(
+                    currentProduct.getID(), currentStore.getID()
+            );
+
+            if (productInStores.size() != 0) {
+                dbService.deleteProductFromAllStores(currentProduct.getID());
             }
 
             JOptionPane.showMessageDialog(
@@ -509,15 +482,12 @@ public class StoreForm {
             );
             currentProduct = null;
             unpickProduct();
+            unpickStore();
         }
     }
 
     private void addToStore() {
-        ArrayList<ProductToStore> currentProductOnStore;
-        try (SqlSession session = DbSession.startSession()) {
-            StoreMapper mapper = session.getMapper(StoreMapper.class);
-            currentProductOnStore = mapper.getProductToStore(currentProduct.getID(), currentStore.getID());
-        }
+        ArrayList<ProductToStore> currentProductOnStore = dbService.getProductToStore(currentProduct.getID(), currentStore.getID());
 
         if (currentProductOnStore.size() != 0) {
             JOptionPane.showMessageDialog(
@@ -527,11 +497,7 @@ public class StoreForm {
                     JOptionPane.WARNING_MESSAGE
             );
         } else {
-            try (SqlSession session = DbSession.startSession()) {
-                StoreMapper mapper = session.getMapper(StoreMapper.class);
-                mapper.insertProductToStore(currentStore.getID(), currentProduct.getID(), 1);
-                session.commit();
-            }
+            dbService.insertProductToStore(currentStore.getID(), currentProduct.getID(), 1);
 
             JOptionPane.showMessageDialog(
                     frame,
@@ -553,11 +519,8 @@ public class StoreForm {
         );
 
         if (result == JOptionPane.YES_OPTION) {
-            try (SqlSession session = DbSession.startSession()) {
-                StoreMapper mapper = session.getMapper(StoreMapper.class);
-                mapper.deleteProductFromStore(currentProductToStore.getID());
-                session.commit();
-            }
+            dbService.deleteProductFromStore(currentProductToStore.getID());
+
             JOptionPane.showMessageDialog(
                     frame,
                     "Запись удалена.",
@@ -570,12 +533,8 @@ public class StoreForm {
 
     private void increaseProduct() {
         currentProductToStore.setCount(currentProductToStore.getCount() + (int) spinnerIncreaseProduct.getValue());
+        dbService.updateCount(currentProductToStore.getID(), currentProductToStore.getCount());
 
-        try (SqlSession session = DbSession.startSession()) {
-            StoreMapper mapper = session.getMapper(StoreMapper.class);
-            mapper.updateCount(currentProductToStore.getID(), currentProductToStore.getCount());
-            session.commit();
-        }
         unpickStore();
         spinnerIncreaseProduct.setValue(0);
     }
@@ -590,12 +549,8 @@ public class StoreForm {
             );
         } else {
             currentProductToStore.setCount(currentProductToStore.getCount() - (int) spinnerDecreaseProduct.getValue());
+            dbService.updateCount(currentProductToStore.getID(), currentProductToStore.getCount());
 
-            try (SqlSession session = DbSession.startSession()) {
-                StoreMapper mapper = session.getMapper(StoreMapper.class);
-                mapper.updateCount(currentProductToStore.getID(), currentProductToStore.getCount());
-                session.commit();
-            }
             unpickStore();
             spinnerDecreaseProduct.setValue(0);
         }
@@ -611,7 +566,7 @@ public class StoreForm {
         );
 
         if (result == JOptionPane.YES_OPTION) {
-            if ((currentProductToStore.getCount() - (int) spinnerMoveProduct.getValue() < 0)) {
+            if (currentProductToStore.getCount() - (int) spinnerMoveProduct.getValue() < 0) {
                 JOptionPane.showMessageDialog(
                         frame,
                         "Вы не можете отпустить такое количество товаров.",
@@ -622,38 +577,24 @@ public class StoreForm {
             }
 
             if ((int) spinnerMoveProduct.getValue() > 0) {
-                ArrayList<ProductToStore> productsInOtherStory;
-
-                try (SqlSession session = DbSession.startSession()) {
-                    StoreMapper mapper = session.getMapper(StoreMapper.class);
-                    productsInOtherStory = mapper.getProductToStore(
-                            currentProductToStore.getProduct_ID(),
-                            mapper.getStoreIDByName(cbbxOtherStores.getSelectedItem().toString())
-                    );
-                }
+                int storeID = dbService.getStoreIDByName(Objects.requireNonNull(cbbxOtherStores.getSelectedItem()).toString());
+                ArrayList<ProductToStore> productsInOtherStory = dbService.getProductToStore(currentProductToStore.getProduct_ID(), storeID);
 
                 if (productsInOtherStory.size() != 0) {
-                    try (SqlSession session = DbSession.startSession()) {
-                        StoreMapper mapper = session.getMapper(StoreMapper.class);
-                        mapper.updateCount(
-                                productsInOtherStory.get(0).getID(),
-                                productsInOtherStory.get(0).getCount() + (int) spinnerMoveProduct.getValue()
-                        );
-                        mapper.updateCount(currentProductToStore.getID(), currentProductToStore.getCount() - (int) spinnerMoveProduct.getValue());
-                        session.commit();
-                    }
+                    dbService.updateCount(
+                            productsInOtherStory.get(0).getID(),
+                            productsInOtherStory.get(0).getCount() + (int) spinnerMoveProduct.getValue()
+                    );
                 } else {
-                    try (SqlSession session = DbSession.startSession()) {
-                        StoreMapper mapper = session.getMapper(StoreMapper.class);
-                        mapper.insertProductToStore(
-                                mapper.getStoreIDByName(cbbxOtherStores.getSelectedItem().toString()),
-                                currentProductToStore.getProduct_ID(),
-                                (int) spinnerMoveProduct.getValue()
-                        );
-                        mapper.updateCount(currentProductToStore.getID(), currentProductToStore.getCount() - (int) spinnerMoveProduct.getValue());
-                        session.commit();
-                    }
+                    dbService.insertProductToStore(
+                            storeID,
+                            currentProductToStore.getProduct_ID(),
+                            (int) spinnerMoveProduct.getValue()
+                    );
                 }
+                dbService.updateCount(currentProductToStore.getID(),
+                currentProductToStore.getCount() - (int) spinnerMoveProduct.getValue());
+
                 JOptionPane.showMessageDialog(
                         frame,
                         "Товар перемещён.",
@@ -679,8 +620,6 @@ public class StoreForm {
         String query = "'%" + tfSearchInProducts.getText() + "%'";
         String option = "";
 
-        ArrayList<ProductView> result;
-
         if (rbName.isSelected()) {
             column = rbName.getActionCommand();
             option = rbName.getText();
@@ -689,10 +628,7 @@ public class StoreForm {
             option = rbCategory.getText();
         }
 
-        try (SqlSession session = DbSession.startSession()) {
-            StoreMapper mapper = session.getMapper(StoreMapper.class);
-            result = mapper.searchProductView(column, query);
-        }
+        ArrayList<ProductView> result = dbService.searchProductView(column, query);
 
         if (result.size() == 0) {
             JOptionPane.showMessageDialog(frame,
@@ -722,12 +658,7 @@ public class StoreForm {
 
         String query = "'%" + tfSearchInStore.getText() + "%'";
 
-        ArrayList<StoreView> result;
-
-        try (SqlSession session = DbSession.startSession()) {
-            StoreMapper mapper = session.getMapper(StoreMapper.class);
-            result = mapper.searchStoreView(currentStore.getID(), query);
-        }
+        ArrayList<StoreView> result = dbService.searchStoreView(currentStore.getID(), query);
 
         if (result.size() == 0) {
             JOptionPane.showMessageDialog(frame,

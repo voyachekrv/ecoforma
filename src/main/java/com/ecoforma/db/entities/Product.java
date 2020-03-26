@@ -1,4 +1,4 @@
-package com.ecoforma.entities;
+package com.ecoforma.db.entities;
 
 public class Product {
     private int ID;

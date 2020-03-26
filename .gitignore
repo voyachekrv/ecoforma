@@ -5,5 +5,5 @@ ecoforma.iml
 .project
 ecoforma.eml
 ecoforma.userlibraries
-*.pyw
 *.lnk
+*.bat

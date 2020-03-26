@@ -1,4 +1,6 @@
-package com.ecoforma.forms;
+package com.ecoforma.frontend.forms;
+
+import com.ecoforma.frontend.CompanyFrame;
 
 import java.io.IOException;
 

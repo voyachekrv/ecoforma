@@ -1,6 +1,6 @@
 package com.ecoforma.db.mappers;
 
-import com.ecoforma.entities.*;
+import com.ecoforma.db.entities.*;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -89,4 +89,7 @@ public interface StoreMapper {
 
     @Update("UPDATE product_to_store SET count = #{count} WHERE ID = #{ID} AND deleted = 0;")
     void updateCount(@Param("ID") int ID, @Param("count") int count);
+
+    @Update("UPDATE product_to_store SET deleted = 1 WHERE product_ID = #{product_ID};")
+    void deleteProductFromAllStores(@Param("product_ID") int product_ID);
 }

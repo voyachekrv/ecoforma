@@ -1,8 +1,8 @@
 package com.ecoforma.db.mappers;
 
-import com.ecoforma.entities.Employee;
-import com.ecoforma.entities.EmployeeView;
-import com.ecoforma.entities.RegistrationData;
+import com.ecoforma.db.entities.Employee;
+import com.ecoforma.db.entities.EmployeeView;
+import com.ecoforma.db.entities.RegistrationData;
 import org.apache.ibatis.annotations.*;
 
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ public interface HRMapper {
     ArrayList<EmployeeView> getAllEmployees();
 
     @Select("SELECT * FROM employee WHERE (ID = #{ID} AND deleted = 0);")
-    Employee getEmployeeByID(@Param("ID") long ID);
+    Employee getEmployeeByID(@Param("ID") int ID);
 
     @Select("SELECT name FROM post WHERE deleted = 0")
     String[] getPostNames();
@@ -45,7 +45,7 @@ public interface HRMapper {
             "education = #{education}, adress = #{adress}, phoneNumber = #{phoneNumber}, email = #{email}, " +
             "post_ID = #{post_ID}, department_ID = #{department_ID}, personalSalary = #{personalSalary} WHERE ID = #{ID};")
     void updateEmployee(
-            @Param("ID") long ID,
+            @Param("ID") int ID,
             @Param("name") String name,
             @Param("dateOfBirth") String dateOfBirth,
             @Param("passport") String passport,
