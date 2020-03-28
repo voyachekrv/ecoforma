@@ -2,7 +2,7 @@ package com.ecoforma.frontend.forms;
 
 import com.ecoforma.db.services.HRService;
 import com.ecoforma.frontend.services.Checker;
-import com.ecoforma.frontend.services.Initializer;
+import com.ecoforma.frontend.services.JComponentFactory;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -35,59 +35,59 @@ public class NewEmployeeForm {
     private JButton btnCancel;
     private JButton btnSave;
 
-    private Initializer initializer;
+    private JComponentFactory factory;
 
     private HRService dbService;
 
     NewEmployeeForm() throws IOException {
-        initializer = new Initializer();
+        factory = new JComponentFactory();
         dbService = new HRService();
 
-        frame = initializer.newFrame("Новый сотрудник",  new Rectangle(598,  144, 800, 790), JFrame.DO_NOTHING_ON_CLOSE);
+        frame = factory.newFrame("Новый сотрудник",  new Rectangle(598,  144, 800, 790), JFrame.DO_NOTHING_ON_CLOSE);
 
-        JPanel panel = initializer.newPanelBevel(10, 11, 764, 739);
+        JPanel panel = factory.newPanelBevel(10, 11, 764, 739);
         frame.getContentPane().add(panel);
 
-        JPanel panelName = initializer.newPanelEtched(10, 11, 744, 72);
+        JPanel panelName = factory.newPanelEtched(10, 11, 744, 72);
         panel.add(panelName);
 
-        tfSurname = initializer.newTextFieldBigFont(17, new Rectangle(10, 34, 244, 27));
+        tfSurname = factory.newTextFieldBigFont(17, new Rectangle(10, 34, 244, 27));
         panelName.add(tfSurname);
 
-        tfName = initializer.newTextFieldBigFont(16, new Rectangle(264, 34, 230, 27));
+        tfName = factory.newTextFieldBigFont(16, new Rectangle(264, 34, 230, 27));
         panelName.add(tfName);
 
-        tfPatronym = initializer.newTextFieldBigFont(16, new Rectangle(504, 34, 230, 27));
+        tfPatronym = factory.newTextFieldBigFont(16, new Rectangle(504, 34, 230, 27));
         panelName.add(tfPatronym);
 
-        JLabel lSurname = initializer.newLabel("Фамилия", new Rectangle(10, 9, 230, 20));
+        JLabel lSurname = factory.newLabel("Фамилия", new Rectangle(10, 9, 230, 20));
         panelName.add(lSurname);
 
-        JLabel lName = initializer.newLabel("Имя", new Rectangle(264, 12, 230, 20));
+        JLabel lName = factory.newLabel("Имя", new Rectangle(264, 12, 230, 20));
         panelName.add(lName);
 
-        JLabel lPatronym = initializer.newLabel("Отчество", new Rectangle(504, 12, 230, 20));
+        JLabel lPatronym = factory.newLabel("Отчество", new Rectangle(504, 12, 230, 20));
         panelName.add(lPatronym);
 
-        JPanel panelPassportData = initializer.newPanelEtched(10, 94, 744, 72);
+        JPanel panelPassportData = factory.newPanelEtched(10, 94, 744, 72);
         panel.add(panelPassportData);
 
-        tfDateOfBirth = initializer.newTextFieldBigFont(20, new Rectangle(10, 34, 258, 27));
+        tfDateOfBirth = factory.newTextFieldBigFont(20, new Rectangle(10, 34, 258, 27));
         panelPassportData.add(tfDateOfBirth);
 
-        tfPassport = initializer.newTextFieldBigFont(10, new Rectangle(278, 34, 456, 27));
+        tfPassport = factory.newTextFieldBigFont(10, new Rectangle(278, 34, 456, 27));
         panelPassportData.add(tfPassport);
 
-        JLabel lDateOfBirth = initializer.newLabel("Дата рождения", new Rectangle(10, 11, 230, 20));
+        JLabel lDateOfBirth = factory.newLabel("Дата рождения", new Rectangle(10, 11, 230, 20));
         panelPassportData.add(lDateOfBirth);
 
-        JLabel lPassport = initializer.newLabel("Номер паспорта", new Rectangle(278, 14, 230, 20));
+        JLabel lPassport = factory.newLabel("Номер паспорта", new Rectangle(278, 14, 230, 20));
         panelPassportData.add(lPassport);
 
-        JPanel panelEducation = initializer.newPanelTitled("Сведения об образовании", new Rectangle(10, 177, 744, 203));
+        JPanel panelEducation = factory.newPanelTitled("Сведения об образовании", new Rectangle(10, 177, 744, 203));
         panel.add(panelEducation);
 
-        textAreaEducation = initializer.newTextAreaBigFont(
+        textAreaEducation = factory.newTextAreaBigFont(
                 10, 21, 724, 171,
                 new AbstractAction() {
                     @Override
@@ -98,78 +98,78 @@ public class NewEmployeeForm {
 
         panelEducation.add(textAreaEducation);
 
-        JPanel panelContactData = initializer.newPanelEtched(10, 391, 744, 131);
+        JPanel panelContactData = factory.newPanelEtched(10, 391, 744, 131);
         panel.add(panelContactData);
 
-        tfAdress = initializer.newTextFieldBigFont(200, new Rectangle(10, 34, 724, 27));
+        tfAdress = factory.newTextFieldBigFont(200, new Rectangle(10, 34, 724, 27));
         panelContactData.add(tfAdress);
 
-        tfEmail = initializer.newTextFieldBigFont(70, new Rectangle(10, 93, 361, 27));
+        tfEmail = factory.newTextFieldBigFont(70, new Rectangle(10, 93, 361, 27));
         panelContactData.add(tfEmail);
 
-        tfPhoneNumber = initializer.newTextFieldBigFont(12, new Rectangle(381, 93, 353, 27));
+        tfPhoneNumber = factory.newTextFieldBigFont(12, new Rectangle(381, 93, 353, 27));
         panelContactData.add(tfPhoneNumber);
 
-        cbNoEmail = initializer.newCheckBox("Почта отсутствует", new Rectangle(60, 68, 165, 20));
+        cbNoEmail = factory.newCheckBox("Почта отсутствует", new Rectangle(60, 68, 165, 20));
         panelContactData.add(cbNoEmail);
 
-        JLabel lAdress = initializer.newLabel("Домашний адрес", new Rectangle(10, 9, 230, 20));
+        JLabel lAdress = factory.newLabel("Домашний адрес", new Rectangle(10, 9, 230, 20));
         panelContactData.add(lAdress);
 
-        JLabel lEmail = initializer.newLabel("E-mail", new Rectangle(10, 68, 230, 20));
+        JLabel lEmail = factory.newLabel("E-mail", new Rectangle(10, 68, 230, 20));
         panelContactData.add(lEmail);
 
-        JLabel lPhoneNumber = initializer.newLabel("Номер телефона", new Rectangle(381, 68, 230, 20));
+        JLabel lPhoneNumber = factory.newLabel("Номер телефона", new Rectangle(381, 68, 230, 20));
         panelContactData.add(lPhoneNumber);
 
-        cbbxPost = initializer.newComboBox(dbService.getPostNames(), new Rectangle(176, 533, 200, 22));
+        cbbxPost = factory.newComboBox(dbService.getPostNames(), new Rectangle(176, 533, 200, 22));
         cbbxPost.setEnabled(true);
         panel.add(cbbxPost);
 
-        cbboxDepartment = initializer.newComboBox(dbService.getDepartmentNames(), new Rectangle(452, 533, 200, 22));
+        cbboxDepartment = factory.newComboBox(dbService.getDepartmentNames(), new Rectangle(452, 533, 200, 22));
         cbboxDepartment.setEnabled(true);
         panel.add(cbboxDepartment);
 
-        JLabel lAppointAs = initializer.newLabel("Назначить на должность: ", new Rectangle(10, 534, 157, 20));
+        JLabel lAppointAs = factory.newLabel("Назначить на должность: ", new Rectangle(10, 534, 157, 20));
         panel.add(lAppointAs);
 
-        JPanel panelSignIn = initializer.newPanelEtched(10, 565, 744, 108);
+        JPanel panelSignIn = factory.newPanelEtched(10, 565, 744, 108);
         panel.add(panelSignIn);
 
-        cbAllowSignIn = initializer.newCheckBox("Позволить регистрацию в системе", new Rectangle(6, 7, 265, 23));
+        cbAllowSignIn = factory.newCheckBox("Позволить регистрацию в системе", new Rectangle(6, 7, 265, 23));
         panelSignIn.add(cbAllowSignIn);
 
-        tfLogin = initializer.newTextFieldDisabled(20, new Rectangle(10, 60, 162, 23));
+        tfLogin = factory.newTextFieldDisabled(20, new Rectangle(10, 60, 162, 23));
         panelSignIn.add(tfLogin);
 
-        tfPassword = initializer.newTextFieldDisabled(40, new Rectangle(281, 60, 162, 23));
+        tfPassword = factory.newTextFieldDisabled(40, new Rectangle(281, 60, 162, 23));
         panelSignIn.add(tfPassword);
 
-        btnGenerateLogin = initializer.newButton("Создать", new Rectangle(182, 60, 89, 23));
+        btnGenerateLogin = factory.newButton("Создать", new Rectangle(182, 60, 89, 23));
         panelSignIn.add(btnGenerateLogin);
 
-        btnGeneratePassword = initializer.newButton("Создать", new Rectangle(453, 60, 89, 23));
+        btnGeneratePassword = factory.newButton("Создать", new Rectangle(453, 60, 89, 23));
         panelSignIn.add(btnGeneratePassword);
 
-        cbbxRole = initializer.newComboBox(dbService.getRoleNames(), new Rectangle(552, 60, 182, 22));
+        cbbxRole = factory.newComboBox(dbService.getRoleNames(), new Rectangle(552, 60, 182, 22));
         panelSignIn.add(cbbxRole);
 
-        JLabel lLogin = initializer.newLabel("Логин", new Rectangle(10, 37, 162, 20));
+        JLabel lLogin = factory.newLabel("Логин", new Rectangle(10, 37, 162, 20));
         panelSignIn.add(lLogin);
 
-        JLabel lPassword = initializer.newLabel("Пароль", new Rectangle(281, 37, 162, 20));
+        JLabel lPassword = factory.newLabel("Пароль", new Rectangle(281, 37, 162, 20));
         panelSignIn.add(lPassword);
 
-        JLabel lRole = initializer.newLabel("Роль", new Rectangle(552, 37, 182, 20));
+        JLabel lRole = factory.newLabel("Роль", new Rectangle(552, 37, 182, 20));
         panelSignIn.add(lRole);
 
-        JLabel lInDepartment = initializer.newLabel("В отдел: ", new Rectangle(387, 533, 116, 20));
+        JLabel lInDepartment = factory.newLabel("В отдел: ", new Rectangle(387, 533, 116, 20));
         panel.add(lInDepartment);
 
-        btnCancel = initializer.newButtonEnabled("Отмена", new Rectangle(638, 698, 116, 30));
+        btnCancel = factory.newButtonEnabled("Отмена", new Rectangle(638, 698, 116, 30));
         panel.add(btnCancel);
 
-        btnSave = initializer.newButtonEnabled("Сохранить", new Rectangle(512, 698, 116, 30));
+        btnSave = factory.newButtonEnabled("Сохранить", new Rectangle(512, 698, 116, 30));
         panel.add(btnSave);
 
         cbNoEmail.addItemListener(itemEvent -> {

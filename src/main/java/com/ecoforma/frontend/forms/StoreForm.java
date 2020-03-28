@@ -48,153 +48,153 @@ public class StoreForm {
 
         frame = new CompanyFrame(currentStore.getName());
 
-        JPanel panelTables = frame.initializer.newPanelDefault(10, 55, 1336, 406);
+        JPanel panelTables = frame.factory.newPanelDefault(10, 55, 1336, 406);
         frame.add(panelTables);
 
-        JPanel panelTableProduct = frame.initializer.newPanelBevelTable(10, 37, 647, 358);
+        JPanel panelTableProduct = frame.factory.newPanelBevelTable(10, 37, 647, 358);
         panelTables.add(panelTableProduct);
 
-        JPanel panelTableStore = frame.initializer.newPanelBevelTable(670, 37, 647, 358);
+        JPanel panelTableStore = frame.factory.newPanelBevelTable(670, 37, 647, 358);
         panelTables.add(panelTableStore);
 
-        JLabel lTableProduct = frame.initializer.newLabel("Общий каталог товаров", new Rectangle(10, 11, 647, 20));
+        JLabel lTableProduct = frame.factory.newLabel("Общий каталог товаров", new Rectangle(10, 11, 647, 20));
         panelTables.add(lTableProduct);
 
-        JLabel lTableStore = frame.initializer.newLabel("Товары на складе", new Rectangle(670, 11, 647, 20));
+        JLabel lTableStore = frame.factory.newLabel("Товары на складе", new Rectangle(670, 11, 647, 20));
         panelTables.add(lTableStore);
 
-        tableProduct = frame.initializer.newTable(setInitialTableProductModel());
+        tableProduct = frame.factory.newTable(setInitialTableProductModel());
 
-        tableProductScroll = frame.initializer.newTableScroll(tableProduct, 627, 336);
+        tableProductScroll = frame.factory.newTableScroll(tableProduct, 627, 336);
         panelTableProduct.add(tableProductScroll);
         addUnpickProductEscape();
 
-        tableStore = frame.initializer.newTable(setInitialTableStoreModel());
+        tableStore = frame.factory.newTable(setInitialTableStoreModel());
 
-        tableStoreScroll = frame.initializer.newTableScroll(tableStore, 627, 336);
+        tableStoreScroll = frame.factory.newTableScroll(tableStore, 627, 336);
         panelTableStore.add(tableStoreScroll);
         addUnpickStoreEscape();
 
-        JLabel lSearchInProducts = frame.initializer.newLabel("Поиск в каталоге", new Rectangle(20, 455, 240, 20));
+        JLabel lSearchInProducts = frame.factory.newLabel("Поиск в каталоге", new Rectangle(20, 455, 240, 20));
         frame.add(lSearchInProducts);
 
-        JLabel lSearchInStore = frame.initializer.newLabel("Поиск на складе", new Rectangle(680, 455, 240, 20));
+        JLabel lSearchInStore = frame.factory.newLabel("Поиск на складе", new Rectangle(680, 455, 240, 20));
         frame.add(lSearchInStore);
 
-        tfSearchInProducts = frame.initializer.newTextFieldEnabled(20, new Rectangle(20, 482, 189, 23));
+        tfSearchInProducts = frame.factory.newTextFieldEnabled(20, new Rectangle(20, 482, 189, 23));
         frame.add(tfSearchInProducts);
 
-        JButton btnSearchInProducts = frame.initializer.newButtonEnabled("Поиск", "icon-search", new Rectangle(219, 482, 93, 23));
+        JButton btnSearchInProducts = frame.factory.newButtonEnabled("Поиск", "icon-search", new Rectangle(219, 482, 93, 23));
         frame.add(btnSearchInProducts);
 
-        JButton btnClearSearchProducts = frame.initializer.newButtonEnabled(null, "icon-close", new Rectangle(320, 482, 24, 23));
+        JButton btnClearSearchProducts = frame.factory.newButtonEnabled(null, "icon-close", new Rectangle(320, 482, 24, 23));
         btnClearSearchProducts.setToolTipText("Очистка результов поиска");
         frame.add(btnClearSearchProducts);
 
-        rbName = frame.initializer.newRadioButton("Имя", "product.name", new Rectangle(352, 482, 56, 23));
+        rbName = frame.factory.newRadioButton("Имя", "product.name", new Rectangle(352, 482, 56, 23));
         rbName.setSelected(true);
         frame.add(rbName);
 
-        rbCategory = frame.initializer.newRadioButton("Категория", "productCategory.name", new Rectangle(412, 482, 96, 23));
+        rbCategory = frame.factory.newRadioButton("Категория", "productCategory.name", new Rectangle(412, 482, 96, 23));
         frame.add(rbCategory);
 
         ButtonGroup searchGroup = new ButtonGroup();
         searchGroup.add(rbName);
         searchGroup.add(rbCategory);
 
-        tfSearchInStore = frame.initializer.newTextFieldEnabled(20, new Rectangle(680, 482, 189, 23));
+        tfSearchInStore = frame.factory.newTextFieldEnabled(20, new Rectangle(680, 482, 189, 23));
         frame.add(tfSearchInStore);
 
-        JButton btnSearchInStore = frame.initializer.newButtonEnabled("Поиск", "icon-search", new Rectangle(879, 480, 93, 23));
+        JButton btnSearchInStore = frame.factory.newButtonEnabled("Поиск", "icon-search", new Rectangle(879, 480, 93, 23));
         frame.add(btnSearchInStore);
 
-        JButton btnClearSearchStore = frame.initializer.newButtonEnabled(null, "icon-close", new Rectangle(980, 480, 24, 23));
+        JButton btnClearSearchStore = frame.factory.newButtonEnabled(null, "icon-close", new Rectangle(980, 480, 24, 23));
         btnClearSearchStore.setToolTipText("Очистка результов поиска");
         frame.add(btnClearSearchStore);
 
-        JPanel panelEditProduct = frame.initializer.newPanelEtched(20, 516, 650, 220);
+        JPanel panelEditProduct = frame.factory.newPanelEtched(20, 516, 650, 220);
         frame.add(panelEditProduct);
 
-        tfName = frame.initializer.newTextFieldEnabled(40, new Rectangle(12, 12, 189, 23));
+        tfName = frame.factory.newTextFieldEnabled(40, new Rectangle(12, 12, 189, 23));
         tfName.setToolTipText("Название товара");
         panelEditProduct.add(tfName);
 
-        spinnerCost = frame.initializer.newSpinnerNumericEnabled(
+        spinnerCost = frame.factory.newSpinnerNumericEnabled(
                 new SpinnerNumberModel(1, 1, 2999999, 100),
                 new Rectangle(213, 13, 189, 22)
         );
         spinnerCost.setToolTipText("Стоимость товара");
         panelEditProduct.add(spinnerCost);
 
-        cbbxCategory = frame.initializer.newComboBox(
+        cbbxCategory = frame.factory.newComboBox(
                 dbService.getCategories(), new Rectangle(414, 11, 224, 25)
         );
         cbbxCategory.setToolTipText("Категория товара");
         cbbxCategory.setEnabled(true);
         panelEditProduct.add(cbbxCategory);
 
-        textAreaCharacteristics = frame.initializer.newTextAreaEnabled(12, 41, 626, 133, 100, 20);
+        textAreaCharacteristics = frame.factory.newTextAreaEnabled(12, 41, 626, 133, 100, 20);
         textAreaCharacteristics.setToolTipText("Описание характеристик товара");
         panelEditProduct.add(textAreaCharacteristics);
 
-        btnAddToStore = frame.initializer.newButton("На склад", "icon-move", new Rectangle(12, 183, 146, 26));
+        btnAddToStore = frame.factory.newButton("На склад", "icon-move", new Rectangle(12, 183, 146, 26));
         panelEditProduct.add(btnAddToStore);
 
-        btnInsertProduct = frame.initializer.newButtonEnabled("В каталог", "icon-add", new Rectangle(169, 183, 142, 26));
+        btnInsertProduct = frame.factory.newButtonEnabled("В каталог", "icon-add", new Rectangle(169, 183, 142, 26));
         panelEditProduct.add(btnInsertProduct);
 
-        btnUpdateProduct = frame.initializer.newButton("Изменить", "icon-unfocus", new Rectangle(323, 183, 135, 26));
+        btnUpdateProduct = frame.factory.newButton("Изменить", "icon-unfocus", new Rectangle(323, 183, 135, 26));
         panelEditProduct.add(btnUpdateProduct);
 
-        btnDeleteFromProduct = frame.initializer.newButton("Удалить", "icon-delete", new Rectangle(470, 183, 168, 26));
+        btnDeleteFromProduct = frame.factory.newButton("Удалить", "icon-delete", new Rectangle(470, 183, 168, 26));
         panelEditProduct.add(btnDeleteFromProduct);
 
-        JLabel lIncreaseProduct = frame.initializer.newLabel("Добавить товар, ед.", new Rectangle(680, 517, 146, 20));
+        JLabel lIncreaseProduct = frame.factory.newLabel("Добавить товар, ед.", new Rectangle(680, 517, 146, 20));
         frame.add(lIncreaseProduct);
 
-        JLabel lDecreaseProduct = frame.initializer.newLabel("Отпустить товар, ед.", new Rectangle(986, 516, 146, 20));
+        JLabel lDecreaseProduct = frame.factory.newLabel("Отпустить товар, ед.", new Rectangle(986, 516, 146, 20));
         frame.add(lDecreaseProduct);
 
-        spinnerIncreaseProduct = frame.initializer.newSpinnerNumericDisabled(
+        spinnerIncreaseProduct = frame.factory.newSpinnerNumericDisabled(
                 new SpinnerNumberModel(0, 0, 1999999, 1),
                 new Rectangle(844, 516, 124, 20)
                 );
         frame.add(spinnerIncreaseProduct);
 
-        spinnerDecreaseProduct = frame.initializer.newSpinnerNumericDisabled(
+        spinnerDecreaseProduct = frame.factory.newSpinnerNumericDisabled(
                 new SpinnerNumberModel(0, 0, 1999999, 1),
                 new Rectangle(1150, 516, 124, 20)
         );
         frame.add(spinnerDecreaseProduct);
 
-        btnAcceptIncrease = frame.initializer.newButton("Подтвердить действие", "icon-accept", new Rectangle(680, 549, 288, 26));
+        btnAcceptIncrease = frame.factory.newButton("Подтвердить действие", "icon-accept", new Rectangle(680, 549, 288, 26));
         frame.add(btnAcceptIncrease);
 
-        btnAcceptDecrease = frame.initializer.newButton("Подтвердить действие", "icon-accept", new Rectangle(986, 549, 288, 26));
+        btnAcceptDecrease = frame.factory.newButton("Подтвердить действие", "icon-accept", new Rectangle(986, 549, 288, 26));
         frame.add(btnAcceptDecrease);
 
-        btnDeleteFromStore = frame.initializer.newButton("Удалить запись о хранении", "icon-delete", new Rectangle(986, 607, 288, 26));
+        btnDeleteFromStore = frame.factory.newButton("Удалить запись о хранении", "icon-delete", new Rectangle(986, 607, 288, 26));
         frame.add(btnDeleteFromStore);
 
-        JLabel lMoveToOtherStore = frame.initializer.newLabel("Переместить на склад:", new Rectangle(680, 587, 288, 16));
+        JLabel lMoveToOtherStore = frame.factory.newLabel("Переместить на склад:", new Rectangle(680, 587, 288, 16));
         frame.add(lMoveToOtherStore);
 
-        cbbxOtherStores = frame.initializer.newComboBox(
+        cbbxOtherStores = frame.factory.newComboBox(
                 dbService.getStoresBesides(currentStore.getID()),
                 new Rectangle(680, 608, 288, 25)
         );
         frame.add(cbbxOtherStores);
 
-        JLabel lQuantityMove = frame.initializer.newLabel("В количестве, ед.", new Rectangle(680, 645, 124, 26));
+        JLabel lQuantityMove = frame.factory.newLabel("В количестве, ед.", new Rectangle(680, 645, 124, 26));
         frame.add(lQuantityMove);
 
-        spinnerMoveProduct = frame.initializer.newSpinnerNumericDisabled(
+        spinnerMoveProduct = frame.factory.newSpinnerNumericDisabled(
                 new SpinnerNumberModel(0, 0, 1999999, 1),
                 new Rectangle(844, 648, 124, 20)
         );
         frame.add(spinnerMoveProduct);
 
-        btnAcceptMove = frame.initializer.newButton("Подтвердить действие", "icon-accept", new Rectangle(680, 683, 288, 26));
+        btnAcceptMove = frame.factory.newButton("Подтвердить действие", "icon-accept", new Rectangle(680, 683, 288, 26));
         frame.add(btnAcceptMove);
 
         ListSelectionModel selectionModelProduct = tableProduct.getSelectionModel();
@@ -305,7 +305,7 @@ public class StoreForm {
     private void removeFocusFromTableProduct() {
         tableProductScroll.setViewportView(null);
 
-        tableProduct = frame.initializer.newTable(setInitialTableProductModel());
+        tableProduct = frame.factory.newTable(setInitialTableProductModel());
         tableProductScroll.setViewportView(tableProduct);
         ListSelectionModel selectionModelProduct = tableProduct.getSelectionModel();
         selectionModelProduct.addListSelectionListener(listSelectionEvent -> prepareToEditProduct());
@@ -315,7 +315,7 @@ public class StoreForm {
     private void removeFocusFromTableStore() {
         tableStoreScroll.setViewportView(null);
 
-        tableStore = frame.initializer.newTable(setInitialTableStoreModel());
+        tableStore = frame.factory.newTable(setInitialTableStoreModel());
         tableStoreScroll.setViewportView(tableStore);
         ListSelectionModel selectionModelStore = tableStore.getSelectionModel();
         selectionModelStore.addListSelectionListener(listSelectionEvent -> prepareToEditStore());

@@ -13,7 +13,7 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 
-public class Initializer {
+public class JComponentFactory {
     @NotNull
     public JFrame newFrame(String t, @NotNull Rectangle r, int operation) throws IOException {
         JFrame f = new JFrame(t);
@@ -253,5 +253,19 @@ public class Initializer {
         actionMap.put(ACTION_KEY, action);
         textArea.setActionMap(actionMap);
         return textArea;
+    }
+
+    @NotNull
+    public JPanel newTabbedPaneElement() {
+        JPanel panel = new JPanel();
+        panel.setLayout(null);
+        return panel;
+    }
+
+    @NotNull
+    public JTabbedPane newTabbedPane(int x, int y, int width, int height) {
+        JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+        tabbedPane.setBounds(x, y, width, height);
+        return tabbedPane;
     }
 }

@@ -1,6 +1,6 @@
 package com.ecoforma.frontend;
 
-import com.ecoforma.frontend.services.Initializer;
+import com.ecoforma.frontend.services.JComponentFactory;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -13,23 +13,23 @@ import static com.ecoforma.App.COMPANY_NAME;
 import static com.ecoforma.App.signInForm;
 
 public class CompanyFrame extends JFrame {
-    public Initializer initializer;
+    public JComponentFactory factory;
 
     public CompanyFrame(String title) throws IOException {
-        initializer = new Initializer();
+        factory = new JComponentFactory();
 
         this.setTitle(COMPANY_NAME + " - " + title);
-        this.setSize(1362, 790); // Установка размеров
+        this.setSize(1352, 790); // Установка размеров
         this.setLocation(323,  144);
         this.setResizable(false);
         this.setIconImage(ImageIO.read(getClass().getResource("/img/logo1.png")));
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Установка операции закрытия окна приложения
         this.getContentPane().setLayout(null);
 
-        JToolBar toolBar = initializer.newToolBar(0, 0, 1346, 44);
+        JToolBar toolBar = factory.newToolBar(0, 0, 1356, 44);
         this.getContentPane().add(toolBar);
 
-        JButton btnSignOut = initializer.newButtonEnabled("Выход из системы", "icon-logout", new Rectangle(0, 0, 1350, 44));
+        JButton btnSignOut = factory.newButtonEnabled("Выход из системы", "icon-logout", new Rectangle(0, 0, 1350, 44));
         toolBar.add(btnSignOut);
 
         btnSignOut.addActionListener(actionEvent -> signOut());
