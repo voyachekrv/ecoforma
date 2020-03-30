@@ -5,7 +5,8 @@ import com.ecoforma.frontend.services.JComponentFactory;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
+
+import static com.ecoforma.frontend.services.JComponentFactory.*;
 
 public class SaleForm {
     CompanyFrame frame;
@@ -14,27 +15,27 @@ public class SaleForm {
 
     JComponentFactory factory;
 
-    public SaleForm(String department) throws IOException {
+    public SaleForm(String department) {
         factory = new JComponentFactory();
 
         frame = new CompanyFrame(department);
 
-        tabbedPane = factory.newTabbedPane(0, 45, 1346, 716);
+        tabbedPane = JComponentFactory.newTabbedPane(0, 45, 1346, 716);
         frame.add(tabbedPane);
 
-        JPanel panelOrders = factory.newTabbedPaneElement();
+        JPanel panelOrders = newTabbedPaneElement();
         tabbedPane.addTab("Список заказов", null, panelOrders, null);
 
-        JPanel panelCustomers = factory.newTabbedPaneElement();
+        JPanel panelCustomers = newTabbedPaneElement();
         tabbedPane.addTab("Список покупателей", null, panelCustomers, null);
 
-        tfSearch = frame.factory.newTextFieldEnabled(50, new Rectangle(12, 12, 128, 23));
+        tfSearch = newTextFieldEnabled(50, new Rectangle(12, 12, 128, 23));
         panelCustomers.add(tfSearch);
 
-        JButton btnSearch = frame.factory.newButtonEnabled("Поиск", "icon-search", new Rectangle(152, 12, 90, 23));
+        JButton btnSearch = newButtonEnabled("Поиск", "icon-search", new Rectangle(152, 12, 90, 23));
         panelCustomers.add(btnSearch);
 
-        JButton btnStopSearch = frame.factory.newButtonEnabled(null, "icon-close", new Rectangle(254, 12, 24, 23));
+        JButton btnStopSearch = newButtonEnabled(null, "icon-close", new Rectangle(254, 12, 24, 23));
         btnStopSearch.setToolTipText("Очистка результов поиска");
         panelCustomers.add(btnStopSearch);
 

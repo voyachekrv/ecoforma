@@ -21,7 +21,7 @@ public class SignInForm {
 
     private SignInService dbService;
 
-    public SignInForm() throws IOException {
+    public SignInForm() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Размеры окна
         dbService = new SignInService();
 
@@ -32,7 +32,12 @@ public class SignInForm {
         frame.setLocation((screenSize.width / 3) + 130, (screenSize.height / 4) + 30); // Установка положения на экране
         frame.setResizable(false); // Запрет изменения размера окна
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Установка операции закрытия окна приложения
-        frame.setIconImage(ImageIO.read(getClass().getResource("/img/logo1.png")));
+
+        try {
+            frame.setIconImage(ImageIO.read(getClass().getResource("/img/logo1.png")));
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
 
         JPanel grid = new JPanel(); // Панель для компоновки элементов формы
         grid.setLayout(new GridLayout(3, 1, 1, 10)); // Установка диспетчера компоновки "Таблица"
@@ -139,27 +144,27 @@ public class SignInForm {
             clearTextFields();
         } else  {
             frame.setVisible(false);
-            try {
-                switch (sessionType) {
-                    case "Отдел кадров":
-                        hrForm = new HRForm(sessionType);
-                        hrForm.frame.setVisible(true);
-                        break;
-                    case "Склад":
-                        storeForm = new StoreForm(tfLogin.getText(), buildClientPassword(tfPassword.getPassword()));
-                        storeForm.frame.setVisible(true);
-                        break;
-                    case "Отдел продаж":
-                        saleForm = new SaleForm(sessionType);
-                        saleForm.frame.setVisible(true);
-                        break;
-                    default:
-                        JOptionPane.showMessageDialog(frame, "Для данной роли не доступен интерфейс", "Системная ошибка", JOptionPane.ERROR_MESSAGE);
-                        frame.setVisible(true);
-                        break;
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+            switch (sessionType) {
+                case "Отдел кадров":
+                    hrForm = new HRForm(sessionType);
+                    hrForm.frame.setVisible(true);
+                    break;
+                case "Склад":
+                    storeForm = new StoreForm(tfLogin.getText(), buildClientPassword(tfPassword.getPassword()));
+                    storeForm.frame.setVisible(true);
+                    break;
+                case "Отдел продаж":
+                    saleForm = new SaleForm(sessionType);
+                    saleForm.frame.setVisible(true);
+                    break;
+                default: JOptionPane.showMessageDialog(
+                        frame,
+                        "Для данной роли не доступен интерфейс",
+                        "Системная ошибка",
+                        JOptionPane.ERROR_MESSAGE
+                );
+                    frame.setVisible(true);
+                    break;
             }
         }
     }

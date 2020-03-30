@@ -2,12 +2,12 @@ package com.ecoforma.frontend.services;
 
 import org.jetbrains.annotations.NotNull;
 
-public class Checker {
-    public boolean checkTextField(@NotNull String text, int length) {
+public final class Checker {
+    public static boolean checkTextField(@NotNull String text, int length) {
         return text.length() <= length && !(text.equals(""));
     }
 
-    public boolean checkNumericTextField(@NotNull String text, int length) {
+    public static boolean checkNumericTextField(@NotNull String text, int length) {
         if (checkTextField(text, length)) {
             try {
                 Long.parseLong(text);
@@ -20,7 +20,7 @@ public class Checker {
         }
     }
 
-    public boolean checkDateTextField(@NotNull String text) {
+    public static boolean checkDateTextField(@NotNull String text) {
         if (checkTextField(text, 10)) {
             String[] date = text.split("-");
             int numericMonth;

@@ -13,21 +13,27 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 
-public class JComponentFactory {
+public final class JComponentFactory {
     @NotNull
-    public JFrame newFrame(String t, @NotNull Rectangle r, int operation) throws IOException {
+    public static JFrame newFrame(String t, @NotNull Rectangle r, int operation) {
         JFrame f = new JFrame(t);
         f.setSize(r.width, r.height); // Установка размеров
         f.setLocation(r.x,  r.y);
         f.setResizable(false);
-        f.setIconImage(ImageIO.read(getClass().getResource("/img/logo1.png")));
+
+        try {
+            f.setIconImage(ImageIO.read(JComponentFactory.class.getResource("/img/logo1.png")));
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
+
         f.setDefaultCloseOperation(operation); // Установка операции закрытия окна приложения
         f.getContentPane().setLayout(null);
         return f;
     }
 
     @NotNull
-    public JPanel newPanelDefault(int x, int y, int width, int height) {
+    public static JPanel newPanelDefault(int x, int y, int width, int height) {
         JPanel p = new JPanel();
         p.setLayout(null);
         p.setBounds(x, y, width, height);
@@ -35,7 +41,7 @@ public class JComponentFactory {
     }
 
     @NotNull
-    public JPanel newPanelEtched(int x, int y, int width, int height) {
+    public static JPanel newPanelEtched(int x, int y, int width, int height) {
         JPanel p = new JPanel();
         p.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
         p.setBounds(x, y, width, height);
@@ -44,7 +50,7 @@ public class JComponentFactory {
     }
 
     @NotNull
-    public JPanel newPanelBevel(int x, int y, int width, int height) {
+    public static JPanel newPanelBevel(int x, int y, int width, int height) {
         JPanel p = new JPanel();
         p.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
         p.setBounds(x, y, width, height);
@@ -53,7 +59,7 @@ public class JComponentFactory {
     }
 
     @NotNull
-    public JPanel newPanelBevelTable(int x, int y, int width, int height) {
+    public static JPanel newPanelBevelTable(int x, int y, int width, int height) {
         JPanel p = new JPanel();
         p.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
         p.setBounds(x, y, width, height);
@@ -61,7 +67,7 @@ public class JComponentFactory {
     }
 
     @NotNull
-    public JPanel newPanelTitled(String t, @NotNull Rectangle r) {
+    public static JPanel newPanelTitled(String t, @NotNull Rectangle r) {
         JPanel p = new JPanel();
         p.setBorder(new TitledBorder(null, t, TitledBorder.LEADING, TitledBorder.TOP, null, null));
         p.setBounds(r.x, r.y, r.width, r.height);
@@ -70,7 +76,7 @@ public class JComponentFactory {
     }
 
     @NotNull
-    public JScrollPane newTableScroll(JTable table, int width, int height) {
+    public static JScrollPane newTableScroll(JTable table, int width, int height) {
         JScrollPane tableScroll = new JScrollPane();
         tableScroll.setViewportView(table);
         tableScroll.setPreferredSize(new Dimension(width, height));
@@ -79,8 +85,8 @@ public class JComponentFactory {
     }
 
     @NotNull
-    public JButton newButton(String t, String i, @NotNull Rectangle r) {
-        JButton b = new JButton(t, new ImageIcon(getClass().getResource("/img/" + i + ".png")));
+    public static JButton newButton(String t, String i, @NotNull Rectangle r) {
+        JButton b = new JButton(t, new ImageIcon(JComponentFactory.class.getResource("/img/" + i + ".png")));
         b.setBounds(r.x, r.y, r.width, r.height);
         b.setFocusPainted(false);
         b.setEnabled(false);
@@ -88,7 +94,7 @@ public class JComponentFactory {
     }
 
     @NotNull
-    public JButton newButton(String t, @NotNull Rectangle r) {
+    public static JButton newButton(String t, @NotNull Rectangle r) {
         JButton b = new JButton(t);
         b.setBounds(r.x, r.y, r.width, r.height);
         b.setFocusPainted(false);
@@ -97,7 +103,7 @@ public class JComponentFactory {
     }
 
     @NotNull
-    public JButton newButtonEnabled(String t, @NotNull Rectangle r) {
+    public static JButton newButtonEnabled(String t, @NotNull Rectangle r) {
         JButton b = new JButton(t);
         b.setBounds(r.x, r.y, r.width, r.height);
         b.setFocusPainted(false);
@@ -105,15 +111,15 @@ public class JComponentFactory {
     }
 
     @NotNull
-    public JButton newButtonEnabled(String t, String i, @NotNull Rectangle r) {
-        JButton b = new JButton(t, new ImageIcon(getClass().getResource("/img/" + i + ".png")));
+    public static JButton newButtonEnabled(String t, String i, @NotNull Rectangle r) {
+        JButton b = new JButton(t, new ImageIcon(JComponentFactory.class.getResource("/img/" + i + ".png")));
         b.setBounds(r.x, r.y, r.width, r.height);
         b.setFocusPainted(false);
         return b;
     }
 
     @NotNull
-    public JRadioButton newRadioButton(String t, String c, @NotNull Rectangle r) {
+    public static JRadioButton newRadioButton(String t, String c, @NotNull Rectangle r) {
         JRadioButton rb = new JRadioButton(t);
         rb.setFocusPainted(false);
         rb.setBounds(r.x, r.y, r.width, r.height);
@@ -123,14 +129,15 @@ public class JComponentFactory {
     }
 
     @NotNull
-    public JCheckBox newCheckBox(String t, @NotNull Rectangle r) {
+    public static JCheckBox newCheckBox(String t, @NotNull Rectangle r) {
         JCheckBox cb = new JCheckBox(t);
         cb.setBounds(r.x, r.y, r.width, r.height);
         cb.setFocusPainted(false);
         return cb;
     }
 
-    public JCheckBox newCheckBoxDisabled(String t, @NotNull Rectangle r) {
+    @NotNull
+    public static JCheckBox newCheckBoxDisabled(String t, @NotNull Rectangle r) {
         JCheckBox cb = new JCheckBox(t);
         cb.setBounds(r.x, r.y, r.width, r.height);
         cb.setFocusPainted(false);
@@ -139,14 +146,14 @@ public class JComponentFactory {
     }
 
     @NotNull
-    public JLabel newLabel(String t, @NotNull Rectangle r) {
+    public static JLabel newLabel(String t, @NotNull Rectangle r) {
         JLabel l = new JLabel(t);
         l.setBounds(r.x, r.y, r.width, r.height);
         return l;
     }
 
     @NotNull
-    public JTextField newTextFieldEnabled(int c, @NotNull Rectangle r) {
+    public static JTextField newTextFieldEnabled(int c, @NotNull Rectangle r) {
         JTextField tf = new JTextField();
         tf.setColumns(c);
         tf.setBounds(r.x, r.y, r.width, r.height);
@@ -154,7 +161,7 @@ public class JComponentFactory {
     }
 
     @NotNull
-    public JTextField newTextFieldBigFont(int c, @NotNull Rectangle r) {
+    public static JTextField newTextFieldBigFont(int c, @NotNull Rectangle r) {
         JTextField tf = new JTextField();
         tf.setColumns(c);
         tf.setBounds(r.x, r.y, r.width, r.height);
@@ -163,7 +170,7 @@ public class JComponentFactory {
     }
 
     @NotNull
-    public JTextField newTextFieldDisabled(int c, @NotNull Rectangle r) {
+    public static JTextField newTextFieldDisabled(int c, @NotNull Rectangle r) {
         JTextField tf = new JTextField();
         tf.setColumns(c);
         tf.setBounds(r.x, r.y, r.width, r.height);
@@ -173,7 +180,7 @@ public class JComponentFactory {
 
     // Инициализация выпадающего списка
     @NotNull
-    public JComboBox newComboBox(String[] m, @NotNull Rectangle r) {
+    public static JComboBox newComboBox(String[] m, @NotNull Rectangle r) {
         JComboBox cbbx = new JComboBox(new DefaultComboBoxModel(m));
         cbbx.setBounds(r.x, r.y, r.width, r.height);
         cbbx.setEnabled(false);
@@ -181,7 +188,7 @@ public class JComponentFactory {
     }
 
     @NotNull
-    public JToolBar newToolBar(int x, int y, int width, int height) {
+    public static JToolBar newToolBar(int x, int y, int width, int height) {
         JToolBar tb = new JToolBar();
         tb.setFloatable(false);
         tb.setBounds(x, y, width, height);
@@ -189,7 +196,7 @@ public class JComponentFactory {
     }
 
     @NotNull
-    public JTable newTable(DefaultTableModel tableModel) {
+    public static JTable newTable(DefaultTableModel tableModel) {
         JTable table = new JTable(tableModel);
         table.setRowHeight(30);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -199,7 +206,7 @@ public class JComponentFactory {
     }
 
     @NotNull
-    public JSpinner newSpinnerNumericDisabled(SpinnerNumberModel model, @NotNull Rectangle r) {
+    public static JSpinner newSpinnerNumericDisabled(SpinnerNumberModel model, @NotNull Rectangle r) {
         JSpinner spinner = new JSpinner();
         spinner.setBounds(r.x, r.y, r.width, r.height);
         spinner.setModel(model);
@@ -208,7 +215,7 @@ public class JComponentFactory {
     }
 
     @NotNull
-    public JSpinner newSpinnerNumericEnabled(SpinnerNumberModel model, @NotNull Rectangle r) {
+    public static JSpinner newSpinnerNumericEnabled(SpinnerNumberModel model, @NotNull Rectangle r) {
         JSpinner spinner = new JSpinner();
         spinner.setBounds(r.x, r.y, r.width, r.height);
         spinner.setModel(model);
@@ -216,7 +223,7 @@ public class JComponentFactory {
     }
 
     @NotNull
-    public JTextArea newTextAreaEnabled(int x, int y, int width, int height, int rows, int cols) {
+    public static JTextArea newTextAreaEnabled(int x, int y, int width, int height, int rows, int cols) {
         JTextArea textArea = new JTextArea();
         textArea.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
         textArea.setBounds(x, y, width, height);
@@ -226,7 +233,7 @@ public class JComponentFactory {
     }
 
     @NotNull
-    public JTextArea newTextAreaDisabled(int x, int y, int width, int height, int rows, int cols) {
+    public static JTextArea newTextAreaDisabled(int x, int y, int width, int height, int rows, int cols) {
         JTextArea textArea = new JTextArea();
         textArea.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
         textArea.setBounds(x, y, width, height);
@@ -237,7 +244,7 @@ public class JComponentFactory {
     }
 
     @NotNull
-    public JTextArea newTextAreaBigFont(int x, int y, int width, int height, Action action) {
+    public static JTextArea newTextAreaBigFont(int x, int y, int width, int height, Action action) {
         JTextArea textArea = new JTextArea();
         textArea.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
         textArea.setBounds(x, y, width, height);
@@ -256,14 +263,14 @@ public class JComponentFactory {
     }
 
     @NotNull
-    public JPanel newTabbedPaneElement() {
+    public static JPanel newTabbedPaneElement() {
         JPanel panel = new JPanel();
         panel.setLayout(null);
         return panel;
     }
 
     @NotNull
-    public JTabbedPane newTabbedPane(int x, int y, int width, int height) {
+    public static JTabbedPane newTabbedPane(int x, int y, int width, int height) {
         JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
         tabbedPane.setBounds(x, y, width, height);
         return tabbedPane;

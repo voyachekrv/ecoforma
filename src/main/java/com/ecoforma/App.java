@@ -18,11 +18,7 @@ public class App {
     public static void main(String[] args) {
         // Запуск формы в потоке обработки событий
         SwingUtilities.invokeLater(() -> {
-            try {
-                signInForm = new SignInForm();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            signInForm = new SignInForm();
         });
     }
 }

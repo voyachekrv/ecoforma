@@ -3,16 +3,18 @@ package com.ecoforma.frontend.forms;
 import com.ecoforma.db.entities.*;
 import com.ecoforma.db.services.StoreService;
 import com.ecoforma.frontend.CompanyFrame;
-import com.ecoforma.frontend.services.Checker;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
+
+import static com.ecoforma.frontend.services.Checker.*;
+import static com.ecoforma.frontend.services.JComponentFactory.*;
 
 public class StoreForm {
     CompanyFrame frame;
@@ -32,169 +34,166 @@ public class StoreForm {
     private String[] tableProductHeader = new String[] { "Код товара", "Название", "Категория", "Стоимость" };
     private String[] tableStoreHeader = new String[] { "Код записи о хранении", "Название", "Количество" };
 
-    private Checker checker;
-
     private StoreService dbService;
 
     private Store currentStore;
     private Product currentProduct;
     private ProductToStore currentProductToStore;
 
-    StoreForm(String login, String password) throws IOException {
+    StoreForm(String login, String password) {
         dbService = new StoreService();
-        checker = new Checker();
 
         currentStore = dbService.getStore(login, password);
 
         frame = new CompanyFrame(currentStore.getName());
 
-        JPanel panelTables = frame.factory.newPanelDefault(10, 55, 1336, 406);
+        JPanel panelTables = newPanelDefault(10, 55, 1336, 406);
         frame.add(panelTables);
 
-        JPanel panelTableProduct = frame.factory.newPanelBevelTable(10, 37, 647, 358);
+        JPanel panelTableProduct = newPanelBevelTable(10, 37, 647, 358);
         panelTables.add(panelTableProduct);
 
-        JPanel panelTableStore = frame.factory.newPanelBevelTable(670, 37, 647, 358);
+        JPanel panelTableStore = newPanelBevelTable(670, 37, 647, 358);
         panelTables.add(panelTableStore);
 
-        JLabel lTableProduct = frame.factory.newLabel("Общий каталог товаров", new Rectangle(10, 11, 647, 20));
+        JLabel lTableProduct = newLabel("Общий каталог товаров", new Rectangle(10, 11, 647, 20));
         panelTables.add(lTableProduct);
 
-        JLabel lTableStore = frame.factory.newLabel("Товары на складе", new Rectangle(670, 11, 647, 20));
+        JLabel lTableStore = newLabel("Товары на складе", new Rectangle(670, 11, 647, 20));
         panelTables.add(lTableStore);
 
-        tableProduct = frame.factory.newTable(setInitialTableProductModel());
+        tableProduct = newTable(setInitialTableProductModel());
 
-        tableProductScroll = frame.factory.newTableScroll(tableProduct, 627, 336);
+        tableProductScroll = newTableScroll(tableProduct, 627, 336);
         panelTableProduct.add(tableProductScroll);
         addUnpickProductEscape();
 
-        tableStore = frame.factory.newTable(setInitialTableStoreModel());
+        tableStore = newTable(setInitialTableStoreModel());
 
-        tableStoreScroll = frame.factory.newTableScroll(tableStore, 627, 336);
+        tableStoreScroll = newTableScroll(tableStore, 627, 336);
         panelTableStore.add(tableStoreScroll);
         addUnpickStoreEscape();
 
-        JLabel lSearchInProducts = frame.factory.newLabel("Поиск в каталоге", new Rectangle(20, 455, 240, 20));
+        JLabel lSearchInProducts = newLabel("Поиск в каталоге", new Rectangle(20, 455, 240, 20));
         frame.add(lSearchInProducts);
 
-        JLabel lSearchInStore = frame.factory.newLabel("Поиск на складе", new Rectangle(680, 455, 240, 20));
+        JLabel lSearchInStore = newLabel("Поиск на складе", new Rectangle(680, 455, 240, 20));
         frame.add(lSearchInStore);
 
-        tfSearchInProducts = frame.factory.newTextFieldEnabled(20, new Rectangle(20, 482, 189, 23));
+        tfSearchInProducts = newTextFieldEnabled(20, new Rectangle(20, 482, 189, 23));
         frame.add(tfSearchInProducts);
 
-        JButton btnSearchInProducts = frame.factory.newButtonEnabled("Поиск", "icon-search", new Rectangle(219, 482, 93, 23));
+        JButton btnSearchInProducts = newButtonEnabled("Поиск", "icon-search", new Rectangle(219, 482, 93, 23));
         frame.add(btnSearchInProducts);
 
-        JButton btnClearSearchProducts = frame.factory.newButtonEnabled(null, "icon-close", new Rectangle(320, 482, 24, 23));
+        JButton btnClearSearchProducts = newButtonEnabled(null, "icon-close", new Rectangle(320, 482, 24, 23));
         btnClearSearchProducts.setToolTipText("Очистка результов поиска");
         frame.add(btnClearSearchProducts);
 
-        rbName = frame.factory.newRadioButton("Имя", "product.name", new Rectangle(352, 482, 56, 23));
+        rbName = newRadioButton("Имя", "product.name", new Rectangle(352, 482, 56, 23));
         rbName.setSelected(true);
         frame.add(rbName);
 
-        rbCategory = frame.factory.newRadioButton("Категория", "productCategory.name", new Rectangle(412, 482, 96, 23));
+        rbCategory = newRadioButton("Категория", "productCategory.name", new Rectangle(412, 482, 96, 23));
         frame.add(rbCategory);
 
         ButtonGroup searchGroup = new ButtonGroup();
         searchGroup.add(rbName);
         searchGroup.add(rbCategory);
 
-        tfSearchInStore = frame.factory.newTextFieldEnabled(20, new Rectangle(680, 482, 189, 23));
+        tfSearchInStore = newTextFieldEnabled(20, new Rectangle(680, 482, 189, 23));
         frame.add(tfSearchInStore);
 
-        JButton btnSearchInStore = frame.factory.newButtonEnabled("Поиск", "icon-search", new Rectangle(879, 480, 93, 23));
+        JButton btnSearchInStore = newButtonEnabled("Поиск", "icon-search", new Rectangle(879, 480, 93, 23));
         frame.add(btnSearchInStore);
 
-        JButton btnClearSearchStore = frame.factory.newButtonEnabled(null, "icon-close", new Rectangle(980, 480, 24, 23));
+        JButton btnClearSearchStore = newButtonEnabled(null, "icon-close", new Rectangle(980, 480, 24, 23));
         btnClearSearchStore.setToolTipText("Очистка результов поиска");
         frame.add(btnClearSearchStore);
 
-        JPanel panelEditProduct = frame.factory.newPanelEtched(20, 516, 650, 220);
+        JPanel panelEditProduct = newPanelEtched(20, 516, 650, 220);
         frame.add(panelEditProduct);
 
-        tfName = frame.factory.newTextFieldEnabled(40, new Rectangle(12, 12, 189, 23));
+        tfName = newTextFieldEnabled(40, new Rectangle(12, 12, 189, 23));
         tfName.setToolTipText("Название товара");
         panelEditProduct.add(tfName);
 
-        spinnerCost = frame.factory.newSpinnerNumericEnabled(
+        spinnerCost = newSpinnerNumericEnabled(
                 new SpinnerNumberModel(1, 1, 2999999, 100),
                 new Rectangle(213, 13, 189, 22)
         );
         spinnerCost.setToolTipText("Стоимость товара");
         panelEditProduct.add(spinnerCost);
 
-        cbbxCategory = frame.factory.newComboBox(
+        cbbxCategory = newComboBox(
                 dbService.getCategories(), new Rectangle(414, 11, 224, 25)
         );
         cbbxCategory.setToolTipText("Категория товара");
         cbbxCategory.setEnabled(true);
         panelEditProduct.add(cbbxCategory);
 
-        textAreaCharacteristics = frame.factory.newTextAreaEnabled(12, 41, 626, 133, 100, 20);
+        textAreaCharacteristics = newTextAreaEnabled(12, 41, 626, 133, 100, 20);
         textAreaCharacteristics.setToolTipText("Описание характеристик товара");
         panelEditProduct.add(textAreaCharacteristics);
 
-        btnAddToStore = frame.factory.newButton("На склад", "icon-move", new Rectangle(12, 183, 146, 26));
+        btnAddToStore = newButton("На склад", "icon-move", new Rectangle(12, 183, 146, 26));
         panelEditProduct.add(btnAddToStore);
 
-        btnInsertProduct = frame.factory.newButtonEnabled("В каталог", "icon-add", new Rectangle(169, 183, 142, 26));
+        btnInsertProduct = newButtonEnabled("В каталог", "icon-add", new Rectangle(169, 183, 142, 26));
         panelEditProduct.add(btnInsertProduct);
 
-        btnUpdateProduct = frame.factory.newButton("Изменить", "icon-unfocus", new Rectangle(323, 183, 135, 26));
+        btnUpdateProduct = newButton("Изменить", "icon-unfocus", new Rectangle(323, 183, 135, 26));
         panelEditProduct.add(btnUpdateProduct);
 
-        btnDeleteFromProduct = frame.factory.newButton("Удалить", "icon-delete", new Rectangle(470, 183, 168, 26));
+        btnDeleteFromProduct = newButton("Удалить", "icon-delete", new Rectangle(470, 183, 168, 26));
         panelEditProduct.add(btnDeleteFromProduct);
 
-        JLabel lIncreaseProduct = frame.factory.newLabel("Добавить товар, ед.", new Rectangle(680, 517, 146, 20));
+        JLabel lIncreaseProduct = newLabel("Добавить товар, ед.", new Rectangle(680, 517, 146, 20));
         frame.add(lIncreaseProduct);
 
-        JLabel lDecreaseProduct = frame.factory.newLabel("Отпустить товар, ед.", new Rectangle(986, 516, 146, 20));
+        JLabel lDecreaseProduct = newLabel("Отпустить товар, ед.", new Rectangle(986, 516, 146, 20));
         frame.add(lDecreaseProduct);
 
-        spinnerIncreaseProduct = frame.factory.newSpinnerNumericDisabled(
+        spinnerIncreaseProduct = newSpinnerNumericDisabled(
                 new SpinnerNumberModel(0, 0, 1999999, 1),
                 new Rectangle(844, 516, 124, 20)
                 );
         frame.add(spinnerIncreaseProduct);
 
-        spinnerDecreaseProduct = frame.factory.newSpinnerNumericDisabled(
+        spinnerDecreaseProduct = newSpinnerNumericDisabled(
                 new SpinnerNumberModel(0, 0, 1999999, 1),
                 new Rectangle(1150, 516, 124, 20)
         );
         frame.add(spinnerDecreaseProduct);
 
-        btnAcceptIncrease = frame.factory.newButton("Подтвердить действие", "icon-accept", new Rectangle(680, 549, 288, 26));
+        btnAcceptIncrease = newButton("Подтвердить действие", "icon-accept", new Rectangle(680, 549, 288, 26));
         frame.add(btnAcceptIncrease);
 
-        btnAcceptDecrease = frame.factory.newButton("Подтвердить действие", "icon-accept", new Rectangle(986, 549, 288, 26));
+        btnAcceptDecrease = newButton("Подтвердить действие", "icon-accept", new Rectangle(986, 549, 288, 26));
         frame.add(btnAcceptDecrease);
 
-        btnDeleteFromStore = frame.factory.newButton("Удалить запись о хранении", "icon-delete", new Rectangle(986, 607, 288, 26));
+        btnDeleteFromStore = newButton("Удалить запись о хранении", "icon-delete", new Rectangle(986, 607, 288, 26));
         frame.add(btnDeleteFromStore);
 
-        JLabel lMoveToOtherStore = frame.factory.newLabel("Переместить на склад:", new Rectangle(680, 587, 288, 16));
+        JLabel lMoveToOtherStore = newLabel("Переместить на склад:", new Rectangle(680, 587, 288, 16));
         frame.add(lMoveToOtherStore);
 
-        cbbxOtherStores = frame.factory.newComboBox(
+        cbbxOtherStores = newComboBox(
                 dbService.getStoresBesides(currentStore.getID()),
                 new Rectangle(680, 608, 288, 25)
         );
         frame.add(cbbxOtherStores);
 
-        JLabel lQuantityMove = frame.factory.newLabel("В количестве, ед.", new Rectangle(680, 645, 124, 26));
+        JLabel lQuantityMove = newLabel("В количестве, ед.", new Rectangle(680, 645, 124, 26));
         frame.add(lQuantityMove);
 
-        spinnerMoveProduct = frame.factory.newSpinnerNumericDisabled(
+        spinnerMoveProduct = newSpinnerNumericDisabled(
                 new SpinnerNumberModel(0, 0, 1999999, 1),
                 new Rectangle(844, 648, 124, 20)
         );
         frame.add(spinnerMoveProduct);
 
-        btnAcceptMove = frame.factory.newButton("Подтвердить действие", "icon-accept", new Rectangle(680, 683, 288, 26));
+        btnAcceptMove = newButton("Подтвердить действие", "icon-accept", new Rectangle(680, 683, 288, 26));
         frame.add(btnAcceptMove);
 
         ListSelectionModel selectionModelProduct = tableProduct.getSelectionModel();
@@ -238,6 +237,7 @@ public class StoreForm {
         });
     }
 
+    @NotNull
     private DefaultTableModel setInitialTableProductModel() {
         DefaultTableModel initialTableProductModel = new DefaultTableModel();
         initialTableProductModel.setColumnIdentifiers(tableProductHeader);
@@ -256,6 +256,7 @@ public class StoreForm {
         return initialTableProductModel;
     }
 
+    @NotNull
     private DefaultTableModel setInitialTableStoreModel() {
         DefaultTableModel initialTableStoreModel = new DefaultTableModel();
         initialTableStoreModel.setColumnIdentifiers(tableStoreHeader);
@@ -305,7 +306,7 @@ public class StoreForm {
     private void removeFocusFromTableProduct() {
         tableProductScroll.setViewportView(null);
 
-        tableProduct = frame.factory.newTable(setInitialTableProductModel());
+        tableProduct = newTable(setInitialTableProductModel());
         tableProductScroll.setViewportView(tableProduct);
         ListSelectionModel selectionModelProduct = tableProduct.getSelectionModel();
         selectionModelProduct.addListSelectionListener(listSelectionEvent -> prepareToEditProduct());
@@ -315,7 +316,7 @@ public class StoreForm {
     private void removeFocusFromTableStore() {
         tableStoreScroll.setViewportView(null);
 
-        tableStore = frame.factory.newTable(setInitialTableStoreModel());
+        tableStore = newTable(setInitialTableStoreModel());
         tableStoreScroll.setViewportView(tableStore);
         ListSelectionModel selectionModelStore = tableStore.getSelectionModel();
         selectionModelStore.addListSelectionListener(listSelectionEvent -> prepareToEditStore());
@@ -384,7 +385,7 @@ public class StoreForm {
     private void insertProductToCatalogue() {
         int result = JOptionPane.showConfirmDialog(
                 frame,
-                "Добавить новый товар " + tfName.getText() + "?",
+                String.format("Добавить новый товар %s?", tfName.getText()),
                 "Подтверждение операции",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE
@@ -401,8 +402,8 @@ public class StoreForm {
                         JOptionPane.WARNING_MESSAGE
                 );
             } else if (
-                    checker.checkTextField(tfName.getText(), tfName.getColumns()) &&
-                    checker.checkTextField(textAreaCharacteristics.getText(), 1000)
+                    checkTextField(tfName.getText(), tfName.getColumns()) &&
+                    checkTextField(textAreaCharacteristics.getText(), 1000)
             ) {
                 dbService.insertProduct(
                         tfName.getText(),
@@ -431,8 +432,8 @@ public class StoreForm {
 
     private void updateProduct() {
         if (
-                checker.checkTextField(tfName.getText(), tfName.getColumns()) &&
-                checker.checkTextField(textAreaCharacteristics.getText(), 1000)
+                checkTextField(tfName.getText(), tfName.getColumns()) &&
+                checkTextField(textAreaCharacteristics.getText(), 1000)
         ) {
             dbService.updateProduct(
                     currentProduct.getID(),
@@ -457,7 +458,7 @@ public class StoreForm {
     private void deleteFromProduct() {
         int result = JOptionPane.showConfirmDialog(
                 frame,
-                "Вы уверены, что хотите удалить " + currentProduct.getName() + "?",
+                String.format("Вы уверены, что хотите удалить товар %s?", currentProduct.getName()),
                 "Подтверждение операции",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.WARNING_MESSAGE
@@ -631,9 +632,14 @@ public class StoreForm {
         ArrayList<ProductView> result = dbService.searchProductView(column, query);
 
         if (result.size() == 0) {
-            JOptionPane.showMessageDialog(frame,
-                    "По запросу \"" + tfSearchInProducts.getText() + "\" по критерию \"" + option +
-                            "\" ничего не найдено.\nПопробуйте уточнить запрос или изменить критерий поиска.", "Не найдено",
+            JOptionPane.showMessageDialog(
+                    frame,
+                    String.format(
+                            "По запросу \"%s\" по критерию \"%s\" ничего не найдено.\n" +
+                            "Попробуйте уточнить запрос или сменить категорию",
+                            tfSearchInProducts.getText(), option
+                    ),
+                    "Не найдено",
                     JOptionPane.INFORMATION_MESSAGE
             );
             tfSearchInProducts.setText("");
@@ -661,9 +667,14 @@ public class StoreForm {
         ArrayList<StoreView> result = dbService.searchStoreView(currentStore.getID(), query);
 
         if (result.size() == 0) {
-            JOptionPane.showMessageDialog(frame,
-                    "По запросу \"" + tfSearchInStore.getText() +
-                            "\" ничего не найдено.\nПопробуйте уточнить запрос.", "Не найдено",
+            JOptionPane.showMessageDialog(
+                    frame,
+                    String.format(
+                            "По запросу \"%s\" ничего не найдено.\n" +
+                             "Попробуйте уточнить запрос или сменить категорию",
+                            tfSearchInProducts.getText()
+                    ),
+                    "Не найдено",
                     JOptionPane.INFORMATION_MESSAGE
             );
             tfSearchInProducts.setText("");
