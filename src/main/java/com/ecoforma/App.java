@@ -14,6 +14,7 @@ public class App {
     public static NewEmployeeForm newEmployeeForm;
     public static StoreForm storeForm;
     public static SaleForm saleForm;
+    public static ContractsForm contractsForm;
 
     public static void main(String[] args) {
         // Запуск формы в потоке обработки событий

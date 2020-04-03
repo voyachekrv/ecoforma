@@ -342,6 +342,7 @@ public class HRForm {
     }
 
     // Задание модели таблицы по умолчанию
+    @NotNull
     private DefaultTableModel setInitialTableModel() {
         DefaultTableModel initialTableModel = new DefaultTableModel();
         initialTableModel.setColumnIdentifiers(columnsHeader);

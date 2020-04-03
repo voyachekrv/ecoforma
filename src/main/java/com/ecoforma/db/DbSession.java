@@ -1,6 +1,7 @@
 package com.ecoforma.db;
 
 import com.ecoforma.db.mappers.HRMapper;
+import com.ecoforma.db.mappers.SaleMapper;
 import com.ecoforma.db.mappers.SignInMapper;
 import com.ecoforma.db.mappers.StoreMapper;
 import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
@@ -47,6 +48,7 @@ public class DbSession {
         configuration.addMapper(SignInMapper.class);
         configuration.addMapper(HRMapper.class);
         configuration.addMapper(StoreMapper.class);
+        configuration.addMapper(SaleMapper.class);
         sqlSessionFactory = new SqlSessionFactoryBuilder().build(configuration);
     }
 

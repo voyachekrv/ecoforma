@@ -170,6 +170,16 @@ public final class JComponentFactory {
     }
 
     @NotNull
+    public static JTextField newTextFieldBigFontDisable(int c, @NotNull Rectangle r) {
+        JTextField tf = new JTextField();
+        tf.setColumns(c);
+        tf.setBounds(r.x, r.y, r.width, r.height);
+        tf.setFont(new Font("Default", Font.PLAIN, 14));
+        tf.setEnabled(false);
+        return tf;
+    }
+
+    @NotNull
     public static JTextField newTextFieldDisabled(int c, @NotNull Rectangle r) {
         JTextField tf = new JTextField();
         tf.setColumns(c);

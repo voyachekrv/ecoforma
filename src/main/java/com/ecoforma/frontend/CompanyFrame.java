@@ -10,7 +10,12 @@ import java.awt.Rectangle;
 import java.io.IOException;
 
 import static com.ecoforma.App.COMPANY_NAME;
+
 import static com.ecoforma.App.signInForm;
+import static com.ecoforma.App.hrForm;
+import static com.ecoforma.App.newEmployeeForm;
+import static com.ecoforma.App.storeForm;
+import static com.ecoforma.App.saleForm;
 
 import static com.ecoforma.frontend.services.JComponentFactory.*;
 
@@ -46,5 +51,9 @@ public class CompanyFrame extends JFrame {
     private void signOut() {
         this.setVisible(false);
         signInForm.frame.setVisible(true);
+        newEmployeeForm = null;
+        storeForm = null;
+        hrForm = null;
+        saleForm = null;
     }
 }
