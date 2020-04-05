@@ -3,7 +3,6 @@ package com.ecoforma;
 import com.ecoforma.frontend.forms.*;
 
 import javax.swing.*;
-import java.io.IOException;
 
 // Основной класс приложения
 public class App {
@@ -15,6 +14,7 @@ public class App {
     public static StoreForm storeForm;
     public static SaleForm saleForm;
     public static ContractsForm contractsForm;
+    public static CashBoxForm cashBoxForm;
 
     public static void main(String[] args) {
         // Запуск формы в потоке обработки событий

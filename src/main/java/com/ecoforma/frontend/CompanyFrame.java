@@ -1,29 +1,18 @@
 package com.ecoforma.frontend;
 
-import com.ecoforma.frontend.services.JComponentFactory;
-
 import javax.imageio.ImageIO;
-import javax.swing.JFrame;
-import javax.swing.JToolBar;
-import javax.swing.JButton;
-import java.awt.Rectangle;
+import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
 
-import static com.ecoforma.App.COMPANY_NAME;
-
-import static com.ecoforma.App.signInForm;
-import static com.ecoforma.App.hrForm;
-import static com.ecoforma.App.newEmployeeForm;
-import static com.ecoforma.App.storeForm;
-import static com.ecoforma.App.saleForm;
-
-import static com.ecoforma.frontend.services.JComponentFactory.*;
+import static com.ecoforma.App.*;
+import static com.ecoforma.frontend.services.JComponentFactory.newButtonEnabled;
+import static com.ecoforma.frontend.services.JComponentFactory.newToolBar;
 
 public class CompanyFrame extends JFrame {
-    public JComponentFactory factory;
+    public JToolBar toolBar;
 
     public CompanyFrame(String title) {
-        factory = new JComponentFactory();
 
         this.setTitle(COMPANY_NAME + " - " + title);
         this.setSize(1352, 790); // Установка размеров
@@ -39,7 +28,7 @@ public class CompanyFrame extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Установка операции закрытия окна приложения
         this.getContentPane().setLayout(null);
 
-        JToolBar toolBar = newToolBar(0, 0, 1356, 44);
+        toolBar = newToolBar(0, 0, 1356, 44);
         this.getContentPane().add(toolBar);
 
         JButton btnSignOut = newButtonEnabled("Выход из системы", "icon-logout", new Rectangle(0, 0, 1350, 44));

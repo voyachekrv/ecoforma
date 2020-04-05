@@ -58,6 +58,16 @@ public interface SaleMapper {
     @Select("SELECT ID, name, dateOfEnd FROM сontractWithLegal WHERE deleted = 0 AND name LIKE ${query}")
     ArrayList<Contract> searchContracts(@Param("query") String query);
 
+    /*
+        SELECT product_to_store.ID AS 'productOnStoreID', product.ID AS 'productID', product.name AS 'productName',
+        productCategory.name AS 'categoryName', product.cost,
+        store.name AS 'storeName', product_to_store.count FROM product
+        JOIN product_to_store ON product.ID = product_to_store.product_ID
+        JOIN productCategory ON product.productCategory_ID  = productCategory.ID
+        JOIN store ON product_to_store.store_ID = store.ID
+        WHERE (product_to_store.deleted = 0);
+    */
+
     @Update("UPDATE сontractWithLegal SET deleted = 1 WHERE ID = #{ID} AND deleted = 0;")
     void deleteContract(@Param("ID") int ID);
 

@@ -5,7 +5,6 @@ import com.ecoforma.db.entities.IndividualPersonView;
 import com.ecoforma.db.entities.LegalPersonView;
 import com.ecoforma.db.services.SaleService;
 import com.ecoforma.frontend.CompanyFrame;
-import com.ecoforma.frontend.services.JComponentFactory;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -18,10 +17,12 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import static com.ecoforma.frontend.services.JComponentFactory.*;
-import static com.ecoforma.frontend.services.Checker.*;
-
 import static com.ecoforma.App.contractsForm;
+import static com.ecoforma.App.cashBoxForm;
+
+import static com.ecoforma.frontend.services.Checker.checkNumericTextField;
+import static com.ecoforma.frontend.services.Checker.checkTextField;
+import static com.ecoforma.frontend.services.JComponentFactory.*;
 
 public class SaleForm {
     CompanyFrame frame;
@@ -38,7 +39,7 @@ public class SaleForm {
     Action saveCustomerListener;
     Action searchListener;
 
-    private String[] columnsLegalsHeader = new String[]{
+    private String[] columnsLegalsHeader = new String[] {
             "Код",
             "Название",
             "Юридический адрес",
@@ -47,7 +48,7 @@ public class SaleForm {
             "Дата окончания действия контракта"
     };
 
-    private String[] columnsIndividualHeader = new String[]{
+    private String[] columnsIndividualHeader = new String[] {
             "Код",
             "ФИО",
             "Адрес",
@@ -64,14 +65,17 @@ public class SaleForm {
 
         frame = new CompanyFrame(department);
 
-        tabbedPane = JComponentFactory.newTabbedPane(0, 45, 1346, 716);
-        frame.add(tabbedPane);
+        JButton btnCashBox = newButtonEnabled("Касса", "icon-cashbox",new Rectangle(1, 1, 1, 1));
+        frame.toolBar.add(btnCashBox);
 
-        JPanel panelOrders = newTabbedPaneElement();
-        tabbedPane.addTab("Список заказов", null, panelOrders, null);
+        tabbedPane = newTabbedPane(0, 45, 1346, 716);
+        frame.add(tabbedPane);
 
         JPanel panelCustomers = newTabbedPaneElement();
         tabbedPane.addTab("Список покупателей", null, panelCustomers, null);
+
+        JPanel panelOrders = newTabbedPaneElement();
+        tabbedPane.addTab("Список оформленных заказов", null, panelOrders, null);
 
         tfSearch = newTextFieldEnabled(50, new Rectangle(12, 12, 128, 23));
         panelCustomers.add(tfSearch);
@@ -161,6 +165,8 @@ public class SaleForm {
 
         ListSelectionModel selectionModel = tableCustomers.getSelectionModel();
         selectionModel.addListSelectionListener(listSelectionEvent -> prepareToEdit());
+
+        btnCashBox.addActionListener(actionEvent -> openCashBoxForm());
 
         rbIndividual.addActionListener(actionEvent -> switchBetweenPersonTypes());
 
@@ -551,5 +557,15 @@ public class SaleForm {
         unpick();
         tfSearch.setText("");
         tableCustomers.setModel(currentTableCustomersModel);
+    }
+
+    private void openCashBoxForm() {
+        if (Objects.isNull(cashBoxForm) || Objects.isNull(cashBoxForm.frame) || !(cashBoxForm.frame.isVisible())) {
+            frame.setState(JFrame.ICONIFIED);
+            cashBoxForm = new CashBoxForm();
+        } else {
+            cashBoxForm.frame.setExtendedState(JFrame.NORMAL);
+            cashBoxForm.frame.toFront();
+        }
     }
 }
