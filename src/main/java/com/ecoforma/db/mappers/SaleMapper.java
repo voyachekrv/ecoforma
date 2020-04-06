@@ -1,9 +1,6 @@
 package com.ecoforma.db.mappers;
 
-import com.ecoforma.db.entities.Contract;
-import com.ecoforma.db.entities.ContractView;
-import com.ecoforma.db.entities.IndividualPersonView;
-import com.ecoforma.db.entities.LegalPersonView;
+import com.ecoforma.db.entities.*;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -67,6 +64,21 @@ public interface SaleMapper {
         JOIN store ON product_to_store.store_ID = store.ID
         WHERE (product_to_store.deleted = 0);
     */
+
+    @Select("SELECT product_to_store.ID AS 'productOnStoreID', product.ID AS 'productID', product.name AS 'productName', " +
+            "productCategory.name AS 'categoryName', product.cost," +
+            "store.name AS 'storeName', product_to_store.count FROM product " +
+            "JOIN product_to_store ON product.ID = product_to_store.product_ID " +
+            "JOIN productCategory ON product.productCategory_ID  = productCategory.ID " +
+            "JOIN store ON product_to_store.store_ID = store.ID " +
+            "WHERE (product_to_store.deleted = 0);")
+    ArrayList<ProductOnCashBox> getAllProductsOnCashBox();
+
+    @Select("SELECT name FROM store WHERE deleted = 0;")
+    ArrayList<String> getStoreNames();
+
+    @Select("SELECT name FROM paymentType WHERE deleted = 0;")
+    String[] getPaymentTypes();
 
     @Update("UPDATE сontractWithLegal SET deleted = 1 WHERE ID = #{ID} AND deleted = 0;")
     void deleteContract(@Param("ID") int ID);

@@ -50,6 +50,15 @@ public final class JComponentFactory {
     }
 
     @NotNull
+    public static JPanel newPanelEtchedRaised(int x, int y, int width, int height) {
+        JPanel p = new JPanel();
+        p.setBorder(new EtchedBorder(EtchedBorder.RAISED, null, null));
+        p.setBounds(x, y, width, height);
+        p.setLayout(null);
+        return p;
+    }
+
+    @NotNull
     public static JPanel newPanelBevel(int x, int y, int width, int height) {
         JPanel p = new JPanel();
         p.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
@@ -148,6 +157,32 @@ public final class JComponentFactory {
     @NotNull
     public static JLabel newLabel(String t, @NotNull Rectangle r) {
         JLabel l = new JLabel(t);
+        l.setBounds(r.x, r.y, r.width, r.height);
+        return l;
+    }
+
+    @NotNull
+    public static JLabel newLabelBigFont(String t, @NotNull Rectangle r) {
+        JLabel l = new JLabel(t);
+        l.setFont(new Font("Dialog", Font.BOLD, 14));
+        l.setBounds(r.x, r.y, r.width, r.height);
+        return l;
+    }
+
+    @NotNull
+    public static JLabel newLabelColored(String t, @NotNull Rectangle r) {
+        JLabel l = new JLabel(t);
+        l.setForeground(Color.RED);
+        l.setFont(new Font("Dialog", Font.BOLD, 15));
+        l.setBounds(r.x, r.y, r.width, r.height);
+        return l;
+    }
+
+    @NotNull
+    public static JLabel newLabelFinalPrice(String t, @NotNull Rectangle r) {
+        JLabel l = new JLabel(t);
+        l.setForeground(Color.RED);
+        l.setFont(new Font("Dialog", Font.BOLD, 20));
         l.setBounds(r.x, r.y, r.width, r.height);
         return l;
     }

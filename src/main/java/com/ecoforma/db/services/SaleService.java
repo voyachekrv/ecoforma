@@ -1,10 +1,7 @@
 package com.ecoforma.db.services;
 
 import com.ecoforma.db.DbSession;
-import com.ecoforma.db.entities.Contract;
-import com.ecoforma.db.entities.ContractView;
-import com.ecoforma.db.entities.IndividualPersonView;
-import com.ecoforma.db.entities.LegalPersonView;
+import com.ecoforma.db.entities.*;
 import com.ecoforma.db.mappers.SaleMapper;
 import org.apache.ibatis.session.SqlSession;
 
@@ -71,6 +68,27 @@ public class SaleService {
         try (SqlSession session = DbSession.startSession()) {
             SaleMapper mapper = session.getMapper(SaleMapper.class);
             return mapper.getContractIDByName(name);
+        }
+    }
+
+    public ArrayList<ProductOnCashBox> getAllProductsOnCashBox() {
+        try (SqlSession session = DbSession.startSession()) {
+            SaleMapper mapper = session.getMapper(SaleMapper.class);
+            return mapper.getAllProductsOnCashBox();
+        }
+    }
+
+    public ArrayList<String> getStoreNames() {
+        try (SqlSession session = DbSession.startSession()) {
+            SaleMapper mapper = session.getMapper(SaleMapper.class);
+            return mapper.getStoreNames();
+        }
+    }
+
+    public String[] getPaymentTypes() {
+        try (SqlSession session = DbSession.startSession()) {
+            SaleMapper mapper = session.getMapper(SaleMapper.class);
+            return mapper.getPaymentTypes();
         }
     }
 
