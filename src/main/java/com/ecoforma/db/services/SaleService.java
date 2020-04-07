@@ -92,6 +92,48 @@ public class SaleService {
         }
     }
 
+    public String getEmployeeOnCashBox(String login, String password) {
+        try (SqlSession session = DbSession.startSession()) {
+            SaleMapper mapper = session.getMapper(SaleMapper.class);
+            return mapper.getEmployeeOnCashBox(login, password);
+        }
+    }
+
+    public ArrayList<ProductOnCashBox> searchProductsOnCashBox(String column, String query) {
+        try (SqlSession session = DbSession.startSession()) {
+            SaleMapper mapper = session.getMapper(SaleMapper.class);
+            return mapper.searchProductsOnCashBox(column, query);
+        }
+    }
+
+    public ArrayList<ProductOnCashBox> searchProductsOnCashBoxInStore(String column, String query, String store) {
+        try (SqlSession session = DbSession.startSession()) {
+            SaleMapper mapper = session.getMapper(SaleMapper.class);
+            return mapper.searchProductsOnCashBoxInStore(column, query, store);
+        }
+    }
+
+    public StoreOnCashBox getStoreInformation(String store) {
+        try (SqlSession session = DbSession.startSession()) {
+            SaleMapper mapper = session.getMapper(SaleMapper.class);
+            return mapper.getStoreInformation(store);
+        }
+    }
+
+    public ArrayList<Customer> getCustomersOnList(int isLegal) {
+        try (SqlSession session = DbSession.startSession()) {
+            SaleMapper mapper = session.getMapper(SaleMapper.class);
+            return mapper.getCustomersOnList(isLegal);
+        }
+    }
+
+    public ArrayList<Customer> searchCustomerOnList(String column, String query, int isLegal) {
+        try (SqlSession session = DbSession.startSession()) {
+            SaleMapper mapper = session.getMapper(SaleMapper.class);
+            return mapper.searchCustomerOnList(column, query, isLegal);
+        }
+    }
+
     public void deleteContract(int ID) {
         try (SqlSession session = DbSession.startSession()) {
             SaleMapper mapper = session.getMapper(SaleMapper.class);

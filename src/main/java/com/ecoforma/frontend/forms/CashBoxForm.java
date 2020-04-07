@@ -1,20 +1,20 @@
 package com.ecoforma.frontend.forms;
 
+import com.ecoforma.db.entities.Customer;
 import com.ecoforma.db.entities.ProductOnCashBox;
+import com.ecoforma.db.entities.StoreOnCashBox;
 import com.ecoforma.db.services.SaleService;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-
 import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Objects;
 
-import static com.ecoforma.App.COMPANY_NAME;
-import static com.ecoforma.App.saleForm;
-
+import static com.ecoforma.App.*;
 import static com.ecoforma.frontend.services.JComponentFactory.*;
 
 public class CashBoxForm {
@@ -50,7 +50,11 @@ public class CashBoxForm {
 
     SaleService dbService;
 
-    public CashBoxForm() {
+    StoreOnCashBox currentStore;
+    ProductOnCashBox currentProductOnCashBox;
+    Customer currentCustomer;
+
+    public CashBoxForm(String login, String password) {
         dbService = new SaleService();
 
         frame = newFrame(COMPANY_NAME + " - Касса", new Rectangle(323,  144, 1352, 790), JFrame.DO_NOTHING_ON_CLOSE);
@@ -81,11 +85,11 @@ public class CashBoxForm {
         JLabel lSearchOptions = newLabel("Критерии поиска:", new Rectangle(12, 82, 107, 24));
         frame.add(lSearchOptions);
 
-        rbName = newRadioButton("Название", "Поменять потом", new Rectangle(121, 82, 81, 24));
+        rbName = newRadioButton("Название", "product.name", new Rectangle(121, 82, 81, 24));
         rbName.setSelected(true);
         frame.add(rbName);
 
-        rbCategory = newRadioButton("Категория", "Поменять потом", new Rectangle(214, 82, 84, 24));
+        rbCategory = newRadioButton("Категория", "productCategory.name", new Rectangle(214, 82, 84, 24));
         frame.add(rbCategory);
 
         ButtonGroup searchGroup = new ButtonGroup();
@@ -106,6 +110,7 @@ public class CashBoxForm {
         panelEmployeeInformation.add(lEmployeeInfo);
 
         lEmployeeName = newLabelColored("", new Rectangle(172, 13, 267, 20));
+        lEmployeeName.setText(dbService.getEmployeeOnCashBox(login, password));
         panelEmployeeInformation.add(lEmployeeName);
 
         JPanel panelDate = newPanelEtchedRaised(448, 12, 175, 25);
@@ -178,38 +183,38 @@ public class CashBoxForm {
         JLabel lPaymentType = newLabel("Способ оплаты", new Rectangle(1123, 407, 206, 20));
         frame.add(lPaymentType);
 
-        spinnerCount = newSpinnerNumericEnabled(
+        spinnerCount = newSpinnerNumericDisabled(
             new SpinnerNumberModel(0, 0, 99999, 1), 
             new Rectangle(694, 439, 181, 20)
         );
         frame.add(spinnerCount);
 
-        spinnerPrepayment = newSpinnerNumericEnabled(
+        spinnerPrepayment = newSpinnerNumericDisabled(
             new SpinnerNumberModel(40, 0, 100, 1), 
             new Rectangle(898, 439, 97, 20)
         );
         frame.add(spinnerPrepayment);
 
-        cbFullPayment = newCheckBox("Полная сумма", new Rectangle(1003, 437, 112, 24));
+        cbFullPayment = newCheckBoxDisabled("Полная сумма", new Rectangle(1003, 437, 112, 24));
+        cbFullPayment.setSelected(true);
         frame.add(cbFullPayment);
 
         cbbxPaymentTypes = newComboBox(dbService.getPaymentTypes(), new Rectangle(1123, 437, 206, 25));
-        cbbxPaymentTypes.setEnabled(true);
         frame.add(cbbxPaymentTypes);
 
         JLabel lDiscount = newLabel("Скидка, %", new Rectangle(694, 471, 70, 20));
         frame.add(lDiscount);
 
-        spinnerDiscount = newSpinnerNumericEnabled(
+        spinnerDiscount = newSpinnerNumericDisabled(
             new SpinnerNumberModel(0, 0, 100, 1), 
             new Rectangle(768, 471, 107, 20)
         );
         frame.add(spinnerDiscount);
 
-        cbGiveDiscount = newCheckBox("Предоставить скидку", new Rectangle(883, 467, 151, 24));
+        cbGiveDiscount = newCheckBoxDisabled("Предоставить скидку", new Rectangle(883, 467, 151, 24));
         frame.add(cbGiveDiscount);
 
-        btnCountFinalPayment = newButtonEnabled("Расчёт стоимости итого", new Rectangle(1148, 474, 181, 26));
+        btnCountFinalPayment = newButton("Расчёт стоимости итого", new Rectangle(1148, 474, 181, 26));
         frame.add(btnCountFinalPayment);
 
         JPanel panelSummary = newPanelTitled("Итого", new Rectangle(694, 503, 635, 173));
@@ -269,7 +274,7 @@ public class CashBoxForm {
         lSumToPaymentVal = newLabelFinalPrice("", new Rectangle(307, 118, 192, 37));
         panelSummary.add(lSumToPaymentVal);
 
-        btnAcceptOrder = newButtonEnabled("Оформить заказ", new Rectangle(1015, 683, 151, 26));
+        btnAcceptOrder = newButton("Оформить заказ", new Rectangle(1015, 683, 151, 26));
         frame.add(btnAcceptOrder);
 
         btnCancelOrder = newButtonEnabled("Отменить заказ", new Rectangle(1178, 683, 151, 26));
@@ -277,7 +282,40 @@ public class CashBoxForm {
 
         frame.setVisible(true);
 
+        ListSelectionModel selectionModel = table.getSelectionModel();
+        selectionModel.addListSelectionListener(listSelectionEvent -> selectProduct());
+
+        cbFullPayment.addItemListener(itemEvent -> setSpinnerDisabled(cbFullPayment, spinnerPrepayment));
+
+        cbGiveDiscount.addItemListener(itemEvent -> setSpinnerEnabled(cbGiveDiscount, spinnerDiscount));
+
         btnClose.addActionListener(actionEvent -> closeForm());
+
+        tfSearch.addActionListener(actionEvent -> searchProducts());
+
+        btnStopSearch.addActionListener(actionEvent -> clearSearchResults());
+
+        btnSearch.addActionListener(actionEvent -> searchProducts());
+
+        btnPickCustomer.addActionListener(actionEvent -> openCustomerList());
+
+        btnCancelOrder.addActionListener(actionEvent -> cancelOrder());
+    }
+
+    private void setSpinnerEnabled(@NotNull JCheckBox cb, JSpinner spinner) {
+        if (cb.isSelected()) {
+            spinner.setEnabled(true);
+        } else {
+            spinner.setEnabled(false);
+        }
+    }
+
+    private void setSpinnerDisabled(@NotNull JCheckBox cb, JSpinner spinner) {
+        if (!(cb.isSelected())) {
+            spinner.setEnabled(true);
+        } else {
+            spinner.setEnabled(false);
+        }
     }
 
     @NotNull
@@ -325,5 +363,210 @@ public class CashBoxForm {
         frame.setVisible(false);
         frame = null;
         saleForm.frame.setExtendedState(JFrame.NORMAL);
+    }
+
+    private void searchProducts() {
+        DefaultTableModel searchModel = new DefaultTableModel();
+        searchModel.setColumnIdentifiers(columnsHeader);
+
+        String column;
+        String query = "'%" + tfSearch.getText() + "%'";
+        String option;
+
+        ArrayList<ProductOnCashBox> result;
+
+        if (rbName.isSelected()) {
+            column = rbName.getActionCommand();
+            option = rbName.getText();
+        } else {
+            column = rbCategory.getActionCommand();
+            option = rbCategory.getText();
+        }
+
+        if (cbbxStores.getSelectedIndex() == 0) {
+            result = dbService.searchProductsOnCashBox(column, query);
+        } else {
+            result = dbService.searchProductsOnCashBoxInStore(
+                    column,
+                    query,
+                    Objects.requireNonNull(cbbxStores.getSelectedItem()).toString()
+            );
+        }
+
+        if (result.size() == 0) {
+            JOptionPane.showMessageDialog(
+                    frame,
+                    String.format(
+                            "По запросу \"%s\" по критерию \"%s\" ничего не найдено.\n" +
+                                    "Попробуйте уточнить запрос или сменить категорию.",
+                            tfSearch.getText(), option
+                    ),
+                    "Не найдено",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+            tfSearch.setText("");
+        } else {
+            for (int i = 0; i < result.size(); i++) {
+                searchModel.insertRow(i, new Object[] {
+                        result.get(i).getProductOnStoreID(),
+                        result.get(i).getProductID(),
+                        result.get(i).getProductName(),
+                        result.get(i).getCategoryName(),
+                        result.get(i).getCost(),
+                        result.get(i).getStoreName(),
+                        result.get(i).getCount()
+                });
+            }
+            table.setModel(searchModel);
+        }
+    }
+
+    private void clearSearchResults() {
+        tfSearch.setText("");
+        rbName.setSelected(true);
+        cbbxStores.setSelectedIndex(0);
+
+        if (!(Objects.isNull(table.getSelectedRow()))) {
+            tableScroll.setViewportView(null);
+
+            table = newTable(setTableModel());
+            tableScroll.setViewportView(table);
+            ListSelectionModel selectionModel = table.getSelectionModel();
+            selectionModel.addListSelectionListener(listSelectionEvent -> selectProduct());
+        }
+
+        if (!(table.getModel().equals(setTableModel()))) {
+            table.setModel(setTableModel());
+        }
+    }
+
+    private void selectProduct() {
+        int rowIndex = table.getSelectedRow();
+        lProductNameVal.setText(table.getModel().getValueAt(rowIndex, 2).toString());
+        lProductCategoryVal.setText(table.getModel().getValueAt(rowIndex, 3).toString());
+
+        currentStore = dbService.getStoreInformation(table.getModel().getValueAt(rowIndex, 5).toString());
+        currentProductOnCashBox = new ProductOnCashBox();
+
+        currentProductOnCashBox.setProductOnStoreID(Integer.parseInt(table.getModel().getValueAt(rowIndex, 0).toString()));
+        currentProductOnCashBox.setProductID(Integer.parseInt(table.getModel().getValueAt(rowIndex, 1).toString()));
+        currentProductOnCashBox.setProductName(table.getModel().getValueAt(rowIndex, 2).toString());
+        currentProductOnCashBox.setCategoryName(table.getModel().getValueAt(rowIndex, 3).toString());
+        currentProductOnCashBox.setCost(Integer.parseInt(table.getModel().getValueAt(rowIndex, 4).toString()));
+        currentProductOnCashBox.setCount(Integer.parseInt(table.getModel().getValueAt(rowIndex, 6).toString()));
+
+        lStoreNameVal.setText(currentStore.getStoreName());
+        lStoreNameVal.setToolTipText(lStoreNameVal.getText());
+
+        lStoreAddressVal.setText(currentStore.getAdress());
+        lStoreAddressVal.setToolTipText(lStoreAddressVal.getText());
+
+        lStoreChiefName.setText(currentStore.getEmployeeName());
+        lStoreChiefName.setToolTipText(lStoreChiefName.getText());
+
+        lStorePhoneVal.setText("т. " + currentStore.getPhoneNumber());
+        lStorePhoneVal.setToolTipText(lStorePhoneVal.getText());
+
+        setPaymentEnabled();
+    }
+
+    private void openCustomerList() {
+        customerListFrom = new CustomerListFrom();
+        frame.setEnabled(false);
+    }
+
+    void setPaymentEnabled() {
+        if (!(Objects.isNull(currentCustomer)) && !(Objects.isNull(currentProductOnCashBox))) {
+            spinnerCount.setEnabled(true);
+            cbbxPaymentTypes.setEnabled(true);
+            cbGiveDiscount.setEnabled(true);
+            cbFullPayment.setEnabled(true);
+            btnCountFinalPayment.setEnabled(true);
+        }
+    }
+
+    private void returnToInitialState() {
+        removeFocusFromTable();
+
+        currentStore = null;
+        currentProductOnCashBox = null;
+        currentCustomer = null;
+
+        lProductNameVal.setText("");
+        lProductCategoryVal.setText("");
+        lStoreNameVal.setText("");
+        lStoreAddressVal.setText("");
+        lStoreChiefName.setText("");
+        lStorePhoneVal.setText("");
+
+        lStoreNameVal.setToolTipText(null);
+        lStoreAddressVal.setToolTipText(null);
+        lStoreChiefName.setToolTipText(null);
+        lStorePhoneVal.setToolTipText(null);
+
+        lCustomerNameVal.setText("");
+        lCustomerAddressVal.setText("");
+        lCustomerPhoneVal.setText("");
+
+        lSumProductVal.setText("");
+        lSumCategoryVal.setText("");
+        lSumCountVal.setText("");
+        lSumPaymentVal.setText("");
+        lSumDiscountVal.setText("");
+        lSumWithDiscountVal.setText("");
+        lSumPrepaymentVal.setText("");
+
+        lSumWithPrepaymentVal.setText("");
+        lSumToPaymentVal.setText("");
+
+        spinnerCount.setValue(0);
+        spinnerPrepayment.setValue(40);
+        spinnerDiscount.setValue(0);
+
+        cbbxPaymentTypes.setSelectedIndex(0);
+
+        cbFullPayment.setSelected(true);
+        cbGiveDiscount.setSelected(false);
+
+        cbFullPayment.setEnabled(false);
+        cbGiveDiscount.setEnabled(false);
+
+        spinnerDiscount.setEnabled(false);
+        spinnerCount.setEnabled(false);
+        spinnerPrepayment.setEnabled(false);
+
+        btnCountFinalPayment.setEnabled(false);
+        btnAcceptOrder.setEnabled(false);
+
+        cbbxPaymentTypes.setEnabled(false);
+
+        tfSearch.setText("");
+        rbName.setSelected(true);
+        cbbxStores.setSelectedIndex(0);
+    }
+
+    private void removeFocusFromTable() {
+        currentProductOnCashBox = null;
+
+        tableScroll.setViewportView(null);
+
+        table = newTable(setTableModel());
+        tableScroll.setViewportView(table);
+        ListSelectionModel selectionModel = table.getSelectionModel();
+        selectionModel.addListSelectionListener(listSelectionEvent -> selectProduct());
+    }
+
+    private void cancelOrder() {
+        int result = JOptionPane.showConfirmDialog(
+                frame,
+                "Вы уверены, что хотите отменить заказ?",
+                "Подтверждение операции",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE
+        );
+
+        if (result == JOptionPane.YES_OPTION) {
+            returnToInitialState();
+        }
     }
 }

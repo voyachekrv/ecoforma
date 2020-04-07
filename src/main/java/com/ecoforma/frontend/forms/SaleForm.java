@@ -17,14 +17,14 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import static com.ecoforma.App.contractsForm;
-import static com.ecoforma.App.cashBoxForm;
-
+import static com.ecoforma.App.*;
 import static com.ecoforma.frontend.services.Checker.checkNumericTextField;
 import static com.ecoforma.frontend.services.Checker.checkTextField;
 import static com.ecoforma.frontend.services.JComponentFactory.*;
 
 public class SaleForm {
+    String login, password;
+
     CompanyFrame frame;
     JTabbedPane tabbedPane;
     JTextField tfSearch;
@@ -60,7 +60,10 @@ public class SaleForm {
     IndividualPersonView currentIndividualPerson;
     LegalPersonView currentLegalPerson;
 
-    public SaleForm(String department) {
+    public SaleForm(String department, String login, String password) {
+        this.login = login;
+        this.password = password;
+
         dbService = new SaleService();
 
         frame = new CompanyFrame(department);
@@ -562,7 +565,7 @@ public class SaleForm {
     private void openCashBoxForm() {
         if (Objects.isNull(cashBoxForm) || Objects.isNull(cashBoxForm.frame) || !(cashBoxForm.frame.isVisible())) {
             frame.setState(JFrame.ICONIFIED);
-            cashBoxForm = new CashBoxForm();
+            cashBoxForm = new CashBoxForm(login, password);
         } else {
             cashBoxForm.frame.setExtendedState(JFrame.NORMAL);
             cashBoxForm.frame.toFront();

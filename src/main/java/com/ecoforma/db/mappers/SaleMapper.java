@@ -55,16 +55,6 @@ public interface SaleMapper {
     @Select("SELECT ID, name, dateOfEnd FROM сontractWithLegal WHERE deleted = 0 AND name LIKE ${query}")
     ArrayList<Contract> searchContracts(@Param("query") String query);
 
-    /*
-        SELECT product_to_store.ID AS 'productOnStoreID', product.ID AS 'productID', product.name AS 'productName',
-        productCategory.name AS 'categoryName', product.cost,
-        store.name AS 'storeName', product_to_store.count FROM product
-        JOIN product_to_store ON product.ID = product_to_store.product_ID
-        JOIN productCategory ON product.productCategory_ID  = productCategory.ID
-        JOIN store ON product_to_store.store_ID = store.ID
-        WHERE (product_to_store.deleted = 0);
-    */
-
     @Select("SELECT product_to_store.ID AS 'productOnStoreID', product.ID AS 'productID', product.name AS 'productName', " +
             "productCategory.name AS 'categoryName', product.cost," +
             "store.name AS 'storeName', product_to_store.count FROM product " +
@@ -79,6 +69,44 @@ public interface SaleMapper {
 
     @Select("SELECT name FROM paymentType WHERE deleted = 0;")
     String[] getPaymentTypes();
+
+    @Select("SELECT name FROM employee WHERE ID = (SELECT employee_ID FROM registrationData WHERE login = #{login} AND password = #{password});")
+    String getEmployeeOnCashBox(@Param("login") String login, @Param("password") String password);
+
+    @Select("SELECT product_to_store.ID AS 'productOnStoreID', product.ID AS 'productID', product.name AS 'productName', " +
+            "productCategory.name AS 'categoryName', product.cost," +
+            "store.name AS 'storeName', product_to_store.count FROM product " +
+            "JOIN product_to_store ON product.ID = product_to_store.product_ID " +
+            "JOIN productCategory ON product.productCategory_ID  = productCategory.ID " +
+            "JOIN store ON product_to_store.store_ID = store.ID " +
+            "WHERE (product_to_store.deleted = 0 AND ${column} LIKE ${query});")
+    ArrayList<ProductOnCashBox> searchProductsOnCashBox(@Param("column") String column, @Param("query") String query);
+
+    @Select("SELECT product_to_store.ID AS 'productOnStoreID', product.ID AS 'productID', product.name AS 'productName', " +
+            "productCategory.name AS 'categoryName', product.cost," +
+            "store.name AS 'storeName', product_to_store.count FROM product " +
+            "JOIN product_to_store ON product.ID = product_to_store.product_ID " +
+            "JOIN productCategory ON product.productCategory_ID  = productCategory.ID " +
+            "JOIN store ON product_to_store.store_ID = store.ID " +
+            "WHERE (product_to_store.deleted = 0 AND ${column} LIKE ${query} AND store.name = #{store});")
+    ArrayList<ProductOnCashBox> searchProductsOnCashBoxInStore(
+            @Param("column") String column,
+            @Param("query") String query,
+            @Param("store") String store
+    );
+
+    @Select("SELECT store.name AS 'storeName', store.adress, employee.name AS 'employeeName', " +
+            "employee.phoneNumber " +
+            "FROM store JOIN employee ON store.employee_ID = employee.ID " +
+            "WHERE store.name = #{store};")
+    StoreOnCashBox getStoreInformation(@Param("store") String store);
+
+    @Select("SELECT ID, name, adress, phoneNumber FROM customer WHERE deleted = 0 AND isLegalPerson = #{isLegal};")
+    ArrayList<Customer> getCustomersOnList(@Param("isLegal") int isLegal);
+
+    @Select("SELECT ID, name, adress, phoneNumber FROM customer WHERE deleted = 0 " +
+            "AND ${column} LIKE ${query} AND isLegalPerson = #{isLegal}")
+    ArrayList<Customer> searchCustomerOnList(@Param("column") String column, @Param("query") String query, @Param("isLegal") int isLegal);
 
     @Update("UPDATE сontractWithLegal SET deleted = 1 WHERE ID = #{ID} AND deleted = 0;")
     void deleteContract(@Param("ID") int ID);

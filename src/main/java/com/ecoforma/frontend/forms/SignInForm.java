@@ -154,7 +154,7 @@ public class SignInForm {
                     storeForm.frame.setVisible(true);
                     break;
                 case "Отдел продаж":
-                    saleForm = new SaleForm(sessionType);
+                    saleForm = new SaleForm(sessionType, tfLogin.getText(), buildClientPassword(tfPassword.getPassword()));
                     saleForm.frame.setVisible(true);
                     break;
                 default: JOptionPane.showMessageDialog(
