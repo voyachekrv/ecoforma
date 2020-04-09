@@ -70,8 +70,8 @@ public interface SaleMapper {
     @Select("SELECT name FROM paymentType WHERE deleted = 0;")
     String[] getPaymentTypes();
 
-    @Select("SELECT name FROM employee WHERE ID = (SELECT employee_ID FROM registrationData WHERE login = #{login} AND password = #{password});")
-    String getEmployeeOnCashBox(@Param("login") String login, @Param("password") String password);
+    @Select("SELECT ID, name FROM employee WHERE ID = (SELECT employee_ID FROM registrationData WHERE login = #{login} AND password = #{password});")
+    Employee getEmployeeOnCashBox(@Param("login") String login, @Param("password") String password);
 
     @Select("SELECT product_to_store.ID AS 'productOnStoreID', product.ID AS 'productID', product.name AS 'productName', " +
             "productCategory.name AS 'categoryName', product.cost," +
@@ -107,6 +107,9 @@ public interface SaleMapper {
     @Select("SELECT ID, name, adress, phoneNumber FROM customer WHERE deleted = 0 " +
             "AND ${column} LIKE ${query} AND isLegalPerson = #{isLegal}")
     ArrayList<Customer> searchCustomerOnList(@Param("column") String column, @Param("query") String query, @Param("isLegal") int isLegal);
+
+    @Select("SELECT ID FROM store WHERE name = #{name};")
+    int getStoreID(String name);
 
     @Update("UPDATE сontractWithLegal SET deleted = 1 WHERE ID = #{ID} AND deleted = 0;")
     void deleteContract(@Param("ID") int ID);
@@ -147,4 +150,36 @@ public interface SaleMapper {
 
     @Insert("INSERT INTO сontractWithLegal (name, dateOfEnd, deleted) VALUES (#{name}, #{dateOfEnd}, 0);")
     void insertContract(@Param("name") String name, @Param("dateOfEnd") String dateOfEnd);
+
+    @Insert("INSERT INTO orders " +
+            "(ID, date, customer_ID, product_ID, store_ID, employee_ID, count, paymentType_ID, prepayment, fullPayment, deleted)" +
+            " VALUES " +
+            "((SELECT COUNT(*) FROM orders), GETDATE(), #{customer_ID}, #{product_ID}, #{store_ID}, " +
+            "#{employee_ID}, #{count}, #{paymentType_ID}, #{prepayment}, #{fullPayment}, 0);")
+    void addOrderWithPrepayment(
+            @Param("customer_ID") int customer_ID,
+            @Param("product_ID") int product_ID,
+            @Param("store_ID") int storeName,
+            @Param("employee_ID") int employee_ID,
+            @Param("count") int count,
+            @Param("paymentType_ID") int paymentType_ID,
+            @Param("prepayment") int prepayment,
+            @Param("fullPayment") int fullPayment
+    );
+
+    @Insert("INSERT INTO orders " +
+            "(ID, date, customer_ID, product_ID, store_ID, employee_ID, count, paymentType_ID, prepayment, fullPayment, deleted)" +
+            " VALUES " +
+            "((SELECT COUNT(*) FROM orders), GETDATE(), #{customer_ID}, #{product_ID}, #{store_ID}, " +
+            "#{employee_ID}, #{count}, #{paymentType_ID}, NULL, #{fullPayment}, 0);")
+    void addOrderWithoutPrepayment(
+            @Param("customer_ID") int customer_ID,
+            @Param("product_ID") int product_ID,
+            @Param("store_ID") int storeName,
+            @Param("employee_ID") int employee_ID,
+            @Param("count") int count,
+            @Param("paymentType_ID") int paymentType_ID,
+            @Param("fullPayment") int fullPayment
+    );
+
 }

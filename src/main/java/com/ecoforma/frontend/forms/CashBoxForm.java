@@ -1,6 +1,7 @@
 package com.ecoforma.frontend.forms;
 
 import com.ecoforma.db.entities.Customer;
+import com.ecoforma.db.entities.Employee;
 import com.ecoforma.db.entities.ProductOnCashBox;
 import com.ecoforma.db.entities.StoreOnCashBox;
 import com.ecoforma.db.services.SaleService;
@@ -53,9 +54,14 @@ public class CashBoxForm {
     StoreOnCashBox currentStore;
     ProductOnCashBox currentProductOnCashBox;
     Customer currentCustomer;
+    Employee currentEmployee;
+
+    int currentPriceAtFinal;
 
     public CashBoxForm(String login, String password) {
         dbService = new SaleService();
+
+        currentEmployee = dbService.getEmployeeOnCashBox(login, password);
 
         frame = newFrame(COMPANY_NAME + " - Касса", new Rectangle(323,  144, 1352, 790), JFrame.DO_NOTHING_ON_CLOSE);
 
@@ -110,7 +116,7 @@ public class CashBoxForm {
         panelEmployeeInformation.add(lEmployeeInfo);
 
         lEmployeeName = newLabelColored("", new Rectangle(172, 13, 267, 20));
-        lEmployeeName.setText(dbService.getEmployeeOnCashBox(login, password));
+        lEmployeeName.setText(currentEmployee.getName());
         panelEmployeeInformation.add(lEmployeeName);
 
         JPanel panelDate = newPanelEtchedRaised(448, 12, 175, 25);
@@ -300,6 +306,10 @@ public class CashBoxForm {
         btnPickCustomer.addActionListener(actionEvent -> openCustomerList());
 
         btnCancelOrder.addActionListener(actionEvent -> cancelOrder());
+
+        btnCountFinalPayment.addActionListener(actionEvent -> calculateFinalPrice());
+
+        btnAcceptOrder.addActionListener(actionEvent -> addOrder());
     }
 
     private void setSpinnerEnabled(@NotNull JCheckBox cb, JSpinner spinner) {
@@ -543,6 +553,11 @@ public class CashBoxForm {
         tfSearch.setText("");
         rbName.setSelected(true);
         cbbxStores.setSelectedIndex(0);
+
+        table.setEnabled(true);
+        btnPickCustomer.setEnabled(true);
+
+        btnCountFinalPayment.setText("Расчёт стоимости итого");
     }
 
     private void removeFocusFromTable() {
@@ -566,6 +581,158 @@ public class CashBoxForm {
         );
 
         if (result == JOptionPane.YES_OPTION) {
+            returnToInitialState();
+        }
+    }
+
+    private void calculateFinalPrice() {
+        if (!(btnAcceptOrder.isEnabled())) {
+            int inputCount = Integer.parseInt(spinnerCount.getValue().toString());
+            int currentPrice;
+
+            if (inputCount > currentProductOnCashBox.getCount() || inputCount <= 0) {
+                JOptionPane.showMessageDialog(
+                        frame,
+                        "Вы не можете отпустить такое количество товара.",
+                        "Ошибка при добавлении",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+            } else {
+                table.setEnabled(false);
+                btnPickCustomer.setEnabled(false);
+
+                lSumProductVal.setText(currentProductOnCashBox.getProductName());
+                lSumCategoryVal.setText(currentProductOnCashBox.getCategoryName());
+                lSumCountVal.setText(String.valueOf(inputCount));
+
+                currentPrice = Integer.parseInt(lSumCountVal.getText()) * currentProductOnCashBox.getCost();
+
+                lSumPaymentVal.setText(String.valueOf(currentPrice) + ' ' + CURRENCY);
+
+                if (cbGiveDiscount.isSelected()) {
+                    if (
+                            Integer.parseInt(
+                                    spinnerDiscount.getValue().toString()) <= 0 || Integer.parseInt(spinnerDiscount.getValue().toString()
+                            ) > 100
+                    ) {
+                        JOptionPane.showMessageDialog(
+                                frame,
+                                "Невозможно предоставить такой процент скидки.",
+                                "Ошибка при добавлении",
+                                JOptionPane.WARNING_MESSAGE
+                        );
+                    } else {
+                        float currentPercentDiscount = 1 - (Float.parseFloat(spinnerDiscount.getValue().toString()) / 100);
+                        currentPrice *= currentPercentDiscount;
+                        lSumDiscountVal.setText(spinnerDiscount.getValue().toString());
+                    }
+                } else {
+                    lSumDiscountVal.setText("-");
+                }
+
+                lSumWithDiscountVal.setText(String.valueOf(currentPrice) + ' ' + CURRENCY);
+
+                if (!(cbFullPayment.isSelected())) {
+                    if (
+                            Integer.parseInt(
+                                    spinnerPrepayment.getValue().toString()) <= 0 || Integer.parseInt(spinnerPrepayment.getValue().toString()
+                            ) > 100
+                    ) {
+                        JOptionPane.showMessageDialog(
+                                frame,
+                                "Невозможно предоставить такой процент предоплаты.",
+                                "Ошибка при добавлении",
+                                JOptionPane.WARNING_MESSAGE
+                        );
+                    } else {
+                        float currentPercentPrepayment = 1 - (Float.parseFloat(spinnerPrepayment.getValue().toString()) / 100);
+                        currentPrice *= currentPercentPrepayment;
+                        lSumPrepaymentVal.setText(spinnerPrepayment.getValue().toString());
+                    }
+                } else {
+                    lSumPrepaymentVal.setText("-");
+                }
+
+                currentPriceAtFinal = currentPrice;
+
+                lSumWithPrepaymentVal.setText(String.valueOf(currentPrice) + ' ' + CURRENCY);
+                lSumToPaymentVal.setText(lSumWithPrepaymentVal.getText());
+
+                btnAcceptOrder.setEnabled(true);
+                btnCountFinalPayment.setText("Перерасчёт");
+                spinnerPrepayment.setEnabled(false);
+                spinnerDiscount.setEnabled(false);
+                spinnerCount.setEnabled(false);
+                cbFullPayment.setEnabled(false);
+                cbGiveDiscount.setEnabled(false);
+            }
+        } else {
+            if (!(cbFullPayment.isSelected())) {
+                spinnerPrepayment.setEnabled(true);
+            }
+
+            if (cbGiveDiscount.isSelected()) {
+                spinnerDiscount.setEnabled(true);
+            }
+            spinnerCount.setEnabled(true);
+
+            btnAcceptOrder.setEnabled(false);
+
+            cbFullPayment.setEnabled(true);
+            cbGiveDiscount.setEnabled(true);
+            btnCountFinalPayment.setText("Расчёт стоимости итого");
+
+            lSumCountVal.setText("");
+            lSumPaymentVal.setText("");
+            lSumDiscountVal.setText("");
+            lSumWithDiscountVal.setText("");
+            lSumPrepaymentVal.setText("");
+            lSumWithPrepaymentVal.setText("");
+            lSumToPaymentVal.setText("");
+        }
+    }
+
+    private void addOrder() {
+        int result = JOptionPane.showConfirmDialog(
+                frame,
+                "Оформить заказ?",
+                "Подтверждение операции",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE
+        );
+
+        if (result == JOptionPane.YES_OPTION) {
+            int storeID = dbService.getStoreID(lStoreNameVal.getText());
+
+            if (cbFullPayment.isSelected()) {
+                dbService.addOrderWithoutPrepayment(
+                    currentCustomer.getID(),
+                    currentProductOnCashBox.getProductID(),
+                    storeID,
+                    currentEmployee.getID(),
+                    Integer.parseInt(lSumCountVal.getText()),
+                    cbbxPaymentTypes.getSelectedIndex(),
+                    currentPriceAtFinal
+                );
+            } else {
+                dbService.addOrderWithPrepayment(
+                    currentCustomer.getID(),
+                    currentProductOnCashBox.getProductID(),
+                    storeID,
+                    currentEmployee.getID(),
+                    Integer.parseInt(lSumCountVal.getText()),
+                    cbbxPaymentTypes.getSelectedIndex(),
+                    currentPriceAtFinal,
+                    currentPriceAtFinal
+                );
+            }
+
+            JOptionPane.showMessageDialog(
+                    frame,
+                    "Заказ успешно осуществлён.",
+                    "Добавлено",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
             returnToInitialState();
         }
     }

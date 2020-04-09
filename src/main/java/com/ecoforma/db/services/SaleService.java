@@ -92,7 +92,7 @@ public class SaleService {
         }
     }
 
-    public String getEmployeeOnCashBox(String login, String password) {
+    public Employee getEmployeeOnCashBox(String login, String password) {
         try (SqlSession session = DbSession.startSession()) {
             SaleMapper mapper = session.getMapper(SaleMapper.class);
             return mapper.getEmployeeOnCashBox(login, password);
@@ -131,6 +131,13 @@ public class SaleService {
         try (SqlSession session = DbSession.startSession()) {
             SaleMapper mapper = session.getMapper(SaleMapper.class);
             return mapper.searchCustomerOnList(column, query, isLegal);
+        }
+    }
+
+    public int getStoreID(String name) {
+        try (SqlSession session = DbSession.startSession()) {
+            SaleMapper mapper = session.getMapper(SaleMapper.class);
+            return mapper.getStoreID(name);
         }
     }
 
@@ -215,6 +222,39 @@ public class SaleService {
         try (SqlSession session = DbSession.startSession()) {
             SaleMapper mapper = session.getMapper(SaleMapper.class);
             mapper.updateContract(ID, name, dateOfEnd);
+            session.commit();
+        }
+    }
+
+    public void addOrderWithPrepayment(
+            int customer_ID,
+            int product_ID,
+            int store_ID,
+            int employee_ID,
+            int count,
+            int paymentType_ID,
+            int prepayment,
+            int fullPayment
+    ) {
+        try (SqlSession session = DbSession.startSession()) {
+            SaleMapper mapper = session.getMapper(SaleMapper.class);
+            mapper.addOrderWithPrepayment(customer_ID, product_ID, store_ID, employee_ID, count, paymentType_ID, prepayment, fullPayment);
+            session.commit();
+        }
+    }
+
+    public void addOrderWithoutPrepayment(
+            int customer_ID,
+            int product_ID,
+            int store_ID,
+            int employee_ID,
+            int count,
+            int paymentType_ID,
+            int fullPayment
+    ) {
+        try (SqlSession session = DbSession.startSession()) {
+            SaleMapper mapper = session.getMapper(SaleMapper.class);
+            mapper.addOrderWithoutPrepayment(customer_ID, product_ID, store_ID, employee_ID, count, paymentType_ID, fullPayment);
             session.commit();
         }
     }
