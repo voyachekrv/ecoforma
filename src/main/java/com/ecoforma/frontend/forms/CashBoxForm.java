@@ -711,7 +711,7 @@ public class CashBoxForm {
                     storeID,
                     currentEmployee.getID(),
                     Integer.parseInt(lSumCountVal.getText()),
-                    cbbxPaymentTypes.getSelectedIndex(),
+                    cbbxPaymentTypes.getSelectedIndex() + 1,
                     currentPriceAtFinal
                 );
             } else {
@@ -721,7 +721,7 @@ public class CashBoxForm {
                     storeID,
                     currentEmployee.getID(),
                     Integer.parseInt(lSumCountVal.getText()),
-                    cbbxPaymentTypes.getSelectedIndex(),
+                    cbbxPaymentTypes.getSelectedIndex() + 1,
                     currentPriceAtFinal,
                     currentPriceAtFinal
                 );

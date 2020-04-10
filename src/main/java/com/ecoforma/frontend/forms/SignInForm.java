@@ -111,9 +111,6 @@ public class SignInForm {
 
         // Установка видимости формы
         frame.setVisible(true);
-
-        tfLogin.setText("kassa");
-        tfPassword.setText("kkk");
     }
 
     // Очистка полей ввода

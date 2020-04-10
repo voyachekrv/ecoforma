@@ -191,6 +191,8 @@ public class SaleForm {
             frame.setEnabled(false);
             contractsForm = new ContractsForm();
         });
+
+        new TableOrders(panelOrders);
     }
 
     @NotNull

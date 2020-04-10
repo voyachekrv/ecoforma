@@ -141,6 +141,34 @@ public class SaleService {
         }
     }
 
+    public ArrayList<OrderWithPrepayment> getAllOrdersWithPrepayment() {
+        try (SqlSession session = DbSession.startSession()) {
+            SaleMapper mapper = session.getMapper(SaleMapper.class);
+            return mapper.getAllOrdersWithPrepayment();
+        }
+    }
+
+    public ArrayList<OrderWithoutPrepayment> getAllOrdersWithoutPrepayment() {
+        try (SqlSession session = DbSession.startSession()) {
+            SaleMapper mapper = session.getMapper(SaleMapper.class);
+            return mapper.getAllOrdersWithoutPrepayment();
+        }
+    }
+
+    public ArrayList<OrderWithPrepayment> searchOrdersWithPrepayment(String column, String query) {
+        try (SqlSession session = DbSession.startSession()) {
+            SaleMapper mapper = session.getMapper(SaleMapper.class);
+            return mapper.searchOrdersWithPrepayment(column, query);
+        }
+    }
+
+    public ArrayList<OrderWithoutPrepayment> searchOrdersWithoutPrepayment(String column, String query) {
+        try (SqlSession session = DbSession.startSession()) {
+            SaleMapper mapper = session.getMapper(SaleMapper.class);
+            return mapper.searchOrdersWithoutPrepayment(column, query);
+        }
+    }
+
     public void deleteContract(int ID) {
         try (SqlSession session = DbSession.startSession()) {
             SaleMapper mapper = session.getMapper(SaleMapper.class);
@@ -207,6 +235,14 @@ public class SaleService {
         try (SqlSession session = DbSession.startSession()) {
             SaleMapper mapper = session.getMapper(SaleMapper.class);
             return mapper.searchContracts(query);
+        }
+    }
+
+    public void addSurcharge(int ID, int surcharge) {
+        try (SqlSession session = DbSession.startSession()) {
+            SaleMapper mapper = session.getMapper(SaleMapper.class);
+            mapper.addSurcharge(ID, surcharge);
+            session.commit();
         }
     }
 

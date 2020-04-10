@@ -111,6 +111,44 @@ public interface SaleMapper {
     @Select("SELECT ID FROM store WHERE name = #{name};")
     int getStoreID(String name);
 
+
+
+    @Select("SELECT orders.ID, orders.date, customer.name AS 'customer', product.name AS 'product', store.name AS 'store', " +
+            "employee.name AS 'employee', orders.count, paymentType.name AS 'paymentType', orders.prepayment, " +
+            "orders.fullPayment FROM orders " +
+            "JOIN customer ON orders.customer_ID = customer.ID JOIN product ON orders.product_ID = product.ID " +
+            "JOIN store ON orders.store_ID = store.ID JOIN employee ON orders.employee_ID = employee.ID " +
+            "JOIN paymentType ON  orders.paymentType_ID = paymentType.ID WHERE orders.deleted = 0 AND " +
+            "orders.prepayment IS NOT NULL;")
+    ArrayList<OrderWithPrepayment> getAllOrdersWithPrepayment();
+
+    @Select("SELECT orders.ID, orders.date, customer.name AS 'customer', product.name AS 'product', store.name AS 'store', " +
+            "employee.name AS 'employee', orders.count, paymentType.name AS 'paymentType', " +
+            "orders.fullPayment FROM orders " +
+            "JOIN customer ON orders.customer_ID = customer.ID JOIN product ON orders.product_ID = product.ID " +
+            "JOIN store ON orders.store_ID = store.ID JOIN employee ON orders.employee_ID = employee.ID " +
+            "JOIN paymentType ON  orders.paymentType_ID = paymentType.ID WHERE orders.deleted = 0 AND " +
+            "orders.prepayment IS NULL;")
+    ArrayList<OrderWithoutPrepayment> getAllOrdersWithoutPrepayment();
+
+    @Select("SELECT orders.ID, orders.date, customer.name AS 'customer', product.name AS 'product', store.name AS 'store', " +
+            "employee.name AS 'employee', orders.count, paymentType.name AS 'paymentType', " +
+            "orders.fullPayment FROM orders " +
+            "JOIN customer ON orders.customer_ID = customer.ID JOIN product ON orders.product_ID = product.ID " +
+            "JOIN store ON orders.store_ID = store.ID JOIN employee ON orders.employee_ID = employee.ID " +
+            "JOIN paymentType ON  orders.paymentType_ID = paymentType.ID WHERE orders.deleted = 0 AND " +
+            "orders.prepayment IS NULL AND ${column} LIKE ${query};")
+    ArrayList<OrderWithoutPrepayment> searchOrdersWithoutPrepayment(@Param("column") String column, @Param("query") String query);
+
+    @Select("SELECT orders.ID, orders.date, customer.name AS 'customer', product.name AS 'product', store.name AS 'store', " +
+            "employee.name AS 'employee', orders.count, paymentType.name AS 'paymentType', orders.prepayment, " +
+            "orders.fullPayment FROM orders " +
+            "JOIN customer ON orders.customer_ID = customer.ID JOIN product ON orders.product_ID = product.ID " +
+            "JOIN store ON orders.store_ID = store.ID JOIN employee ON orders.employee_ID = employee.ID " +
+            "JOIN paymentType ON  orders.paymentType_ID = paymentType.ID WHERE orders.deleted = 0 AND " +
+            "orders.prepayment IS NOT NULL AND ${column} LIKE ${query};")
+    ArrayList<OrderWithPrepayment> searchOrdersWithPrepayment(@Param("column") String column, @Param("query") String query);
+
     @Update("UPDATE сontractWithLegal SET deleted = 1 WHERE ID = #{ID} AND deleted = 0;")
     void deleteContract(@Param("ID") int ID);
 
@@ -130,6 +168,9 @@ public interface SaleMapper {
 
     @Update("UPDATE сontractWithLegal SET name = #{name}, dateOfEnd = #{dateOfEnd} WHERE ID = #{ID} AND deleted = 0;")
     void updateContract(@Param("ID") int ID, @Param("name") String name, @Param("dateOfEnd") String dateOfEnd);
+
+    @Update("UPDATE orders SET fullPayment = #{surcharge} WHERE ID = #{ID}")
+    void addSurcharge(@Param("ID") int ID, @Param("surcharge") int surcharge);
 
     @Insert("INSERT INTO customer (name, adress, isLegalPerson, сontractWithLegal_ID, phoneNumber, deleted) " +
             "VALUES (#{name}, #{adress}, 1, #{сontractWithLegal_ID}, #{phoneNumber}, 0)")
@@ -181,5 +222,4 @@ public interface SaleMapper {
             @Param("paymentType_ID") int paymentType_ID,
             @Param("fullPayment") int fullPayment
     );
-
 }
