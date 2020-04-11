@@ -3,6 +3,7 @@ package com.ecoforma.frontend;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 
 import static com.ecoforma.App.*;
@@ -34,7 +35,12 @@ public class CompanyFrame extends JFrame {
         JButton btnSignOut = newButtonEnabled("Выход из системы", "icon-logout", new Rectangle(0, 0, 1350, 44));
         toolBar.add(btnSignOut);
 
+        JButton btnHelp = newButtonEnabled("Справка","icon-help", new Rectangle(1, 1, 1, 1));
+        toolBar.add(btnHelp);
+
         btnSignOut.addActionListener(actionEvent -> signOut());
+
+        btnHelp.addActionListener(actionEvent -> openHelpFile());
     }
 
     private void signOut() {
@@ -44,5 +50,15 @@ public class CompanyFrame extends JFrame {
         storeForm = null;
         hrForm = null;
         saleForm = null;
+    }
+
+    private void openHelpFile() {
+        try {
+            File htmlFile = new File(this.getClass().getResource("/htm/help.html").getFile());
+            Desktop.getDesktop().browse(htmlFile.toURI());
+        }
+        catch (IOException ex) {
+            ex.getMessage();
+        }
     }
 }
