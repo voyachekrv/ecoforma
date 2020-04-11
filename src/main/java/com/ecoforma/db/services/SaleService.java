@@ -270,11 +270,22 @@ public class SaleService {
             int count,
             int paymentType_ID,
             int prepayment,
-            int fullPayment
+            int fullPayment,
+            byte isDeliveryNeeded
     ) {
         try (SqlSession session = DbSession.startSession()) {
             SaleMapper mapper = session.getMapper(SaleMapper.class);
-            mapper.addOrderWithPrepayment(customer_ID, product_ID, store_ID, employee_ID, count, paymentType_ID, prepayment, fullPayment);
+            mapper.addOrderWithPrepayment(
+                    customer_ID,
+                    product_ID,
+                    store_ID,
+                    employee_ID,
+                    count,
+                    paymentType_ID,
+                    prepayment,
+                    fullPayment,
+                    isDeliveryNeeded
+            );
             session.commit();
         }
     }
@@ -286,11 +297,12 @@ public class SaleService {
             int employee_ID,
             int count,
             int paymentType_ID,
-            int fullPayment
+            int fullPayment,
+            byte isDeliveryNeeded
     ) {
         try (SqlSession session = DbSession.startSession()) {
             SaleMapper mapper = session.getMapper(SaleMapper.class);
-            mapper.addOrderWithoutPrepayment(customer_ID, product_ID, store_ID, employee_ID, count, paymentType_ID, fullPayment);
+            mapper.addOrderWithoutPrepayment(customer_ID, product_ID, store_ID, employee_ID, count, paymentType_ID, fullPayment, isDeliveryNeeded);
             session.commit();
         }
     }

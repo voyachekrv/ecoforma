@@ -193,10 +193,10 @@ public interface SaleMapper {
     void insertContract(@Param("name") String name, @Param("dateOfEnd") String dateOfEnd);
 
     @Insert("INSERT INTO orders " +
-            "(ID, date, customer_ID, product_ID, store_ID, employee_ID, count, paymentType_ID, prepayment, fullPayment, deleted)" +
+            "(date, customer_ID, product_ID, store_ID, employee_ID, count, paymentType_ID, prepayment, fullPayment, isDeliveryNeeded, deleted)" +
             " VALUES " +
-            "((SELECT COUNT(*) FROM orders), GETDATE(), #{customer_ID}, #{product_ID}, #{store_ID}, " +
-            "#{employee_ID}, #{count}, #{paymentType_ID}, #{prepayment}, #{fullPayment}, 0);")
+            "(GETDATE(), #{customer_ID}, #{product_ID}, #{store_ID}, " +
+            "#{employee_ID}, #{count}, #{paymentType_ID}, #{prepayment}, #{fullPayment}, #{isDeliveryNeeded}, 0);")
     void addOrderWithPrepayment(
             @Param("customer_ID") int customer_ID,
             @Param("product_ID") int product_ID,
@@ -205,14 +205,15 @@ public interface SaleMapper {
             @Param("count") int count,
             @Param("paymentType_ID") int paymentType_ID,
             @Param("prepayment") int prepayment,
-            @Param("fullPayment") int fullPayment
+            @Param("fullPayment") int fullPayment,
+            @Param("isDeliveryNeeded") byte isDeliveryNeeded
     );
 
     @Insert("INSERT INTO orders " +
-            "(ID, date, customer_ID, product_ID, store_ID, employee_ID, count, paymentType_ID, prepayment, fullPayment, deleted)" +
+            "(date, customer_ID, product_ID, store_ID, employee_ID, count, paymentType_ID, prepayment, fullPayment, isDeliveryNeeded, deleted)" +
             " VALUES " +
-            "((SELECT COUNT(*) FROM orders), GETDATE(), #{customer_ID}, #{product_ID}, #{store_ID}, " +
-            "#{employee_ID}, #{count}, #{paymentType_ID}, NULL, #{fullPayment}, 0);")
+            "(GETDATE(), #{customer_ID}, #{product_ID}, #{store_ID}, " +
+            "#{employee_ID}, #{count}, #{paymentType_ID}, NULL, #{fullPayment}, #{isDeliveryNeeded}, 0);")
     void addOrderWithoutPrepayment(
             @Param("customer_ID") int customer_ID,
             @Param("product_ID") int product_ID,
@@ -220,6 +221,7 @@ public interface SaleMapper {
             @Param("employee_ID") int employee_ID,
             @Param("count") int count,
             @Param("paymentType_ID") int paymentType_ID,
-            @Param("fullPayment") int fullPayment
+            @Param("fullPayment") int fullPayment,
+            @Param("isDeliveryNeeded") byte isDeliveryNeeded
     );
 }

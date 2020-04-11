@@ -19,8 +19,6 @@ import static com.ecoforma.App.*;
 import static com.ecoforma.frontend.services.JComponentFactory.*;
 
 public class CashBoxForm {
-    private final char CURRENCY = '₽';
-
     JFrame frame;
     JScrollPane tableScroll;
     JTable table;
@@ -32,7 +30,7 @@ public class CashBoxForm {
     JLabel lCustomerNameVal, lCustomerAddressVal, lCustomerPhoneVal;
     JButton btnPickCustomer;
     JSpinner spinnerCount, spinnerPrepayment, spinnerDiscount;
-    JCheckBox cbFullPayment, cbGiveDiscount;
+    JCheckBox cbFullPayment, cbGiveDiscount, cbOrganizeDelivery;
     JButton btnCountFinalPayment;
     JLabel lSumProductVal, lSumCategoryVal, lSumCountVal;
     JLabel lSumPaymentVal, lSumDiscountVal, lSumWithDiscountVal, lSumPrepaymentVal;
@@ -285,6 +283,9 @@ public class CashBoxForm {
 
         btnCancelOrder = newButtonEnabled("Отменить заказ", new Rectangle(1178, 683, 151, 26));
         frame.add(btnCancelOrder);
+
+        cbOrganizeDelivery = newCheckBoxDisabled("Оформить доставку", new Rectangle(694, 684, 151,24));
+        frame.add(cbOrganizeDelivery);
 
         frame.setVisible(true);
 
@@ -558,6 +559,7 @@ public class CashBoxForm {
         btnPickCustomer.setEnabled(true);
 
         btnCountFinalPayment.setText("Расчёт стоимости итого");
+        cbOrganizeDelivery.setEnabled(false);
     }
 
     private void removeFocusFromTable() {
@@ -607,6 +609,7 @@ public class CashBoxForm {
 
                 currentPrice = Integer.parseInt(lSumCountVal.getText()) * currentProductOnCashBox.getCost();
 
+                char CURRENCY = '₽';
                 lSumPaymentVal.setText(String.valueOf(currentPrice) + ' ' + CURRENCY);
 
                 if (cbGiveDiscount.isSelected()) {
@@ -665,6 +668,7 @@ public class CashBoxForm {
                 spinnerCount.setEnabled(false);
                 cbFullPayment.setEnabled(false);
                 cbGiveDiscount.setEnabled(false);
+                cbOrganizeDelivery.setEnabled(true);
             }
         } else {
             if (!(cbFullPayment.isSelected())) {
@@ -677,6 +681,7 @@ public class CashBoxForm {
             spinnerCount.setEnabled(true);
 
             btnAcceptOrder.setEnabled(false);
+            cbOrganizeDelivery.setEnabled(false);
 
             cbFullPayment.setEnabled(true);
             cbGiveDiscount.setEnabled(true);
@@ -703,6 +708,11 @@ public class CashBoxForm {
 
         if (result == JOptionPane.YES_OPTION) {
             int storeID = dbService.getStoreID(lStoreNameVal.getText());
+            byte isDeliveryNeeded = 0;
+
+            if (cbOrganizeDelivery.isSelected()) {
+                isDeliveryNeeded++;
+            }
 
             if (cbFullPayment.isSelected()) {
                 dbService.addOrderWithoutPrepayment(
@@ -712,7 +722,8 @@ public class CashBoxForm {
                     currentEmployee.getID(),
                     Integer.parseInt(lSumCountVal.getText()),
                     cbbxPaymentTypes.getSelectedIndex() + 1,
-                    currentPriceAtFinal
+                    currentPriceAtFinal,
+                    isDeliveryNeeded
                 );
             } else {
                 dbService.addOrderWithPrepayment(
@@ -723,7 +734,8 @@ public class CashBoxForm {
                     Integer.parseInt(lSumCountVal.getText()),
                     cbbxPaymentTypes.getSelectedIndex() + 1,
                     currentPriceAtFinal,
-                    currentPriceAtFinal
+                    currentPriceAtFinal,
+                    isDeliveryNeeded
                 );
             }
 
