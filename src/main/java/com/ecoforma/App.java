@@ -16,6 +16,7 @@ public class App {
     public static ContractsForm contractsForm;
     public static CashBoxForm cashBoxForm;
     public static CustomerListFrom customerListFrom;
+    public static DeliveryForm deliveryForm;
 
     public static void main(String[] args) {
         // Запуск формы в потоке обработки событий

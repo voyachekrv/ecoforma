@@ -192,7 +192,7 @@ public class SaleForm {
             contractsForm = new ContractsForm();
         });
 
-        new TableOrders(panelOrders);
+        new TableOrdersFormElement(panelOrders);
     }
 
     @NotNull

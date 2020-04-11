@@ -11,6 +11,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.io.IOException;
 
 public final class JComponentFactory {
@@ -94,6 +95,22 @@ public final class JComponentFactory {
     }
 
     @NotNull
+    public static JScrollPane newTableDisabledScroll(JTable table, int width, int height) {
+        JScrollPane tableScroll = new JScrollPane();
+        tableScroll.setViewportView(table);
+        tableScroll.setPreferredSize(new Dimension(width, height));
+        try {
+            tableScroll.setCursor(Toolkit.getDefaultToolkit().createCustomCursor(
+                    new ImageIcon(ImageIO.read(JComponentFactory.class.getResource("/img/not-allowed.png"))).getImage(),
+                    new Point(0,0),"not-allowed cursor"));
+        } catch (IOException e) {
+            throw new RuntimeException("Файл курсора найден");
+        }
+
+        return tableScroll;
+    }
+
+    @NotNull
     public static JButton newButton(String t, String i, @NotNull Rectangle r) {
         JButton b = new JButton(t, new ImageIcon(JComponentFactory.class.getResource("/img/" + i + ".png")));
         b.setBounds(r.x, r.y, r.width, r.height);
@@ -124,6 +141,23 @@ public final class JComponentFactory {
         JButton b = new JButton(t, new ImageIcon(JComponentFactory.class.getResource("/img/" + i + ".png")));
         b.setBounds(r.x, r.y, r.width, r.height);
         b.setFocusPainted(false);
+        return b;
+    }
+
+    @NotNull
+    public static JButton newButtonHelp() {
+        JButton b = new JButton("Справка", new ImageIcon(JComponentFactory.class.getResource("/img/icon-help.png")));
+
+        b.addActionListener(actionEvent -> {
+            try {
+                File htmlFile = new File(JComponentFactory.class.getResource("/htm/help.html").getFile());
+                Desktop.getDesktop().browse(htmlFile.toURI());
+            }
+            catch (IOException ex) {
+                throw new RuntimeException("Файл справки не найден");
+            }
+        });
+
         return b;
     }
 
@@ -251,6 +285,16 @@ public final class JComponentFactory {
     }
 
     @NotNull
+    public static JTable newTableDisabled(DefaultTableModel tableModel) {
+        JTable table = new JTable(tableModel);
+        table.setRowHeight(30);
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.setDefaultEditor(Object.class, null);
+        table.setEnabled(false);
+        return table;
+    }
+
+    @NotNull
     public static JSpinner newSpinnerNumericDisabled(SpinnerNumberModel model, @NotNull Rectangle r) {
         JSpinner spinner = new JSpinner();
         spinner.setBounds(r.x, r.y, r.width, r.height);
@@ -261,6 +305,14 @@ public final class JComponentFactory {
 
     @NotNull
     public static JSpinner newSpinnerNumericEnabled(SpinnerNumberModel model, @NotNull Rectangle r) {
+        JSpinner spinner = new JSpinner();
+        spinner.setBounds(r.x, r.y, r.width, r.height);
+        spinner.setModel(model);
+        return spinner;
+    }
+
+    @NotNull
+    public static JSpinner newSpinnerList(SpinnerListModel model, @NotNull Rectangle r) {
         JSpinner spinner = new JSpinner();
         spinner.setBounds(r.x, r.y, r.width, r.height);
         spinner.setModel(model);

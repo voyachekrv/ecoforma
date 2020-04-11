@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import static com.ecoforma.frontend.services.JComponentFactory.*;
 import static com.ecoforma.App.saleForm;
 
-public class TableOrders {
+public class TableOrdersFormElement {
     JTextField tfSearch;
     JTable table;
     JScrollPane tableScroll;
@@ -54,7 +54,7 @@ public class TableOrders {
 
     int currentOrderID;
 
-    public TableOrders(@NotNull JPanel panel) {
+    public TableOrdersFormElement(@NotNull JPanel panel) {
         dbService = new SaleService();
 
         tfSearch = newTextFieldEnabled(50, new Rectangle(12, 12, 128, 23));

@@ -58,7 +58,7 @@ public class CompanyFrame extends JFrame {
             Desktop.getDesktop().browse(htmlFile.toURI());
         }
         catch (IOException ex) {
-            ex.getMessage();
+            throw new RuntimeException("Файл справки не найден");
         }
     }
 }

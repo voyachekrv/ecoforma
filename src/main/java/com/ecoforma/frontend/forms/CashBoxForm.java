@@ -69,6 +69,8 @@ public class CashBoxForm {
         JButton btnClose = newButtonEnabled("Закрыть", "icon-logout", new Rectangle(1, 1, 1, 1));
         toolBar.add(btnClose);
 
+        toolBar.add(newButtonHelp());
+
         JPanel panelProducts = newPanelBevelTable(12, 115, 670, 634);
         frame.add(panelProducts);
 
@@ -560,6 +562,7 @@ public class CashBoxForm {
 
         btnCountFinalPayment.setText("Расчёт стоимости итого");
         cbOrganizeDelivery.setEnabled(false);
+        cbOrganizeDelivery.setSelected(false);
     }
 
     private void removeFocusFromTable() {

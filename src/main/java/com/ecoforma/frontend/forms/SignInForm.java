@@ -154,6 +154,10 @@ public class SignInForm {
                     saleForm = new SaleForm(sessionType, tfLogin.getText(), buildClientPassword(tfPassword.getPassword()));
                     saleForm.frame.setVisible(true);
                     break;
+                case "Автопарк":
+                    deliveryForm = new DeliveryForm(sessionType);
+                    deliveryForm.frame.setVisible(true);
+                    break;
                 default: JOptionPane.showMessageDialog(
                         frame,
                         "Для данной роли не доступен интерфейс",
