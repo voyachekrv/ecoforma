@@ -2,15 +2,13 @@ package com.ecoforma.frontend.forms;
 
 import com.ecoforma.db.entities.Contract;
 import com.ecoforma.db.services.SaleService;
+import com.ecoforma.frontend.JDateSpinner;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -23,7 +21,8 @@ public class ContractsForm {
     JFrame frame;
     JTable table;
     JScrollPane tableScroll;
-    JTextField tfSearch, tfName, tfDateOfEnd;
+    JTextField tfSearch, tfName;
+    JDateSpinner dateSpinner;
     JButton btnSearch, btnStopSearch, btnQuit, btnAcceptChanges, btnNewContract, btnDeleteContract;
 
     Action searchListener, saveContractListener;
@@ -41,7 +40,15 @@ public class ContractsForm {
     ContractsForm() {
         dbService = new SaleService();
 
-        frame = newFrame("Контракты с юридическими лицами", new Rectangle(598,  234, 800, 600), JFrame.DO_NOTHING_ON_CLOSE);
+        frame = newFrame("Контракты с юридическими лицами", new Rectangle(598,  234, 800, 600),
+                new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(WindowEvent e) {
+                        frame.setVisible(false);
+                        saleForm.frame.setEnabled(true);
+                    }
+                }
+        );
         frame.setVisible(true);
 
         tfSearch = newTextFieldEnabled(50, new Rectangle(12, 12, 200, 23));
@@ -72,9 +79,9 @@ public class ContractsForm {
         frame.add(tfName);
         addSaveKeyCombination(tfName);
 
-        tfDateOfEnd = newTextFieldEnabled(10, new Rectangle(214, 526, 123, 23));
-        frame.add(tfDateOfEnd);
-        addSaveKeyCombination(tfDateOfEnd);
+        dateSpinner = new JDateSpinner(214, 526, 123, 23, true);
+        frame.add(dateSpinner);
+        addSaveKeyCombination(dateSpinner);
 
         btnNewContract = newButtonEnabled("Нов.контр.", new Rectangle(354, 524, 98, 26));
         btnNewContract.setToolTipText("Добавить новый контракт");
@@ -151,7 +158,7 @@ public class ContractsForm {
         currentContract = dbService.getContractByID(Integer.parseInt(table.getModel().getValueAt(rowIndex, 0).toString()));
 
         tfName.setText(currentContract.getName());
-        tfDateOfEnd.setText(currentContract.getDateOfEnd());
+        dateSpinner.setDateToSpinner(currentContract.getDateOfEnd());
     }
 
     private void removeFocusFromTable() {
@@ -202,7 +209,7 @@ public class ContractsForm {
     private void unpick() {
         removeFocusFromTable();
         tfName.setText("");
-        tfDateOfEnd.setText("");
+        dateSpinner.setCurrentDate();
         btnAcceptChanges.setEnabled(false);
         btnDeleteContract.setEnabled(false);
         btnNewContract.setEnabled(true);
@@ -218,11 +225,8 @@ public class ContractsForm {
         );
 
         if (result == JOptionPane.YES_OPTION) {
-            if (
-                    checkTextField(tfName.getText(), tfName.getColumns()) &&
-                    checkDateTextField(tfDateOfEnd.getText())
-            ) {
-                dbService.insertContract(tfName.getText(), tfDateOfEnd.getText());
+            if (checkTextField(tfName.getText(), tfName.getColumns())) {
+                dbService.insertContract(tfName.getText(), dateSpinner.getDatabaseFormatDate());
 
                 JOptionPane.showMessageDialog(
                         frame,
@@ -243,11 +247,8 @@ public class ContractsForm {
     }
 
     private void updateContract() {
-        if (
-                checkTextField(tfName.getText(), tfName.getColumns()) &&
-                checkDateTextField(tfDateOfEnd.getText())
-        ) {
-            dbService.updateContract(currentContract.getID(), tfName.getText(), tfDateOfEnd.getText());
+        if (checkTextField(tfName.getText(), tfName.getColumns())) {
+            dbService.updateContract(currentContract.getID(), tfName.getText(), dateSpinner.getDatabaseFormatDate());
             unpick();
         } else {
             JOptionPane.showMessageDialog(

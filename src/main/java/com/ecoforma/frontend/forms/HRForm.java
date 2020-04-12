@@ -5,6 +5,7 @@ import com.ecoforma.db.entities.EmployeeView;
 import com.ecoforma.db.entities.RegistrationData;
 import com.ecoforma.db.services.HRService;
 import com.ecoforma.frontend.CompanyFrame;
+import com.ecoforma.frontend.JDateSpinner;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -28,7 +29,7 @@ public class HRForm {
     private JRadioButton rbID, rbName, rbPassport, rbEducation, rbAdress, rbPhoneNumber, rbEmail, rbPost, rbDepartment;
     private JScrollPane tableScroll;
     private JTable table;
-    private JTextField tfName, tfDateOfBirth, tfPassport, tfEducation, tfAddress, tfPhoneNumber, tfEmail;
+    private JTextField tfName, tfPassport, tfEducation, tfAddress, tfPhoneNumber, tfEmail;
     private JSpinner spinnerPersonalSalary;
     private JComboBox cbboxPost, cbboxDepartment;
     private JTextField tfLogin, tfPassword;
@@ -37,6 +38,7 @@ public class HRForm {
     private JButton btnAcceptChanges;
     private JButton btnDeleteEmployee;
     private JButton btnUnpick;
+    private JDateSpinner dateSpinner;
 
     private Action actionListener;
     private String[] columnsHeader = new String[] {
@@ -137,9 +139,9 @@ public class HRForm {
         JLabel lName = newLabel("ФИО", new Rectangle (30, 538, 46, 14));
         frame.getContentPane().add(lName);
 
-        tfDateOfBirth = newTextFieldDisabled(20, new Rectangle(222, 562, 185, 23));
-        addSaveKeyCombination(tfDateOfBirth);
-        frame.getContentPane().add(tfDateOfBirth);
+        dateSpinner = new JDateSpinner(222, 562, 185, 23, false);
+        addSaveKeyCombination(dateSpinner);
+        frame.getContentPane().add(dateSpinner);
 
         JLabel lDateOfBirth = newLabel("Дата рождения", new Rectangle (222, 539, 100, 14));
         frame.getContentPane().add(lDateOfBirth);
@@ -375,7 +377,7 @@ public class HRForm {
         currentEmployee = dbService.getEmployeeByID(Integer.parseInt(table.getModel().getValueAt(rowIndex, 0).toString()));
 
         tfName.setText(currentEmployee.getName());
-        tfDateOfBirth.setText(currentEmployee.getDateOfBirth());
+        dateSpinner.setDateToSpinner(currentEmployee.getDateOfBirth());
         tfEmail.setText(currentEmployee.getEmail());
         tfAddress.setText(currentEmployee.getAdress());
         tfEducation.setText(currentEmployee.getEducation());
@@ -387,7 +389,7 @@ public class HRForm {
         cbboxDepartment.setSelectedIndex(currentEmployee.getDepartment_ID() - 1);
 
         tfName.setEnabled(true);
-        tfDateOfBirth.setEnabled(true);
+        dateSpinner.setEnabled(true);
         tfEmail.setEnabled(true);
         tfAddress.setEnabled(true);
         tfEducation.setEnabled(true);
@@ -443,7 +445,7 @@ public class HRForm {
         removeFocusFromTable();
 
         tfName.setText("");
-        tfDateOfBirth.setText("");
+        dateSpinner.setCurrentDate();
         tfEmail.setText("");
         tfAddress.setText("");
         tfEducation.setText("");
@@ -456,7 +458,7 @@ public class HRForm {
         cbAllowSignIn.setEnabled(false);
 
         tfName.setEnabled(false);
-        tfDateOfBirth.setEnabled(false);
+        dateSpinner.setEnabled(false);
         tfEmail.setEnabled(false);
         tfAddress.setEnabled(false);
         tfEducation.setEnabled(false);
@@ -606,13 +608,12 @@ public class HRForm {
                     checkTextField(tfEducation.getText(), tfEducation.getColumns()) &&
                     checkTextField(tfAddress.getText(), tfAddress.getColumns()) &&
                     checkNumericTextField(tfPassport.getText(), tfPassport.getColumns()) &&
-                    checkNumericTextField(tfPhoneNumber.getText(), tfPhoneNumber.getColumns()) &&
-                    checkDateTextField(tfDateOfBirth.getText())
+                    checkNumericTextField(tfPhoneNumber.getText(), tfPhoneNumber.getColumns())
             ) {
                 dbService.updateEmployee(
                         currentEmployee.getID(),
                         tfName.getText(),
-                        tfDateOfBirth.getText(),
+                        dateSpinner.getDatabaseFormatDate(),
                         tfPassport.getText(),
                         tfEducation.getText(),
                         tfAddress.getText(),

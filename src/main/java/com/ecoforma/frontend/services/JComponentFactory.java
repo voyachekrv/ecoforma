@@ -11,16 +11,19 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
 
 public final class JComponentFactory {
     @NotNull
-    public static JFrame newFrame(String t, @NotNull Rectangle r, int operation) {
+    public static JFrame newFrame(String t, @NotNull Rectangle r, WindowListener l) {
         JFrame f = new JFrame(t);
         f.setSize(r.width, r.height); // Установка размеров
         f.setLocation(r.x,  r.y);
         f.setResizable(false);
+
+        f.addWindowListener(l);
 
         try {
             f.setIconImage(ImageIO.read(JComponentFactory.class.getResource("/img/logo1.png")));
@@ -28,7 +31,6 @@ public final class JComponentFactory {
             throw new RuntimeException();
         }
 
-        f.setDefaultCloseOperation(operation); // Установка операции закрытия окна приложения
         f.getContentPane().setLayout(null);
         return f;
     }

@@ -1,14 +1,17 @@
 package com.ecoforma.frontend.forms;
 
 import com.ecoforma.db.services.HRService;
+import com.ecoforma.frontend.JDateSpinner;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowEvent;
 
 import static com.ecoforma.App.hrForm;
-import static com.ecoforma.frontend.services.Checker.*;
+import static com.ecoforma.frontend.services.Checker.checkNumericTextField;
+import static com.ecoforma.frontend.services.Checker.checkTextField;
 import static com.ecoforma.frontend.services.JComponentFactory.*;
 
 public class NewEmployeeForm {
@@ -16,7 +19,6 @@ public class NewEmployeeForm {
     private JTextField tfSurname;
     private JTextField tfName;
     private JTextField tfPatronym;
-    private JTextField tfDateOfBirth;
     private JTextField tfPassport;
     private JTextField tfAdress;
     private JTextField tfPhoneNumber;
@@ -31,13 +33,22 @@ public class NewEmployeeForm {
     private JCheckBox cbAllowSignIn;
     private JButton btnGenerateLogin;
     private JButton btnGeneratePassword;
+    private JDateSpinner dateSpinner;
 
     private HRService dbService;
 
     NewEmployeeForm() {
         dbService = new HRService();
 
-        frame = newFrame("Новый сотрудник",  new Rectangle(598,  144, 800, 790), JFrame.DO_NOTHING_ON_CLOSE);
+        frame = newFrame("Новый сотрудник",  new Rectangle(598,  144, 800, 790),
+                new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(WindowEvent e) {
+                        frame.setVisible(false);
+                        hrForm.frame.setEnabled(true);
+                    }
+                }
+        );
 
         JPanel panel = newPanelBevel(10, 11, 764, 739);
         frame.getContentPane().add(panel);
@@ -66,8 +77,8 @@ public class NewEmployeeForm {
         JPanel panelPassportData = newPanelEtched(10, 94, 744, 72);
         panel.add(panelPassportData);
 
-        tfDateOfBirth = newTextFieldBigFont(20, new Rectangle(10, 34, 258, 27));
-        panelPassportData.add(tfDateOfBirth);
+        dateSpinner = new JDateSpinner(10, 34, 258, 27, true);
+        panelPassportData.add(dateSpinner);
 
         tfPassport = newTextFieldBigFont(10, new Rectangle(278, 34, 456, 27));
         panelPassportData.add(tfPassport);
@@ -232,7 +243,6 @@ public class NewEmployeeForm {
                     checkTextField(tfSurname.getText(), tfSurname.getColumns()) &&
                     checkTextField(tfName.getText(), tfName.getColumns()) &&
                     checkTextField(tfPatronym.getText(), tfPatronym.getColumns()) &&
-                    checkDateTextField(tfDateOfBirth.getText()) &&
                     checkNumericTextField(tfPassport.getText(), tfPassport.getColumns()) &&
                     checkTextField(textAreaEducation.getText(), 300) &&
                     checkTextField(tfAdress.getText(), tfAdress.getColumns()) &&
@@ -240,7 +250,7 @@ public class NewEmployeeForm {
             ) {
                 dbService.insertEmployee(
                     tfSurname.getText()+ " " + tfName.getText() + " " + tfPatronym.getText(),
-                    tfDateOfBirth.getText(),
+                    dateSpinner.getDatabaseFormatDate(),
                     tfPassport.getText(),
                     textAreaEducation.getText(),
                     tfAdress.getText(),

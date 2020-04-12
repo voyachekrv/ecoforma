@@ -50,6 +50,7 @@ public class CompanyFrame extends JFrame {
         storeForm = null;
         hrForm = null;
         saleForm = null;
+        cashBoxForm = null;
     }
 
     private void openHelpFile() {

@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.WindowEvent;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -61,7 +62,14 @@ public class CashBoxForm {
 
         currentEmployee = dbService.getEmployeeOnCashBox(login, password);
 
-        frame = newFrame(COMPANY_NAME + " - Касса", new Rectangle(323,  144, 1352, 790), JFrame.DO_NOTHING_ON_CLOSE);
+        frame = newFrame(COMPANY_NAME + " - Касса", new Rectangle(323,  144, 1352, 790),
+                new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(WindowEvent e) {
+                        closeForm();
+                    }
+                }
+        );
 
         JToolBar toolBar = newToolBar(0, 0, 1356,44);
         frame.add(toolBar);
@@ -375,6 +383,7 @@ public class CashBoxForm {
     private void closeForm() {
         frame.setVisible(false);
         frame = null;
+        customerListFrom = null;
         saleForm.frame.setExtendedState(JFrame.NORMAL);
     }
 

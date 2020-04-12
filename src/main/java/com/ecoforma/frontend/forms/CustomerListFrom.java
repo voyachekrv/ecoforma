@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -37,7 +38,14 @@ public class CustomerListFrom {
     public CustomerListFrom() {
         dbService = new SaleService();
 
-        frame = newFrame("Список заказчиков", new Rectangle(598,  234, 800, 600), JFrame.DO_NOTHING_ON_CLOSE);
+        frame = newFrame("Список заказчиков", new Rectangle(598,  234, 800, 600),
+                new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(WindowEvent e) {
+                        quit();
+                    }
+                }
+        );
         frame.setVisible(true);
 
         tfSearch = newTextFieldEnabled(50, new Rectangle(12, 12, 200, 26));
