@@ -54,8 +54,9 @@ public class CompanyFrame extends JFrame {
     }
 
     private void openHelpFile() {
+        String pathToProgram = new File("").getAbsolutePath();
         try {
-            File htmlFile = new File(this.getClass().getResource("/htm/help.html").getFile());
+            File htmlFile = new File(String.format("%s/target/classes/htm/help.html", pathToProgram));
             Desktop.getDesktop().browse(htmlFile.toURI());
         }
         catch (IOException ex) {

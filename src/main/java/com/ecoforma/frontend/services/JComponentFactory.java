@@ -151,8 +151,9 @@ public final class JComponentFactory {
         JButton b = new JButton("Справка", new ImageIcon(JComponentFactory.class.getResource("/img/icon-help.png")));
 
         b.addActionListener(actionEvent -> {
+            String pathToProgram = new File("").getAbsolutePath();
             try {
-                File htmlFile = new File(JComponentFactory.class.getResource("/htm/help.html").getFile());
+                File htmlFile = new File(String.format("%s/target/classes/htm/help.html", pathToProgram));
                 Desktop.getDesktop().browse(htmlFile.toURI());
             }
             catch (IOException ex) {

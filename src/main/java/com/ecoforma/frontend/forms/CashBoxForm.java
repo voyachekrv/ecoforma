@@ -618,7 +618,7 @@ public class CashBoxForm {
 
                 currentPrice = Integer.parseInt(lSumCountVal.getText()) * currentProductOnCashBox.getCost();
 
-                char CURRENCY = '₽';
+                String CURRENCY = "руб.";
                 lSumPaymentVal.setText(String.valueOf(currentPrice) + ' ' + CURRENCY);
 
                 if (cbGiveDiscount.isSelected()) {
