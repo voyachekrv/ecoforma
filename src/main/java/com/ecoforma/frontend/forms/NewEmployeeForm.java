@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
 import java.awt.event.WindowEvent;
 
 import static com.ecoforma.App.hrForm;
@@ -16,26 +17,26 @@ import static com.ecoforma.frontend.services.JComponentFactory.*;
 
 public class NewEmployeeForm {
     JFrame frame;
-    private JTextField tfSurname;
-    private JTextField tfName;
-    private JTextField tfPatronym;
-    private JTextField tfPassport;
-    private JTextField tfAdress;
-    private JTextField tfPhoneNumber;
-    private JTextField tfEmail;
-    private JTextField tfLogin;
-    private JTextField tfPassword;
-    private JTextArea textAreaEducation;
-    private JCheckBox cbNoEmail;
-    private JComboBox cbbxPost;
-    private JComboBox cbboxDepartment;
-    private JComboBox cbbxRole;
-    private JCheckBox cbAllowSignIn;
-    private JButton btnGenerateLogin;
-    private JButton btnGeneratePassword;
-    private JDateSpinner dateSpinner;
+    private final JTextField tfSurname;
+    private final JTextField tfName;
+    private final JTextField tfPatronymic;
+    private final JTextField tfPassport;
+    private final JTextField tfAddress;
+    private final JTextField tfPhoneNumber;
+    private final JTextField tfEmail;
+    private final JTextField tfLogin;
+    private final JTextField tfPassword;
+    private final JTextArea textAreaEducation;
+    private final JCheckBox cbNoEmail;
+    private final JComboBox<String > comboBoxPost;
+    private final JComboBox<String > comboBoxDepartment;
+    private final JComboBox<String > comboBoxRole;
+    private final JCheckBox cbAllowSignIn;
+    private final JButton btnGenerateLogin;
+    private final JButton btnGeneratePassword;
+    private final JDateSpinner dateSpinner;
 
-    private HRService dbService;
+    private final HRService dbService;
 
     NewEmployeeForm() {
         dbService = new HRService();
@@ -62,8 +63,8 @@ public class NewEmployeeForm {
         tfName = newTextFieldBigFont(16, new Rectangle(264, 34, 230, 27));
         panelName.add(tfName);
 
-        tfPatronym = newTextFieldBigFont(16, new Rectangle(504, 34, 230, 27));
-        panelName.add(tfPatronym);
+        tfPatronymic = newTextFieldBigFont(16, new Rectangle(504, 34, 230, 27));
+        panelName.add(tfPatronymic);
 
         JLabel lSurname = newLabel("Фамилия", new Rectangle(10, 9, 230, 20));
         panelName.add(lSurname);
@@ -71,8 +72,8 @@ public class NewEmployeeForm {
         JLabel lName = newLabel("Имя", new Rectangle(264, 12, 230, 20));
         panelName.add(lName);
 
-        JLabel lPatronym = newLabel("Отчество", new Rectangle(504, 12, 230, 20));
-        panelName.add(lPatronym);
+        JLabel lPatronymic = newLabel("Отчество", new Rectangle(504, 12, 230, 20));
+        panelName.add(lPatronymic);
 
         JPanel panelPassportData = newPanelEtched(10, 94, 744, 72);
         panel.add(panelPassportData);
@@ -97,7 +98,7 @@ public class NewEmployeeForm {
                 new AbstractAction() {
                     @Override
                     public void actionPerformed(ActionEvent actionEvent) {
-                        tfAdress.requestFocus();
+                        tfAddress.requestFocus();
                     }
                 });
 
@@ -106,8 +107,8 @@ public class NewEmployeeForm {
         JPanel panelContactData = newPanelEtched(10, 391, 744, 131);
         panel.add(panelContactData);
 
-        tfAdress = newTextFieldBigFont(200, new Rectangle(10, 34, 724, 27));
-        panelContactData.add(tfAdress);
+        tfAddress = newTextFieldBigFont(200, new Rectangle(10, 34, 724, 27));
+        panelContactData.add(tfAddress);
 
         tfEmail = newTextFieldBigFont(70, new Rectangle(10, 93, 361, 27));
         panelContactData.add(tfEmail);
@@ -118,8 +119,8 @@ public class NewEmployeeForm {
         cbNoEmail = newCheckBox("Почта отсутствует", new Rectangle(60, 68, 165, 20));
         panelContactData.add(cbNoEmail);
 
-        JLabel lAdress = newLabel("Домашний адрес", new Rectangle(10, 9, 230, 20));
-        panelContactData.add(lAdress);
+        JLabel lAddress = newLabel("Домашний адрес", new Rectangle(10, 9, 230, 20));
+        panelContactData.add(lAddress);
 
         JLabel lEmail = newLabel("E-mail", new Rectangle(10, 68, 230, 20));
         panelContactData.add(lEmail);
@@ -127,13 +128,13 @@ public class NewEmployeeForm {
         JLabel lPhoneNumber = newLabel("Номер телефона", new Rectangle(381, 68, 230, 20));
         panelContactData.add(lPhoneNumber);
 
-        cbbxPost = newComboBox(dbService.getPostNames(), new Rectangle(176, 533, 200, 22));
-        cbbxPost.setEnabled(true);
-        panel.add(cbbxPost);
+        comboBoxPost = newComboBox(dbService.getPostNames(), new Rectangle(176, 533, 200, 22));
+        comboBoxPost.setEnabled(true);
+        panel.add(comboBoxPost);
 
-        cbboxDepartment = newComboBox(dbService.getDepartmentNames(), new Rectangle(452, 533, 200, 22));
-        cbboxDepartment.setEnabled(true);
-        panel.add(cbboxDepartment);
+        comboBoxDepartment = newComboBox(dbService.getDepartmentNames(), new Rectangle(452, 533, 200, 22));
+        comboBoxDepartment.setEnabled(true);
+        panel.add(comboBoxDepartment);
 
         JLabel lAppointAs = newLabel("Назначить на должность: ", new Rectangle(10, 534, 157, 20));
         panel.add(lAppointAs);
@@ -156,8 +157,8 @@ public class NewEmployeeForm {
         btnGeneratePassword = newButton("Создать", new Rectangle(453, 60, 89, 23));
         panelSignIn.add(btnGeneratePassword);
 
-        cbbxRole = newComboBox(dbService.getRoleNames(), new Rectangle(552, 60, 182, 22));
-        panelSignIn.add(cbbxRole);
+        comboBoxRole = newComboBox(dbService.getRoleNames(), new Rectangle(552, 60, 182, 22));
+        panelSignIn.add(comboBoxRole);
 
         JLabel lLogin = newLabel("Логин", new Rectangle(10, 37, 162, 20));
         panelSignIn.add(lLogin);
@@ -177,26 +178,20 @@ public class NewEmployeeForm {
         JButton btnSave = newButtonEnabled("Сохранить", new Rectangle(512, 698, 116, 30));
         panel.add(btnSave);
 
-        cbNoEmail.addItemListener(itemEvent -> {
-            if (cbNoEmail.isSelected()) {
-                tfEmail.setEnabled(false);
-            } else {
-                tfEmail.setEnabled(true);
-            }
-        });
+        cbNoEmail.addItemListener(this::itemStateChanged);
 
         cbAllowSignIn.addItemListener(itemEvent -> {
             if (cbAllowSignIn.isSelected()) {
                 tfLogin.setEnabled(true);
                 tfPassword.setEnabled(true);
-                cbbxRole.setEnabled(true);
+                comboBoxRole.setEnabled(true);
                 btnGenerateLogin.setEnabled(true);
                 btnGeneratePassword.setEnabled(true);
             } else {
                 tfLogin.setEnabled(false);
                 tfPassword.setEnabled(false);
-                cbbxRole.setEnabled(false);
-                cbbxRole.setSelectedIndex(0);
+                comboBoxRole.setEnabled(false);
+                comboBoxRole.setSelectedIndex(0);
                 btnGenerateLogin.setEnabled(false);
                 btnGeneratePassword.setEnabled(false);
             }
@@ -231,7 +226,7 @@ public class NewEmployeeForm {
                 frame,
                 String.format(
                         "Добавить нового сотрудника %s %s %s?",
-                        tfSurname.getText(), tfName.getText(), tfPatronym.getText()
+                        tfSurname.getText(), tfName.getText(), tfPatronymic.getText()
                 ),
                 "Подтверждение операции",
                 JOptionPane.YES_NO_OPTION,
@@ -242,26 +237,26 @@ public class NewEmployeeForm {
             if (
                     checkTextField(tfSurname.getText(), tfSurname.getColumns()) &&
                     checkTextField(tfName.getText(), tfName.getColumns()) &&
-                    checkTextField(tfPatronym.getText(), tfPatronym.getColumns()) &&
+                    checkTextField(tfPatronymic.getText(), tfPatronymic.getColumns()) &&
                     checkNumericTextField(tfPassport.getText(), tfPassport.getColumns()) &&
                     checkTextField(textAreaEducation.getText(), 300) &&
-                    checkTextField(tfAdress.getText(), tfAdress.getColumns()) &&
+                    checkTextField(tfAddress.getText(), tfAddress.getColumns()) &&
                     checkNumericTextField(tfPhoneNumber.getText(), tfPhoneNumber.getColumns())
             ) {
                 dbService.insertEmployee(
-                    tfSurname.getText()+ " " + tfName.getText() + " " + tfPatronym.getText(),
+                    tfSurname.getText()+ " " + tfName.getText() + " " + tfPatronymic.getText(),
                     dateSpinner.getDatabaseFormatDate(),
                     tfPassport.getText(),
                     textAreaEducation.getText(),
-                    tfAdress.getText(),
+                    tfAddress.getText(),
                     tfPhoneNumber.getText(),
                     tfEmail.getText(),
-                    cbbxPost.getSelectedIndex() + 1,
-                    cbboxDepartment.getSelectedIndex() + 1
+                    comboBoxPost.getSelectedIndex() + 1,
+                    comboBoxDepartment.getSelectedIndex() + 1
                 );
 
-                if ((cbbxPost.getSelectedIndex() + 1) == dbService.getChiefID()) {
-                    dbService.setChiefWhenInsert(cbboxDepartment.getSelectedIndex() + 1);
+                if ((comboBoxPost.getSelectedIndex() + 1) == dbService.getChiefID()) {
+                    dbService.setChiefWhenInsert(comboBoxDepartment.getSelectedIndex() + 1);
                 }
 
                 if (cbAllowSignIn.isSelected()) {
@@ -269,7 +264,7 @@ public class NewEmployeeForm {
                             checkTextField(tfLogin.getText(), tfLogin.getColumns()) &&
                             checkTextField(tfPassword.getText(), tfPassword.getColumns())
                     ) {
-                        dbService.insertRegistrationDataWithEmployee(tfLogin.getText(), tfPassword.getText(), cbbxRole.getSelectedIndex() + 1);
+                        dbService.insertRegistrationDataWithEmployee(tfLogin.getText(), tfPassword.getText(), comboBoxRole.getSelectedIndex() + 1);
                     } else {
                         JOptionPane.showMessageDialog(
                                 frame,
@@ -308,5 +303,9 @@ public class NewEmployeeForm {
         }
 
         return builder.toString();
+    }
+
+    private void itemStateChanged(ItemEvent itemEvent) {
+        tfEmail.setEnabled(!cbNoEmail.isSelected());
     }
 }

@@ -2,7 +2,7 @@ package com.ecoforma.db.entities;
 
 public class StoreOnCashBox {
     private String storeName;
-    private String adress;
+    private String address;
     private String employeeName;
     private String phoneNumber;
 
@@ -14,12 +14,12 @@ public class StoreOnCashBox {
         this.storeName = storeName;
     }
 
-    public String getAdress() {
-        return adress;
+    public String getAddress() {
+        return address;
     }
 
-    public void setAdress(String adress) {
-        this.adress = adress;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getEmployeeName() {

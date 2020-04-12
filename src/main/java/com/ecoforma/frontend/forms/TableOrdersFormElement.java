@@ -25,7 +25,7 @@ public class TableOrdersFormElement {
 
     DefaultTableModel currentTableModel;
 
-    private String[] columnsPrepaymentHeader = new String[] {
+    private final String[] columnsPrepaymentHeader = new String[] {
             "Код",
             "Дата",
             "Заказчик",
@@ -38,7 +38,7 @@ public class TableOrdersFormElement {
             "Полная оплата"
     };
 
-    private String[] columnsCommonHeader = new String[] {
+    private final String[] columnsCommonHeader = new String[] {
             "Код",
             "Дата",
             "Заказчик",

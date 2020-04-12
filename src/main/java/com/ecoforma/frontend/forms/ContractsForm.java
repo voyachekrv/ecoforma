@@ -19,23 +19,23 @@ import static com.ecoforma.App.saleForm;
 
 public class ContractsForm {
     JFrame frame;
-    JTable table;
-    JScrollPane tableScroll;
-    JTextField tfSearch, tfName;
-    JDateSpinner dateSpinner;
-    JButton btnSearch, btnStopSearch, btnQuit, btnAcceptChanges, btnNewContract, btnDeleteContract;
+    private JTable table;
+    private final JScrollPane tableScroll;
+    private final JTextField tfSearch, tfName;
+    private final JDateSpinner dateSpinner;
+    private final JButton btnAcceptChanges;
+    private final JButton btnNewContract;
+    private final JButton btnDeleteContract;
 
-    Action searchListener, saveContractListener;
-
-    private String[] columnsHeader = new String[]{
+    private final String[] columnsHeader = new String[]{
             "Код",
             "Название",
             "Дата окончания",
     };
 
-    SaleService dbService;
+    private final SaleService dbService;
 
-    Contract currentContract;
+    private Contract currentContract;
 
     ContractsForm() {
         dbService = new SaleService();
@@ -54,10 +54,10 @@ public class ContractsForm {
         tfSearch = newTextFieldEnabled(50, new Rectangle(12, 12, 200, 23));
         frame.add(tfSearch);
 
-        btnSearch = newButtonEnabled("Поиск", "icon-search", new Rectangle(224, 12, 113, 23));
+        JButton btnSearch = newButtonEnabled("Поиск", "icon-search", new Rectangle(224, 12, 113, 23));
         frame.add(btnSearch);
 
-        btnStopSearch = newButtonEnabled(null, "icon-close", new Rectangle(349, 12, 24, 23));
+        JButton btnStopSearch = newButtonEnabled(null, "icon-close", new Rectangle(349, 12, 24, 23));
         frame.add(btnStopSearch);
 
         JPanel tablePanel = newPanelBevelTable(12, 47, 770, 439);
@@ -93,11 +93,11 @@ public class ContractsForm {
         btnDeleteContract = newButton("Удалить", new Rectangle(574, 524, 98, 26));
         frame.add(btnDeleteContract);
 
-        btnQuit = newButtonEnabled("Выход", new Rectangle(684, 524, 98, 26));
+        JButton btnQuit = newButtonEnabled("Выход", new Rectangle(684, 524, 98, 26));
         frame.add(btnQuit);
 
         String ACTION_KEY = "searchAction";
-        searchListener = new AbstractAction() {
+        Action searchListener = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 tfSearch.requestFocus();
@@ -188,7 +188,7 @@ public class ContractsForm {
 
     private void addSaveKeyCombination(@NotNull JComponent component) {
         String ACTION_KEY = "saveAction";
-        saveContractListener = new AbstractAction() {
+        Action saveContractListener = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 if (Objects.isNull(currentContract)) {

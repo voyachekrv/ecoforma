@@ -241,16 +241,6 @@ public final class JComponentFactory {
     }
 
     @NotNull
-    public static JTextField newTextFieldBigFontDisable(int c, @NotNull Rectangle r) {
-        JTextField tf = new JTextField();
-        tf.setColumns(c);
-        tf.setBounds(r.x, r.y, r.width, r.height);
-        tf.setFont(new Font("Default", Font.PLAIN, 14));
-        tf.setEnabled(false);
-        return tf;
-    }
-
-    @NotNull
     public static JTextField newTextFieldDisabled(int c, @NotNull Rectangle r) {
         JTextField tf = new JTextField();
         tf.setColumns(c);
@@ -261,11 +251,11 @@ public final class JComponentFactory {
 
     // Инициализация выпадающего списка
     @NotNull
-    public static JComboBox newComboBox(String[] m, @NotNull Rectangle r) {
-        JComboBox cbbx = new JComboBox(new DefaultComboBoxModel(m));
-        cbbx.setBounds(r.x, r.y, r.width, r.height);
-        cbbx.setEnabled(false);
-        return cbbx;
+    public static JComboBox<String> newComboBox(String[] m, @NotNull Rectangle r) {
+        JComboBox<String> comboBox = new JComboBox<>(m);
+        comboBox.setBounds(r.x, r.y, r.width, r.height);
+        comboBox.setEnabled(false);
+        return comboBox;
     }
 
     @NotNull
@@ -326,17 +316,6 @@ public final class JComponentFactory {
         JTextArea textArea = new JTextArea();
         textArea.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
         textArea.setBounds(x, y, width, height);
-        textArea.setRows(rows);
-        textArea.setColumns(cols);
-        return textArea;
-    }
-
-    @NotNull
-    public static JTextArea newTextAreaDisabled(int x, int y, int width, int height, int rows, int cols) {
-        JTextArea textArea = new JTextArea();
-        textArea.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-        textArea.setBounds(x, y, width, height);
-        textArea.setEnabled(false);
         textArea.setRows(rows);
         textArea.setColumns(cols);
         return textArea;

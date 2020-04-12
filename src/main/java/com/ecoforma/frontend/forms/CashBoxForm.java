@@ -21,24 +21,27 @@ import static com.ecoforma.frontend.services.JComponentFactory.*;
 
 public class CashBoxForm {
     JFrame frame;
-    JScrollPane tableScroll;
-    JTable table;
-    JTextField tfSearch;
-    JButton btnSearch, btnStopSearch;
-    JRadioButton rbName, rbCategory;
-    JComboBox cbbxStores, cbbxPaymentTypes;
-    JLabel lEmployeeName, lProductNameVal, lProductCategoryVal, lStoreNameVal, lStoreAddressVal, lStorePhoneVal, lStoreChiefName;
-    JLabel lCustomerNameVal, lCustomerAddressVal, lCustomerPhoneVal;
-    JButton btnPickCustomer;
-    JSpinner spinnerCount, spinnerPrepayment, spinnerDiscount;
-    JCheckBox cbFullPayment, cbGiveDiscount, cbOrganizeDelivery;
-    JButton btnCountFinalPayment;
-    JLabel lSumProductVal, lSumCategoryVal, lSumCountVal;
-    JLabel lSumPaymentVal, lSumDiscountVal, lSumWithDiscountVal, lSumPrepaymentVal;
-    JLabel lSumWithPrepaymentVal, lSumToPaymentVal;
-    JButton btnAcceptOrder, btnCancelOrder;
+    private final JScrollPane tableScroll;
+    private JTable table;
+    private final JTextField tfSearch;
+    private final JRadioButton rbName, rbCategory;
+    private final JComboBox<String> comboBoxStores, comboBoxPaymentTypes;
+    private final JLabel lProductNameVal;
+    private final JLabel lProductCategoryVal;
+    private final JLabel lStoreNameVal;
+    private final JLabel lStoreAddressVal;
+    private final JLabel lStorePhoneVal;
+    private final JLabel lStoreChiefName;
+    private final JButton btnPickCustomer;
+    private final JSpinner spinnerCount, spinnerPrepayment, spinnerDiscount;
+    private final JCheckBox cbFullPayment, cbGiveDiscount, cbOrganizeDelivery;
+    private final JButton btnCountFinalPayment;
+    private final JLabel lSumProductVal, lSumCategoryVal, lSumCountVal;
+    private final JLabel lSumPaymentVal, lSumDiscountVal, lSumWithDiscountVal, lSumPrepaymentVal;
+    private final JLabel lSumWithPrepaymentVal, lSumToPaymentVal;
+    private final JButton btnAcceptOrder;
 
-    private String[] columnsHeader = new String[] {
+    private final String[] columnsHeader = new String[] {
             "Код записи о хранении",
             "Код товара",
             "Название товара",
@@ -48,14 +51,16 @@ public class CashBoxForm {
             "Количество на складе"
     };
 
-    SaleService dbService;
+    private final SaleService dbService;
 
-    StoreOnCashBox currentStore;
-    ProductOnCashBox currentProductOnCashBox;
+    private StoreOnCashBox currentStore;
+    private ProductOnCashBox currentProductOnCashBox;
+    private final Employee currentEmployee;
+
+    private int currentPriceAtFinal;
+    final JLabel lCustomerNameVal, lCustomerAddressVal, lCustomerPhoneVal;
+
     Customer currentCustomer;
-    Employee currentEmployee;
-
-    int currentPriceAtFinal;
 
     public CashBoxForm(String login, String password) {
         dbService = new SaleService();
@@ -90,10 +95,10 @@ public class CashBoxForm {
         tfSearch = newTextFieldEnabled(50, new Rectangle(12, 55, 180, 23));
         frame.add(tfSearch);
 
-        btnSearch = newButtonEnabled("Поиск", "icon-search", new Rectangle(204, 55, 98, 23));
+        JButton btnSearch = newButtonEnabled("Поиск", "icon-search", new Rectangle(204, 55, 98, 23));
         frame.add(btnSearch);
 
-        btnStopSearch = newButtonEnabled(null, "icon-close", new Rectangle(315, 55, 24, 23));
+        JButton btnStopSearch = newButtonEnabled(null, "icon-close", new Rectangle(315, 55, 24, 23));
         frame.add(btnStopSearch);
 
         JLabel lSearchOptions = newLabel("Критерии поиска:", new Rectangle(12, 82, 107, 24));
@@ -113,9 +118,9 @@ public class CashBoxForm {
         JLabel lStoreComboBox = newLabel("Склад:", new Rectangle(324, 82, 50, 24));
         frame.add(lStoreComboBox);
 
-        cbbxStores = newComboBox(setComboBoxStoresModel(), new Rectangle(372, 82, 286, 24));
-        cbbxStores.setEnabled(true);
-        frame.add(cbbxStores);
+        comboBoxStores = newComboBox(setComboBoxStoresModel(), new Rectangle(372, 82, 286, 24));
+        comboBoxStores.setEnabled(true);
+        frame.add(comboBoxStores);
 
         JPanel panelEmployeeInformation = newPanelEtched(694, 55, 635, 49);
         frame.add(panelEmployeeInformation);
@@ -123,7 +128,7 @@ public class CashBoxForm {
         JLabel lEmployeeInfo = newLabel("Менеджер по продажам:", new Rectangle(12, 12, 148, 25));
         panelEmployeeInformation.add(lEmployeeInfo);
 
-        lEmployeeName = newLabelColored("", new Rectangle(172, 13, 267, 20));
+        JLabel lEmployeeName = newLabelColored("", new Rectangle(172, 13, 267, 20));
         lEmployeeName.setText(currentEmployee.getName());
         panelEmployeeInformation.add(lEmployeeName);
 
@@ -213,8 +218,8 @@ public class CashBoxForm {
         cbFullPayment.setSelected(true);
         frame.add(cbFullPayment);
 
-        cbbxPaymentTypes = newComboBox(dbService.getPaymentTypes(), new Rectangle(1123, 437, 206, 25));
-        frame.add(cbbxPaymentTypes);
+        comboBoxPaymentTypes = newComboBox(dbService.getPaymentTypes(), new Rectangle(1123, 437, 206, 25));
+        frame.add(comboBoxPaymentTypes);
 
         JLabel lDiscount = newLabel("Скидка, %", new Rectangle(694, 471, 70, 20));
         frame.add(lDiscount);
@@ -291,7 +296,7 @@ public class CashBoxForm {
         btnAcceptOrder = newButton("Оформить заказ", new Rectangle(1015, 683, 151, 26));
         frame.add(btnAcceptOrder);
 
-        btnCancelOrder = newButtonEnabled("Отменить заказ", new Rectangle(1178, 683, 151, 26));
+        JButton btnCancelOrder = newButtonEnabled("Отменить заказ", new Rectangle(1178, 683, 151, 26));
         frame.add(btnCancelOrder);
 
         cbOrganizeDelivery = newCheckBoxDisabled("Оформить доставку", new Rectangle(694, 684, 151,24));
@@ -323,20 +328,12 @@ public class CashBoxForm {
         btnAcceptOrder.addActionListener(actionEvent -> addOrder());
     }
 
-    private void setSpinnerEnabled(@NotNull JCheckBox cb, JSpinner spinner) {
-        if (cb.isSelected()) {
-            spinner.setEnabled(true);
-        } else {
-            spinner.setEnabled(false);
-        }
+    private void setSpinnerEnabled(@NotNull JCheckBox cb, @NotNull JSpinner spinner) {
+        spinner.setEnabled(cb.isSelected());
     }
 
-    private void setSpinnerDisabled(@NotNull JCheckBox cb, JSpinner spinner) {
-        if (!(cb.isSelected())) {
-            spinner.setEnabled(true);
-        } else {
-            spinner.setEnabled(false);
-        }
+    private void setSpinnerDisabled(@NotNull JCheckBox cb, @NotNull JSpinner spinner) {
+        spinner.setEnabled(!(cb.isSelected()));
     }
 
     @NotNull
@@ -405,13 +402,13 @@ public class CashBoxForm {
             option = rbCategory.getText();
         }
 
-        if (cbbxStores.getSelectedIndex() == 0) {
+        if (comboBoxStores.getSelectedIndex() == 0) {
             result = dbService.searchProductsOnCashBox(column, query);
         } else {
             result = dbService.searchProductsOnCashBoxInStore(
                     column,
                     query,
-                    Objects.requireNonNull(cbbxStores.getSelectedItem()).toString()
+                    Objects.requireNonNull(comboBoxStores.getSelectedItem()).toString()
             );
         }
 
@@ -446,7 +443,7 @@ public class CashBoxForm {
     private void clearSearchResults() {
         tfSearch.setText("");
         rbName.setSelected(true);
-        cbbxStores.setSelectedIndex(0);
+        comboBoxStores.setSelectedIndex(0);
 
         if (!(Objects.isNull(table.getSelectedRow()))) {
             tableScroll.setViewportView(null);
@@ -480,7 +477,7 @@ public class CashBoxForm {
         lStoreNameVal.setText(currentStore.getStoreName());
         lStoreNameVal.setToolTipText(lStoreNameVal.getText());
 
-        lStoreAddressVal.setText(currentStore.getAdress());
+        lStoreAddressVal.setText(currentStore.getAddress());
         lStoreAddressVal.setToolTipText(lStoreAddressVal.getText());
 
         lStoreChiefName.setText(currentStore.getEmployeeName());
@@ -500,7 +497,7 @@ public class CashBoxForm {
     void setPaymentEnabled() {
         if (!(Objects.isNull(currentCustomer)) && !(Objects.isNull(currentProductOnCashBox))) {
             spinnerCount.setEnabled(true);
-            cbbxPaymentTypes.setEnabled(true);
+            comboBoxPaymentTypes.setEnabled(true);
             cbGiveDiscount.setEnabled(true);
             cbFullPayment.setEnabled(true);
             btnCountFinalPayment.setEnabled(true);
@@ -545,7 +542,7 @@ public class CashBoxForm {
         spinnerPrepayment.setValue(40);
         spinnerDiscount.setValue(0);
 
-        cbbxPaymentTypes.setSelectedIndex(0);
+        comboBoxPaymentTypes.setSelectedIndex(0);
 
         cbFullPayment.setSelected(true);
         cbGiveDiscount.setSelected(false);
@@ -560,11 +557,11 @@ public class CashBoxForm {
         btnCountFinalPayment.setEnabled(false);
         btnAcceptOrder.setEnabled(false);
 
-        cbbxPaymentTypes.setEnabled(false);
+        comboBoxPaymentTypes.setEnabled(false);
 
         tfSearch.setText("");
         rbName.setSelected(true);
-        cbbxStores.setSelectedIndex(0);
+        comboBoxStores.setSelectedIndex(0);
 
         table.setEnabled(true);
         btnPickCustomer.setEnabled(true);
@@ -733,7 +730,7 @@ public class CashBoxForm {
                     storeID,
                     currentEmployee.getID(),
                     Integer.parseInt(lSumCountVal.getText()),
-                    cbbxPaymentTypes.getSelectedIndex() + 1,
+                    comboBoxPaymentTypes.getSelectedIndex() + 1,
                     currentPriceAtFinal,
                     isDeliveryNeeded
                 );
@@ -744,7 +741,7 @@ public class CashBoxForm {
                     storeID,
                     currentEmployee.getID(),
                     Integer.parseInt(lSumCountVal.getText()),
-                    cbbxPaymentTypes.getSelectedIndex() + 1,
+                    comboBoxPaymentTypes.getSelectedIndex() + 1,
                     currentPriceAtFinal,
                     currentPriceAtFinal,
                     isDeliveryNeeded

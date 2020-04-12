@@ -3,7 +3,7 @@ package com.ecoforma.db.entities;
 public class Store {
     private int ID;
     private String name;
-    private String adress;
+    private String address;
     private int employee_ID;
     private byte deleted;
 
@@ -23,12 +23,12 @@ public class Store {
         this.name = name;
     }
 
-    public String getAdress() {
-        return adress;
+    public String getAddress() {
+        return address;
     }
 
-    public void setAdress(String adress) {
-        this.adress = adress;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public int getEmployee_ID() {

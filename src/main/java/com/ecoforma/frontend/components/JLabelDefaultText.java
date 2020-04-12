@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class JLabelDefaultText extends JLabel {
-    private String defaultText;
+    private final String defaultText;
 
     public JLabelDefaultText(String defaultText, Rectangle r) {
         this.defaultText = defaultText;

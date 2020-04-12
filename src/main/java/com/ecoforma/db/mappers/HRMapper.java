@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public interface HRMapper {
     @Select("SELECT employee.ID, employee.name, employee.dateOfBirth, employee.passport, employee.education, " +
-            "employee.adress, employee.phoneNumber, employee.email, employee.dateOfEmployment, post.name AS 'post', department.name AS 'department', " +
+            "employee.address, employee.phoneNumber, employee.email, employee.dateOfEmployment, post.name AS 'post', department.name AS 'department', " +
             "employee.personalSalary FROM employee JOIN post ON employee.post_ID = post.ID " +
             "JOIN department ON employee.department_ID = department.ID WHERE employee.deleted = 0;")
     ArrayList<EmployeeView> getAllEmployees();
@@ -23,7 +23,7 @@ public interface HRMapper {
     @Select("SELECT name FROM department WHERE deleted = 0")
     String[] getDepartmentNames();
 
-    @Select("SELECT employee.ID, employee.name, employee.dateOfBirth, employee.passport, employee.education, employee.adress, " +
+    @Select("SELECT employee.ID, employee.name, employee.dateOfBirth, employee.passport, employee.education, employee.address, " +
             "employee.phoneNumber, employee.email, employee.dateOfEmployment, post.name AS 'post', department.name AS 'department', " +
             "employee.personalSalary FROM employee JOIN post ON employee.post_ID = post.ID JOIN department ON employee.department_ID = department.ID " +
             "WHERE (${column} LIKE ${query} AND employee.deleted = 0);")
@@ -42,7 +42,7 @@ public interface HRMapper {
     void deleteEmployee(@Param("ID") int ID);
 
     @Update("UPDATE employee SET name = #{name}, dateOfBirth = #{dateOfBirth}, passport = #{passport}, " +
-            "education = #{education}, adress = #{adress}, phoneNumber = #{phoneNumber}, email = #{email}, " +
+            "education = #{education}, address = #{address}, phoneNumber = #{phoneNumber}, email = #{email}, " +
             "post_ID = #{post_ID}, department_ID = #{department_ID}, personalSalary = #{personalSalary} WHERE ID = #{ID};")
     void updateEmployee(
             @Param("ID") int ID,
@@ -50,7 +50,7 @@ public interface HRMapper {
             @Param("dateOfBirth") String dateOfBirth,
             @Param("passport") String passport,
             @Param("education") String education,
-            @Param("adress") String adress,
+            @Param("address") String address,
             @Param("phoneNumber") String phoneNumber,
             @Param("email") String email,
             @Param("post_ID") int post_ID,
@@ -83,15 +83,15 @@ public interface HRMapper {
     @Delete("DELETE FROM registrationData WHERE employee_ID = #{employee_ID}")
     void deleteRegistrationData(@Param("employee_ID") int employee_ID);
 
-    @Insert("INSERT INTO employee (name, dateOfBirth, passport, education, adress, phoneNumber, email, dateOfEmployment, " +
-            "post_ID, department_ID, personalSalary, deleted) VALUES (#{name}, #{dateOfBirth}, #{passport}, #{education}, #{adress}, " +
+    @Insert("INSERT INTO employee (name, dateOfBirth, passport, education, address, phoneNumber, email, dateOfEmployment, " +
+            "post_ID, department_ID, personalSalary, deleted) VALUES (#{name}, #{dateOfBirth}, #{passport}, #{education}, #{address}, " +
             "#{phoneNumber}, #{email}, GETDATE(), #{post_ID}, #{department_ID}, (SELECT salary FROM post WHERE ID = #{post_ID}), 0);")
     void insertEmployee(
             @Param("name") String name,
             @Param("dateOfBirth") String dateOfBirth,
             @Param("passport") String passport,
             @Param("education") String education,
-            @Param("adress") String adress,
+            @Param("address") String address,
             @Param("phoneNumber") String phoneNumber,
             @Param("email") String email,
             @Param("post_ID") int post_ID,

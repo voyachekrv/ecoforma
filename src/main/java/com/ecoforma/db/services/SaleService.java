@@ -185,10 +185,10 @@ public class SaleService {
         }
     }
 
-    public void updateCustomer(int ID, String name, String adress, String phoneNumber) {
+    public void updateCustomer(int ID, String name, String address, String phoneNumber) {
         try (SqlSession session = DbSession.startSession()) {
             SaleMapper mapper = session.getMapper(SaleMapper.class);
-            mapper.updateCustomer(ID, name, adress, phoneNumber);
+            mapper.updateCustomer(ID, name, address, phoneNumber);
             session.commit();
         }
     }
@@ -201,18 +201,18 @@ public class SaleService {
         }
     }
 
-    public void insertLegalPerson(String name, String adress, int сontractWithLegal_ID, String phoneNumber) {
+    public void insertLegalPerson(String name, String address, int contractWithLegal_ID, String phoneNumber) {
         try (SqlSession session = DbSession.startSession()) {
             SaleMapper mapper = session.getMapper(SaleMapper.class);
-            mapper.insertLegalPerson(name, adress, сontractWithLegal_ID, phoneNumber);
+            mapper.insertLegalPerson(name, address, contractWithLegal_ID, phoneNumber);
             session.commit();
         }
     }
 
-    public void insertIndividualPerson(String name, String adress, String phoneNumber) {
+    public void insertIndividualPerson(String name, String address, String phoneNumber) {
         try (SqlSession session = DbSession.startSession()) {
             SaleMapper mapper = session.getMapper(SaleMapper.class);
-            mapper.insertIndividualPerson(name, adress, phoneNumber);
+            mapper.insertIndividualPerson(name, address, phoneNumber);
             session.commit();
         }
     }

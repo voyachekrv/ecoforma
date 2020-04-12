@@ -9,50 +9,50 @@ import org.apache.ibatis.annotations.Update;
 import java.util.ArrayList;
 
 public interface SaleMapper {
-    @Select("SELECT customer.ID, customer.name, customer.adress, customer.phoneNumber, сontractWithLegal.name " +
-            "AS 'contractName', сontractWithLegal.dateOfEnd AS 'endOfContract' " +
-            "FROM customer JOIN сontractWithLegal ON customer.сontractWithLegal_ID = сontractWithLegal.ID " +
+    @Select("SELECT customer.ID, customer.name, customer.address, customer.phoneNumber, contractWithLegal.name " +
+            "AS 'contractName', contractWithLegal.dateOfEnd AS 'endOfContract' " +
+            "FROM customer JOIN contractWithLegal ON customer.contractWithLegal_ID = contractWithLegal.ID " +
             "WHERE (customer.isLegalPerson = 1 AND customer.deleted = 0);")
     ArrayList<LegalPersonView> getAllLegalPersons();
 
-    @Select("SELECT ID, name FROM сontractWithLegal WHERE deleted = 0;")
+    @Select("SELECT ID, name FROM contractWithLegal WHERE deleted = 0;")
     ArrayList<ContractView> getAllContractsModel();
 
-    @Select("SELECT ID, name, dateOfEnd FROM сontractWithLegal WHERE deleted = 0;")
+    @Select("SELECT ID, name, dateOfEnd FROM contractWithLegal WHERE deleted = 0;")
     ArrayList<Contract> getAllContracts();
 
-    @Select("SELECT ID, name, dateOfEnd FROM сontractWithLegal WHERE deleted = 0 AND ID = #{ID};")
+    @Select("SELECT ID, name, dateOfEnd FROM contractWithLegal WHERE deleted = 0 AND ID = #{ID};")
     Contract getContractByID(@Param("ID") int ID);
 
-    @Select("SELECT ID, name, adress, phoneNumber FROM customer WHERE isLegalPerson = 0 AND deleted = 0;")
+    @Select("SELECT ID, name, address, phoneNumber FROM customer WHERE isLegalPerson = 0 AND deleted = 0;")
     ArrayList<IndividualPersonView> getAllIndividualPersons();
 
-    @Select("SELECT customer.ID, customer.name, customer.adress, customer.phoneNumber, сontractWithLegal.name " +
-            "AS 'contractName', сontractWithLegal.dateOfEnd AS 'endOfContract' " +
-            "FROM customer JOIN сontractWithLegal ON customer.сontractWithLegal_ID = сontractWithLegal.ID " +
+    @Select("SELECT customer.ID, customer.name, customer.address, customer.phoneNumber, contractWithLegal.name " +
+            "AS 'contractName', contractWithLegal.dateOfEnd AS 'endOfContract' " +
+            "FROM customer JOIN contractWithLegal ON customer.contractWithLegal_ID = contractWithLegal.ID " +
             "WHERE (customer.ID = #{ID} AND customer.isLegalPerson = 1 AND customer.deleted = 0);")
     LegalPersonView getLegalPersonByID(@Param("ID") int ID);
 
-    @Select("SELECT ID, name, adress, phoneNumber FROM customer WHERE ID = #{ID} AND isLegalPerson = 0 AND deleted = 0;")
+    @Select("SELECT ID, name, address, phoneNumber FROM customer WHERE ID = #{ID} AND isLegalPerson = 0 AND deleted = 0;")
     IndividualPersonView getIndividualPersonByID(@Param("ID") int ID);
 
-    @Select("SELECT ID FROM сontractWithLegal WHERE name = #{name} AND dateOfEnd = #{dateOfEnd} AND deleted = 0;")
+    @Select("SELECT ID FROM contractWithLegal WHERE name = #{name} AND dateOfEnd = #{dateOfEnd} AND deleted = 0;")
     int getContractID(@Param("name") String name, @Param("dateOfEnd") String dateOfEnd);
 
-    @Select("SELECT ID FROM сontractWithLegal WHERE name = #{name} AND deleted = 0;")
+    @Select("SELECT ID FROM contractWithLegal WHERE name = #{name} AND deleted = 0;")
     int getContractIDByName(@Param("name") String name);
 
-    @Select("SELECT customer.ID, customer.name, customer.adress, customer.phoneNumber, сontractWithLegal.name " +
-            "AS 'contractName', сontractWithLegal.dateOfEnd AS 'endOfContract' " +
-            "FROM customer JOIN сontractWithLegal ON customer.сontractWithLegal_ID = сontractWithLegal.ID " +
+    @Select("SELECT customer.ID, customer.name, customer.address, customer.phoneNumber, contractWithLegal.name " +
+            "AS 'contractName', contractWithLegal.dateOfEnd AS 'endOfContract' " +
+            "FROM customer JOIN contractWithLegal ON customer.contractWithLegal_ID = contractWithLegal.ID " +
             "WHERE (customer.isLegalPerson = 1 AND customer.deleted = 0" +
             "AND customer.name LIKE ${query});")
     ArrayList<LegalPersonView> searchLegalPerson(@Param("query") String query);
 
-    @Select("SELECT ID, name, adress, phoneNumber FROM customer WHERE isLegalPerson = 0 AND deleted = 0 AND name LIKE ${query};")
+    @Select("SELECT ID, name, address, phoneNumber FROM customer WHERE isLegalPerson = 0 AND deleted = 0 AND name LIKE ${query};")
     ArrayList<IndividualPersonView> searchIndividualPerson(@Param("query") String query);
 
-    @Select("SELECT ID, name, dateOfEnd FROM сontractWithLegal WHERE deleted = 0 AND name LIKE ${query}")
+    @Select("SELECT ID, name, dateOfEnd FROM contractWithLegal WHERE deleted = 0 AND name LIKE ${query}")
     ArrayList<Contract> searchContracts(@Param("query") String query);
 
     @Select("SELECT product_to_store.ID AS 'productOnStoreID', product.ID AS 'productID', product.name AS 'productName', " +
@@ -95,24 +95,22 @@ public interface SaleMapper {
             @Param("store") String store
     );
 
-    @Select("SELECT store.name AS 'storeName', store.adress, employee.name AS 'employeeName', " +
+    @Select("SELECT store.name AS 'storeName', store.address, employee.name AS 'employeeName', " +
             "employee.phoneNumber " +
             "FROM store JOIN employee ON store.employee_ID = employee.ID " +
             "WHERE store.name = #{store};")
     StoreOnCashBox getStoreInformation(@Param("store") String store);
 
-    @Select("SELECT ID, name, adress, phoneNumber FROM customer WHERE deleted = 0 AND isLegalPerson = #{isLegal};")
+    @Select("SELECT ID, name, address, phoneNumber FROM customer WHERE deleted = 0 AND isLegalPerson = #{isLegal};")
     ArrayList<Customer> getCustomersOnList(@Param("isLegal") int isLegal);
 
-    @Select("SELECT ID, name, adress, phoneNumber FROM customer WHERE deleted = 0 " +
+    @Select("SELECT ID, name, address, phoneNumber FROM customer WHERE deleted = 0 " +
             "AND ${column} LIKE ${query} AND isLegalPerson = #{isLegal}")
     ArrayList<Customer> searchCustomerOnList(@Param("column") String column, @Param("query") String query, @Param("isLegal") int isLegal);
 
     @Select("SELECT ID FROM store WHERE name = #{name};")
     int getStoreID(String name);
-
-
-
+    
     @Select("SELECT orders.ID, orders.date, customer.name AS 'customer', product.name AS 'product', store.name AS 'store', " +
             "employee.name AS 'employee', orders.count, paymentType.name AS 'paymentType', orders.prepayment, " +
             "orders.fullPayment FROM orders " +
@@ -149,47 +147,47 @@ public interface SaleMapper {
             "orders.prepayment IS NOT NULL AND ${column} LIKE ${query};")
     ArrayList<OrderWithPrepayment> searchOrdersWithPrepayment(@Param("column") String column, @Param("query") String query);
 
-    @Update("UPDATE сontractWithLegal SET deleted = 1 WHERE ID = #{ID} AND deleted = 0;")
+    @Update("UPDATE contractWithLegal SET deleted = 1 WHERE ID = #{ID} AND deleted = 0;")
     void deleteContract(@Param("ID") int ID);
 
     @Update("UPDATE customer SET deleted = 1 WHERE ID = #{ID} AND deleted = 0;")
     void deleteCustomer(@Param("ID") int ID);
 
-    @Update("UPDATE customer SET name = #{name}, adress = #{adress}, phoneNumber = #{phoneNumber} WHERE ID = #{ID} AND deleted = 0;")
+    @Update("UPDATE customer SET name = #{name}, address = #{address}, phoneNumber = #{phoneNumber} WHERE ID = #{ID} AND deleted = 0;")
     void updateCustomer(
             @Param("ID") int ID,
             @Param("name") String name,
-            @Param("adress") String adress,
+            @Param("address") String address,
             @Param("phoneNumber") String phoneNumber
     );
 
-    @Update("UPDATE customer SET сontractWithLegal_ID = #{сontractWithLegal_ID} WHERE ID = #{ID} AND deleted = 0;")
-    void updateContractWithLegal(@Param("ID") int ID, @Param("сontractWithLegal_ID") int сontractWithLegal_ID);
+    @Update("UPDATE customer SET contractWithLegal_ID = #{contractWithLegal_ID} WHERE ID = #{ID} AND deleted = 0;")
+    void updateContractWithLegal(@Param("ID") int ID, @Param("contractWithLegal_ID") int contractWithLegal_ID);
 
-    @Update("UPDATE сontractWithLegal SET name = #{name}, dateOfEnd = #{dateOfEnd} WHERE ID = #{ID} AND deleted = 0;")
+    @Update("UPDATE contractWithLegal SET name = #{name}, dateOfEnd = #{dateOfEnd} WHERE ID = #{ID} AND deleted = 0;")
     void updateContract(@Param("ID") int ID, @Param("name") String name, @Param("dateOfEnd") String dateOfEnd);
 
     @Update("UPDATE orders SET fullPayment = #{surcharge} WHERE ID = #{ID}")
     void addSurcharge(@Param("ID") int ID, @Param("surcharge") int surcharge);
 
-    @Insert("INSERT INTO customer (name, adress, isLegalPerson, сontractWithLegal_ID, phoneNumber, deleted) " +
-            "VALUES (#{name}, #{adress}, 1, #{сontractWithLegal_ID}, #{phoneNumber}, 0)")
+    @Insert("INSERT INTO customer (name, address, isLegalPerson, contractWithLegal_ID, phoneNumber, deleted) " +
+            "VALUES (#{name}, #{address}, 1, #{contractWithLegal_ID}, #{phoneNumber}, 0)")
     void insertLegalPerson(
             @Param("name") String name,
-            @Param("adress") String adress,
-            @Param("сontractWithLegal_ID") int сontractWithLegal_ID,
+            @Param("address") String address,
+            @Param("contractWithLegal_ID") int contractWithLegal_ID,
             @Param("phoneNumber") String phoneNumber
     );
 
-    @Insert("INSERT INTO customer (name, adress, isLegalPerson, сontractWithLegal_ID, phoneNumber, deleted) " +
-            "VALUES (#{name}, #{adress}, 0, NULL, #{phoneNumber}, 0)")
+    @Insert("INSERT INTO customer (name, address, isLegalPerson, contractWithLegal_ID, phoneNumber, deleted) " +
+            "VALUES (#{name}, #{address}, 0, NULL, #{phoneNumber}, 0)")
     void insertIndividualPerson(
             @Param("name") String name,
-            @Param("adress") String adress,
+            @Param("address") String address,
             @Param("phoneNumber") String phoneNumber
     );
 
-    @Insert("INSERT INTO сontractWithLegal (name, dateOfEnd, deleted) VALUES (#{name}, #{dateOfEnd}, 0);")
+    @Insert("INSERT INTO contractWithLegal (name, dateOfEnd, deleted) VALUES (#{name}, #{dateOfEnd}, 0);")
     void insertContract(@Param("name") String name, @Param("dateOfEnd") String dateOfEnd);
 
     @Insert("INSERT INTO orders " +

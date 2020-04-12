@@ -3,7 +3,7 @@ package com.ecoforma.db.entities;
 public class IndividualPersonView {
     private int ID;
     private String name;
-    private String adress;
+    private String address;
     private String phoneNumber;
 
     public int getID() {
@@ -22,12 +22,12 @@ public class IndividualPersonView {
         this.name = name;
     }
 
-    public String getAdress() {
-        return adress;
+    public String getAddress() {
+        return address;
     }
 
-    public void setAdress(String adress) {
-        this.adress = adress;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getPhoneNumber() {

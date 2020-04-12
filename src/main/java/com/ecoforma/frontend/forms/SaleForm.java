@@ -31,15 +31,15 @@ public class SaleForm {
     JRadioButton rbLegal, rbIndividual;
     JTable tableCustomers;
     JScrollPane tableScroll;
-    JTextField tfName, tfAdress, tfPhoneNumber;
-    JComboBox cbbxContract;
+    JTextField tfName, tfAddress, tfPhoneNumber;
+    JComboBox<String> cbbxContract;
     JButton btnContracts, btnAcceptChanges, btnNewCustomer, btnDelete;
 
     DefaultTableModel currentTableCustomersModel;
     Action saveCustomerListener;
     Action searchListener;
 
-    private String[] columnsLegalsHeader = new String[] {
+    private final String[] columnsLegalsHeader = new String[] {
             "Код",
             "Название",
             "Юридический адрес",
@@ -48,7 +48,7 @@ public class SaleForm {
             "Дата окончания действия контракта"
     };
 
-    private String[] columnsIndividualHeader = new String[] {
+    private final String[] columnsIndividualHeader = new String[] {
             "Код",
             "ФИО",
             "Адрес",
@@ -114,8 +114,8 @@ public class SaleForm {
         JLabel lName = newLabel("Имя", new Rectangle(12, 572, 318, 20));
         panelCustomers.add(lName);
 
-        JLabel lAdress = newLabel("Адрес", new Rectangle(339, 572, 318, 20));
-        panelCustomers.add(lAdress);
+        JLabel laddress = newLabel("Адрес", new Rectangle(339, 572, 318, 20));
+        panelCustomers.add(laddress);
 
         JLabel lPhoneNumber = newLabel("Телефон", new Rectangle(669, 572, 318, 20));
         panelCustomers.add(lPhoneNumber);
@@ -127,9 +127,9 @@ public class SaleForm {
         addSaveKeyCombination(tfName);
         panelCustomers.add(tfName);
 
-        tfAdress = newTextFieldBigFont(200, new Rectangle(339, 600, 318, 32));
-        addSaveKeyCombination(tfAdress);
-        panelCustomers.add(tfAdress);
+        tfAddress = newTextFieldBigFont(200, new Rectangle(339, 600, 318, 32));
+        addSaveKeyCombination(tfAddress);
+        panelCustomers.add(tfAddress);
 
         tfPhoneNumber = newTextFieldBigFont(12, new Rectangle(669, 600, 318, 32));
         addSaveKeyCombination(tfPhoneNumber);
@@ -206,7 +206,7 @@ public class SaleForm {
             initialTableModel.insertRow(i, new Object[]{
                     legals.get(i).getID(),
                     legals.get(i).getName(),
-                    legals.get(i).getAdress(),
+                    legals.get(i).getAddress(),
                     legals.get(i).getPhoneNumber(),
                     legals.get(i).getContractName(),
                     legals.get(i).getEndOfContract()
@@ -227,7 +227,7 @@ public class SaleForm {
             initialTableModel.insertRow(i, new Object[] {
                     individuals.get(i).getID(),
                     individuals.get(i).getName(),
-                    individuals.get(i).getAdress(),
+                    individuals.get(i).getAddress(),
                     individuals.get(i).getPhoneNumber()
             });
         }
@@ -269,7 +269,7 @@ public class SaleForm {
 
     private void switchBetweenPersonTypes() {
         tfName.setText("");
-        tfAdress.setText("");
+        tfAddress.setText("");
         tfPhoneNumber.setText("");
 
         btnAcceptChanges.setEnabled(false);
@@ -314,14 +314,14 @@ public class SaleForm {
         if (rbLegal.isSelected()) {
             currentIndividualPerson = null;
             currentLegalPerson = dbService.getLegalPersonByID(Integer.parseInt(tableCustomers.getModel().getValueAt(rowIndex, 0).toString()));
-            tfAdress.setText(currentLegalPerson.getAdress());
+            tfAddress.setText(currentLegalPerson.getAddress());
             tfName.setText(currentLegalPerson.getName());
             tfPhoneNumber.setText(currentLegalPerson.getPhoneNumber());
             cbbxContract.setSelectedItem(currentLegalPerson.getContractName());
         } else {
             currentLegalPerson = null;
             currentIndividualPerson = dbService.getIndividualPersonByID(Integer.parseInt(tableCustomers.getModel().getValueAt(rowIndex, 0).toString()));
-            tfAdress.setText(currentIndividualPerson.getAdress());
+            tfAddress.setText(currentIndividualPerson.getAddress());
             tfName.setText(currentIndividualPerson.getName());
             tfPhoneNumber.setText(currentIndividualPerson.getPhoneNumber());
         }
@@ -335,7 +335,7 @@ public class SaleForm {
         btnDelete.setEnabled(false);
 
         tfName.setText("");
-        tfAdress.setText("");
+        tfAddress.setText("");
         tfPhoneNumber.setText("");
         cbbxContract.setSelectedIndex(0);
     }
@@ -418,11 +418,11 @@ public class SaleForm {
         if (result == JOptionPane.YES_OPTION) {
             if (
                     checkTextField(tfName.getText(), tfName.getColumns()) &&
-                            checkTextField(tfAdress.getText(), tfAdress.getColumns()) &&
+                            checkTextField(tfAddress.getText(), tfAddress.getColumns()) &&
                             checkNumericTextField(tfPhoneNumber.getText(), tfPhoneNumber.getColumns())
             ) {
                 if (rbLegal.isSelected()) {
-                    dbService.updateCustomer(currentLegalPerson.getID(), tfName.getText(), tfAdress.getText(), tfPhoneNumber.getText());
+                    dbService.updateCustomer(currentLegalPerson.getID(), tfName.getText(), tfAddress.getText(), tfPhoneNumber.getText());
 
                     int newContractID = dbService.getContractID((String) cbbxContract.getSelectedItem());
                     dbService.updateContractWithLegal(currentLegalPerson.getID(), newContractID);
@@ -430,7 +430,7 @@ public class SaleForm {
                     currentLegalPerson = null;
                     currentTableCustomersModel = setInitialTableLegalsModel();
                 } else {
-                    dbService.updateCustomer(currentIndividualPerson.getID(), tfName.getText(), tfAdress.getText(), tfPhoneNumber.getText());
+                    dbService.updateCustomer(currentIndividualPerson.getID(), tfName.getText(), tfAddress.getText(), tfPhoneNumber.getText());
 
                     currentIndividualPerson = null;
                     currentTableCustomersModel = setInitialTableIndividualModel();
@@ -459,15 +459,15 @@ public class SaleForm {
         if (result == JOptionPane.YES_OPTION) {
             if (
                     checkTextField(tfName.getText(), tfName.getColumns()) &&
-                            checkTextField(tfAdress.getText(), tfAdress.getColumns()) &&
+                            checkTextField(tfAddress.getText(), tfAddress.getColumns()) &&
                             checkNumericTextField(tfPhoneNumber.getText(), tfPhoneNumber.getColumns())
             ) {
                 if (rbLegal.isSelected()) {
                     int contractID = dbService.getContractID((String) cbbxContract.getSelectedItem());
-                    dbService.insertLegalPerson(tfName.getText(), tfAdress.getText(), contractID, tfPhoneNumber.getText());
+                    dbService.insertLegalPerson(tfName.getText(), tfAddress.getText(), contractID, tfPhoneNumber.getText());
                     currentTableCustomersModel = setInitialTableLegalsModel();
                 } else {
-                    dbService.insertIndividualPerson(tfName.getText(), tfAdress.getText(), tfPhoneNumber.getText());
+                    dbService.insertIndividualPerson(tfName.getText(), tfAddress.getText(), tfPhoneNumber.getText());
                     currentTableCustomersModel = setInitialTableIndividualModel();
                 }
 
@@ -518,7 +518,7 @@ public class SaleForm {
                     searchModel.insertRow(i, new Object[] {
                             legalPersonResult.get(i).getID(),
                             legalPersonResult.get(i).getName(),
-                            legalPersonResult.get(i).getAdress(),
+                            legalPersonResult.get(i).getAddress(),
                             legalPersonResult.get(i).getPhoneNumber(),
                             legalPersonResult.get(i).getContractName(),
                             legalPersonResult.get(i).getEndOfContract()
@@ -549,7 +549,7 @@ public class SaleForm {
                     searchModel.insertRow(i, new Object[] {
                             individualPersonResult.get(i).getID(),
                             individualPersonResult.get(i).getName(),
-                            individualPersonResult.get(i).getAdress(),
+                            individualPersonResult.get(i).getAddress(),
                             individualPersonResult.get(i).getPhoneNumber(),
                     });
                 }

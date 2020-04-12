@@ -25,23 +25,23 @@ import static com.ecoforma.frontend.services.JComponentFactory.*;
 
 public class HRForm {
     CompanyFrame frame;
-    private JTextField tfSearch;
-    private JRadioButton rbID, rbName, rbPassport, rbEducation, rbAdress, rbPhoneNumber, rbEmail, rbPost, rbDepartment;
-    private JScrollPane tableScroll;
+    private final JTextField tfSearch;
+    private final JRadioButton rbID, rbName, rbPassport, rbEducation, rbAddress, rbPhoneNumber, rbEmail, rbPost, rbDepartment;
+    private final JScrollPane tableScroll;
+    private final JTextField tfName, tfPassport, tfEducation, tfAddress, tfPhoneNumber, tfEmail;
+    private final JSpinner spinnerPersonalSalary;
+    private final JComboBox<String> comboBoxPost, comboBoxDepartment;
+    private final JTextField tfLogin, tfPassword;
+    private final JComboBox<String> comboBoxRole;
+    private final JCheckBox cbAllowSignIn;
+    private final JButton btnAcceptChanges;
+    private final JButton btnDeleteEmployee;
+    private final JButton btnUnpick;
+    private final JDateSpinner dateSpinner;
     private JTable table;
-    private JTextField tfName, tfPassport, tfEducation, tfAddress, tfPhoneNumber, tfEmail;
-    private JSpinner spinnerPersonalSalary;
-    private JComboBox cbboxPost, cbboxDepartment;
-    private JTextField tfLogin, tfPassword;
-    private JComboBox cbboxRole;
-    private JCheckBox cbAllowSignIn;
-    private JButton btnAcceptChanges;
-    private JButton btnDeleteEmployee;
-    private JButton btnUnpick;
-    private JDateSpinner dateSpinner;
 
     private Action actionListener;
-    private String[] columnsHeader = new String[] {
+    private final String[] columnsHeader = new String[] {
             "Табельный номер",
             "ФИО",
             "Дата рождения",
@@ -59,7 +59,7 @@ public class HRForm {
     private Employee currentEmployee;
     private RegistrationData currentRegistrationData;
 
-    private HRService dbService;
+    private final HRService dbService;
 
     HRForm(String department) {
         dbService = new HRService();
@@ -105,8 +105,8 @@ public class HRForm {
         rbEducation = newRadioButton("Образование", "employee.education", new Rectangle(675, 66, 106, 23));
         frame.getContentPane().add(rbEducation);
 
-        rbAdress = newRadioButton("Адрес", "employee.adress", new Rectangle(777, 66, 67, 23));
-        frame.getContentPane().add(rbAdress);
+        rbAddress = newRadioButton("Адрес", "employee.address", new Rectangle(777, 66, 67, 23));
+        frame.getContentPane().add(rbAddress);
 
         rbPhoneNumber = newRadioButton("Номер телефона", "employee.phoneNumber", new Rectangle(840, 66, 125, 23));
         frame.getContentPane().add(rbPhoneNumber);
@@ -125,7 +125,7 @@ public class HRForm {
         searchGroup.add(rbName);
         searchGroup.add(rbPassport);
         searchGroup.add(rbEducation);
-        searchGroup.add(rbAdress);
+        searchGroup.add(rbAddress);
         searchGroup.add(rbPhoneNumber);
         searchGroup.add(rbEmail);
         searchGroup.add(rbPost);
@@ -194,16 +194,16 @@ public class HRForm {
         JLabel lPost = newLabel("Должность", new Rectangle (807, 538, 150, 14));
         frame.getContentPane().add(lPost);
 
-        cbboxPost = newComboBox(dbService.getPostNames(), new Rectangle(807, 562, 185, 23));
-        addSaveKeyCombination(cbboxPost);
-        frame.getContentPane().add(cbboxPost);
+        comboBoxPost = newComboBox(dbService.getPostNames(), new Rectangle(807, 562, 185, 23));
+        addSaveKeyCombination(comboBoxPost);
+        frame.getContentPane().add(comboBoxPost);
 
         JLabel lDepartment = newLabel("Отдел", new Rectangle (1007, 538, 150, 14));
         frame.getContentPane().add(lDepartment);
 
-        cbboxDepartment = newComboBox(dbService.getDepartmentNames(), new Rectangle(1007, 562, 220, 23));
-        addSaveKeyCombination(cbboxDepartment);
-        frame.getContentPane().add(cbboxDepartment);
+        comboBoxDepartment = newComboBox(dbService.getDepartmentNames(), new Rectangle(1007, 562, 220, 23));
+        addSaveKeyCombination(comboBoxDepartment);
+        frame.getContentPane().add(comboBoxDepartment);
 
         JLabel lLogin = newLabel("Логин", new Rectangle (807, 596, 150, 14));
         frame.getContentPane().add(lLogin);
@@ -222,9 +222,9 @@ public class HRForm {
         JLabel lRole = newLabel("Роль в системе", new Rectangle (1007, 596, 150, 14));
         frame.getContentPane().add(lRole);
 
-        cbboxRole = newComboBox(dbService.getRoleNames(), new Rectangle(1007, 621, 220, 23));
-        addSaveKeyCombination(cbboxRole);
-        frame.getContentPane().add(cbboxRole);
+        comboBoxRole = newComboBox(dbService.getRoleNames(), new Rectangle(1007, 621, 220, 23));
+        addSaveKeyCombination(comboBoxRole);
+        frame.getContentPane().add(comboBoxRole);
 
         cbAllowSignIn = newCheckBoxDisabled("Позволить регистрироваться в системе", new Rectangle(1007, 680, 270, 23));
         cbAllowSignIn.setSelected(false);
@@ -296,11 +296,11 @@ public class HRForm {
             if (cbAllowSignIn.isSelected()) {
                 tfLogin.setEnabled(true);
                 tfPassword.setEnabled(true);
-                cbboxRole.setEnabled(true);
+                comboBoxRole.setEnabled(true);
             } else {
                 tfLogin.setEnabled(false);
                 tfPassword.setEnabled(false);
-                cbboxRole.setEnabled(false);
+                comboBoxRole.setEnabled(false);
             }
         });
 
@@ -358,7 +358,7 @@ public class HRForm {
                     employees.get(i).getDateOfBirth(),
                     employees.get(i).getPassport(),
                     employees.get(i).getEducation(),
-                    employees.get(i).getAdress(),
+                    employees.get(i).getAddress(),
                     employees.get(i).getPhoneNumber(),
                     employees.get(i).getEmail(),
                     employees.get(i).getDateOfEmployment(),
@@ -379,14 +379,14 @@ public class HRForm {
         tfName.setText(currentEmployee.getName());
         dateSpinner.setDateToSpinner(currentEmployee.getDateOfBirth());
         tfEmail.setText(currentEmployee.getEmail());
-        tfAddress.setText(currentEmployee.getAdress());
+        tfAddress.setText(currentEmployee.getAddress());
         tfEducation.setText(currentEmployee.getEducation());
         tfPassport.setText(currentEmployee.getPassport());
         spinnerPersonalSalary.setValue(currentEmployee.getPersonalSalary());
         tfPhoneNumber.setText(currentEmployee.getPhoneNumber());
 
-        cbboxPost.setSelectedIndex(currentEmployee.getPost_ID() - 1);
-        cbboxDepartment.setSelectedIndex(currentEmployee.getDepartment_ID() - 1);
+        comboBoxPost.setSelectedIndex(currentEmployee.getPost_ID() - 1);
+        comboBoxDepartment.setSelectedIndex(currentEmployee.getDepartment_ID() - 1);
 
         tfName.setEnabled(true);
         dateSpinner.setEnabled(true);
@@ -397,8 +397,8 @@ public class HRForm {
         spinnerPersonalSalary.setEnabled(true);
         tfPhoneNumber.setEnabled(true);
 
-        cbboxPost.setEnabled(true);
-        cbboxDepartment.setEnabled(true);
+        comboBoxPost.setEnabled(true);
+        comboBoxDepartment.setEnabled(true);
 
         btnAcceptChanges.setEnabled(true);
         btnDeleteEmployee.setEnabled(true);
@@ -411,21 +411,21 @@ public class HRForm {
         if (!(Objects.isNull(currentRegistrationData))) {
             tfLogin.setEnabled(true);
             tfPassword.setEnabled(true);
-            cbboxRole.setEnabled(true);
+            comboBoxRole.setEnabled(true);
 
             cbAllowSignIn.setSelected(true);
             tfLogin.setText(currentRegistrationData.getLogin());
             tfPassword.setText(currentRegistrationData.getPassword());
-            cbboxRole.setSelectedIndex(currentRegistrationData.getRole_ID() - 1);
+            comboBoxRole.setSelectedIndex(currentRegistrationData.getRole_ID() - 1);
         } else {
             tfLogin.setText("");
             tfPassword.setText("");
-            cbboxRole.setSelectedIndex(0);
+            comboBoxRole.setSelectedIndex(0);
             cbAllowSignIn.setSelected(false);
 
             tfLogin.setEnabled(false);
             tfPassword.setEnabled(false);
-            cbboxRole.setEnabled(false);
+            comboBoxRole.setEnabled(false);
         }
     }
 
@@ -466,11 +466,11 @@ public class HRForm {
         spinnerPersonalSalary.setEnabled(false);
         tfPhoneNumber.setEnabled(false);
 
-        cbboxPost.setSelectedIndex(0);
-        cbboxPost.setEnabled(false);
+        comboBoxPost.setSelectedIndex(0);
+        comboBoxPost.setEnabled(false);
 
-        cbboxDepartment.setSelectedIndex(0);
-        cbboxDepartment.setEnabled(false);
+        comboBoxDepartment.setSelectedIndex(0);
+        comboBoxDepartment.setEnabled(false);
 
         btnAcceptChanges.setEnabled(false);
         btnDeleteEmployee.setEnabled(false);
@@ -497,9 +497,9 @@ public class HRForm {
         } else if (rbEducation.isSelected()) {
             column = rbEducation.getActionCommand();
             option = rbEducation.getText();
-        } else if (rbAdress.isSelected()) {
-            column = rbAdress.getActionCommand();
-            option = rbAdress.getText();
+        } else if (rbAddress.isSelected()) {
+            column = rbAddress.getActionCommand();
+            option = rbAddress.getText();
         } else if (rbPhoneNumber.isSelected()) {
             column = rbPhoneNumber.getActionCommand();
             option = rbPhoneNumber.getText();
@@ -539,7 +539,7 @@ public class HRForm {
                         result.get(i).getDateOfBirth(),
                         result.get(i).getPassport(),
                         result.get(i).getEducation(),
-                        result.get(i).getAdress(),
+                        result.get(i).getAddress(),
                         result.get(i).getPhoneNumber(),
                         result.get(i).getEmail(),
                         result.get(i).getDateOfEmployment(),
@@ -619,13 +619,13 @@ public class HRForm {
                         tfAddress.getText(),
                         tfPhoneNumber.getText(),
                         tfEmail.getText(),
-                        cbboxPost.getSelectedIndex() + 1,
-                        cbboxDepartment.getSelectedIndex() + 1,
+                        comboBoxPost.getSelectedIndex() + 1,
+                        comboBoxDepartment.getSelectedIndex() + 1,
                         Integer.parseInt(spinnerPersonalSalary.getValue().toString())
                 );
 
-                if (cbboxPost.getSelectedIndex() + 1 == dbService.getChiefID()) {
-                    dbService.setChiefWhenUpdate(cbboxDepartment.getSelectedIndex() + 1, currentEmployee.getID());
+                if (comboBoxPost.getSelectedIndex() + 1 == dbService.getChiefID()) {
+                    dbService.setChiefWhenUpdate(comboBoxDepartment.getSelectedIndex() + 1, currentEmployee.getID());
                 }
 
                 if (cbAllowSignIn.isSelected() && !(Objects.isNull(currentRegistrationData))) {
@@ -637,7 +637,7 @@ public class HRForm {
                                 currentRegistrationData.getEmployee_ID(),
                                 tfLogin.getText(),
                                 tfPassword.getText(),
-                                cbboxRole.getSelectedIndex() + 1
+                                comboBoxRole.getSelectedIndex() + 1
                         );
                     } else {
                         JOptionPane.showMessageDialog(
@@ -655,7 +655,7 @@ public class HRForm {
                                 currentEmployee.getID(),
                                 tfLogin.getText(),
                                 tfPassword.getText(),
-                                cbboxRole.getSelectedIndex() + 1
+                                comboBoxRole.getSelectedIndex() + 1
                         );
                     } else {
                         JOptionPane.showMessageDialog(

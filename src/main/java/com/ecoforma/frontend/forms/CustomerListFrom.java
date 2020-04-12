@@ -17,23 +17,23 @@ import static com.ecoforma.App.cashBoxForm;
 
 public class CustomerListFrom {
     JFrame frame;
-    JTable table;
-    JScrollPane tableScroll;
-    JTextField tfSearch;
-    JButton btnSearch, btnStopSearch, btnAccept, btnCancel;
-    JRadioButton rbIndividual, rbLegal;
-    JRadioButton rbName, rbAddress, rbPhone;
+    private JTable table;
+    private final JScrollPane tableScroll;
+    private final JTextField tfSearch;
+    private final JButton btnAccept;
+    private final JRadioButton rbIndividual, rbLegal;
+    private final JRadioButton rbName, rbAddress, rbPhone;
 
-    SaleService dbService;
-
-    Customer currentCustomer;
-
-    private String[] columnsHeader = new String[] {
+    private final String[] columnsHeader = new String[] {
             "Код заказчика",
             "Имя",
             "Адрес доставки",
             "Телефон"
     };
+
+    private Customer currentCustomer;
+
+    private final SaleService dbService;
 
     public CustomerListFrom() {
         dbService = new SaleService();
@@ -51,10 +51,10 @@ public class CustomerListFrom {
         tfSearch = newTextFieldEnabled(50, new Rectangle(12, 12, 200, 26));
         frame.add(tfSearch);
 
-        btnSearch = newButtonEnabled("Поиск", "icon-search", new Rectangle(232, 14, 122, 23));
+        JButton btnSearch = newButtonEnabled("Поиск", "icon-search", new Rectangle(232, 14, 122, 23));
         frame.add(btnSearch);
 
-        btnStopSearch = newButtonEnabled(null, "icon-close", new Rectangle(366, 14, 24, 23));
+        JButton btnStopSearch = newButtonEnabled(null, "icon-close", new Rectangle(366, 14, 24, 23));
         frame.add(btnStopSearch);
 
         rbIndividual = newRadioButton("Физ.лица", "0", new Rectangle(398, 13, 91, 24));
@@ -80,7 +80,7 @@ public class CustomerListFrom {
         rbName.setSelected(true);
         frame.add(rbName);
 
-        rbAddress = newRadioButton("Адрес", "adress", new Rectangle(72, 46, 68, 24));
+        rbAddress = newRadioButton("Адрес", "Address", new Rectangle(72, 46, 68, 24));
         frame.add(rbAddress);
 
         rbPhone = newRadioButton("Телефон", "phoneNumber", new Rectangle(144, 46, 79, 24));
@@ -94,7 +94,7 @@ public class CustomerListFrom {
         btnAccept = newButton("Добавить заказчика", new Rectangle(493, 533, 179, 26));
         frame.add(btnAccept);
 
-        btnCancel = newButtonEnabled("Отмена", new Rectangle(684, 533, 98, 26));
+        JButton btnCancel = newButtonEnabled("Отмена", new Rectangle(684, 533, 98, 26));
         frame.add(btnCancel);
 
         ListSelectionModel selectionModel = table.getSelectionModel();
@@ -135,7 +135,7 @@ public class CustomerListFrom {
             initialTableModel.insertRow(i, new Object[] {
                     data.get(i).getID(),
                     data.get(i).getName(),
-                    data.get(i).getAdress(),
+                    data.get(i).getAddress(),
                     data.get(i).getPhoneNumber()
             });
         }
@@ -147,7 +147,7 @@ public class CustomerListFrom {
         currentCustomer = new Customer();
         currentCustomer.setID(Integer.parseInt(table.getModel().getValueAt(rowIndex, 0).toString()));
         currentCustomer.setName(table.getModel().getValueAt(rowIndex, 1).toString());
-        currentCustomer.setAdress(table.getModel().getValueAt(rowIndex, 2).toString());
+        currentCustomer.setAddress(table.getModel().getValueAt(rowIndex, 2).toString());
         currentCustomer.setPhoneNumber(table.getModel().getValueAt(rowIndex, 3).toString());
 
         btnAccept.setEnabled(true);
@@ -198,7 +198,7 @@ public class CustomerListFrom {
                 searchModel.insertRow(i, new Object[] {
                         result.get(i).getID(),
                         result.get(i).getName(),
-                        result.get(i).getAdress(),
+                        result.get(i).getAddress(),
                         result.get(i).getPhoneNumber()
                 });
             }
@@ -207,7 +207,7 @@ public class CustomerListFrom {
     }
 
     private void stopSearch() {
-        if (!(Objects.isNull(table.getSelectedRow()))) {
+        if (Objects.nonNull(table.getSelectedRow())) {
             tableScroll.setViewportView(null);
 
             table = newTable(setInitialTableModel());
@@ -235,11 +235,11 @@ public class CustomerListFrom {
         cashBoxForm.currentCustomer = new Customer();
         cashBoxForm.currentCustomer.setID(this.currentCustomer.getID());
         cashBoxForm.currentCustomer.setName(this.currentCustomer.getName());
-        cashBoxForm.currentCustomer.setAdress(this.currentCustomer.getAdress());
+        cashBoxForm.currentCustomer.setAddress(this.currentCustomer.getAddress());
         cashBoxForm.currentCustomer.setPhoneNumber(this.currentCustomer.getPhoneNumber());
 
         cashBoxForm.lCustomerNameVal.setText(cashBoxForm.currentCustomer.getName());
-        cashBoxForm.lCustomerAddressVal.setText(cashBoxForm.currentCustomer.getAdress());
+        cashBoxForm.lCustomerAddressVal.setText(cashBoxForm.currentCustomer.getAddress());
         cashBoxForm.lCustomerPhoneVal.setText(cashBoxForm.currentCustomer.getPhoneNumber());
         cashBoxForm.setPaymentEnabled();
         quit();

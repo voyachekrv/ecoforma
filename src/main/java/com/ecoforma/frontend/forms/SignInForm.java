@@ -16,10 +16,10 @@ import static com.ecoforma.App.*;
 // Форма регистрации в систем
 public class SignInForm {
     public JFrame frame;
-    private JTextField tfLogin; // Поле для ввода логина
-    private JPasswordField tfPassword; // Поле для ввода пароля
+    private final JTextField tfLogin; // Поле для ввода логина
+    private final JPasswordField tfPassword; // Поле для ввода пароля
 
-    private SignInService dbService;
+    private final SignInService dbService;
 
     public SignInForm() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Размеры окна

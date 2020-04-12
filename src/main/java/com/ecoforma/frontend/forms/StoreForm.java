@@ -19,24 +19,24 @@ import static com.ecoforma.frontend.services.JComponentFactory.*;
 public class StoreForm {
     CompanyFrame frame;
     private JTable tableProduct, tableStore;
-    private JTextField tfSearchInProducts, tfSearchInStore;
-    private JRadioButton rbName, rbCategory;
-    private JTextField tfName;
-    private JSpinner spinnerCost;
-    private JComboBox cbbxCategory;
-    private JTextArea textAreaCharacteristics;
-    private JButton btnAddToStore, btnInsertProduct, btnUpdateProduct, btnDeleteFromProduct;
-    private JSpinner spinnerIncreaseProduct, spinnerDecreaseProduct, spinnerMoveProduct;
-    private JComboBox cbbxOtherStores;
-    private JButton btnAcceptIncrease, btnAcceptDecrease, btnAcceptMove, btnDeleteFromStore;
-    private JScrollPane tableProductScroll, tableStoreScroll;
+    private final JTextField tfSearchInProducts, tfSearchInStore;
+    private final JRadioButton rbName, rbCategory;
+    private final JTextField tfName;
+    private final JSpinner spinnerCost;
+    private final JComboBox<String> comboBoxCategory;
+    private final JTextArea textAreaCharacteristics;
+    private final JButton btnAddToStore, btnInsertProduct, btnUpdateProduct, btnDeleteFromProduct;
+    private final JSpinner spinnerIncreaseProduct, spinnerDecreaseProduct, spinnerMoveProduct;
+    private final JComboBox<String> comboBoxOtherStores;
+    private final JButton btnAcceptIncrease, btnAcceptDecrease, btnAcceptMove, btnDeleteFromStore;
+    private final JScrollPane tableProductScroll, tableStoreScroll;
 
-    private String[] tableProductHeader = new String[] { "Код товара", "Название", "Категория", "Стоимость" };
-    private String[] tableStoreHeader = new String[] { "Код записи о хранении", "Название", "Количество" };
+    private final String[] tableProductHeader = new String[] { "Код товара", "Название", "Категория", "Стоимость" };
+    private final String[] tableStoreHeader = new String[] { "Код записи о хранении", "Название", "Количество" };
 
-    private StoreService dbService;
+    private final StoreService dbService;
 
-    private Store currentStore;
+    private final Store currentStore;
     private Product currentProduct;
     private ProductToStore currentProductToStore;
 
@@ -125,12 +125,12 @@ public class StoreForm {
         spinnerCost.setToolTipText("Стоимость товара");
         panelEditProduct.add(spinnerCost);
 
-        cbbxCategory = newComboBox(
+        comboBoxCategory = newComboBox(
                 dbService.getCategories(), new Rectangle(414, 11, 224, 25)
         );
-        cbbxCategory.setToolTipText("Категория товара");
-        cbbxCategory.setEnabled(true);
-        panelEditProduct.add(cbbxCategory);
+        comboBoxCategory.setToolTipText("Категория товара");
+        comboBoxCategory.setEnabled(true);
+        panelEditProduct.add(comboBoxCategory);
 
         textAreaCharacteristics = newTextAreaEnabled(12, 41, 626, 133, 100, 20);
         textAreaCharacteristics.setToolTipText("Описание характеристик товара");
@@ -178,11 +178,11 @@ public class StoreForm {
         JLabel lMoveToOtherStore = newLabel("Переместить на склад:", new Rectangle(680, 587, 288, 16));
         frame.add(lMoveToOtherStore);
 
-        cbbxOtherStores = newComboBox(
+        comboBoxOtherStores = newComboBox(
                 dbService.getStoresBesides(currentStore.getID()),
                 new Rectangle(680, 608, 288, 25)
         );
-        frame.add(cbbxOtherStores);
+        frame.add(comboBoxOtherStores);
 
         JLabel lQuantityMove = newLabel("В количестве, ед.", new Rectangle(680, 645, 124, 26));
         frame.add(lQuantityMove);
@@ -280,7 +280,7 @@ public class StoreForm {
 
         tfName.setText(currentProduct.getName());
         spinnerCost.setValue(currentProduct.getCost());
-        cbbxCategory.setSelectedIndex(currentProduct.getProductCategory_ID() - 1);
+        comboBoxCategory.setSelectedIndex(currentProduct.getProductCategory_ID() - 1);
         textAreaCharacteristics.setText(currentProduct.getCharacteristics());
 
         btnInsertProduct.setEnabled(false);
@@ -296,7 +296,7 @@ public class StoreForm {
         spinnerIncreaseProduct.setEnabled(true);
         spinnerDecreaseProduct.setEnabled(true);
         spinnerMoveProduct.setEnabled(true);
-        cbbxOtherStores.setEnabled(true);
+        comboBoxOtherStores.setEnabled(true);
         btnAcceptIncrease.setEnabled(true);
         btnAcceptDecrease.setEnabled(true);
         btnAcceptMove.setEnabled(true);
@@ -328,7 +328,7 @@ public class StoreForm {
 
         tfName.setText("");
         spinnerCost.setValue(1);
-        cbbxCategory.setSelectedIndex(0);
+        comboBoxCategory.setSelectedIndex(0);
         textAreaCharacteristics.setText("");
 
         btnInsertProduct.setEnabled(true);
@@ -345,7 +345,7 @@ public class StoreForm {
         spinnerIncreaseProduct.setEnabled(false);
         spinnerDecreaseProduct.setEnabled(false);
         spinnerMoveProduct.setEnabled(false);
-        cbbxOtherStores.setEnabled(false);
+        comboBoxOtherStores.setEnabled(false);
         btnAcceptIncrease.setEnabled(false);
         btnAcceptDecrease.setEnabled(false);
         btnAcceptMove.setEnabled(false);
@@ -355,7 +355,7 @@ public class StoreForm {
         spinnerDecreaseProduct.setValue(0);
         spinnerMoveProduct.setValue(0);
 
-        cbbxOtherStores.setSelectedIndex(0);
+        comboBoxOtherStores.setSelectedIndex(0);
     }
 
     private void addUnpickStoreEscape() {
@@ -409,7 +409,7 @@ public class StoreForm {
                         tfName.getText(),
                         textAreaCharacteristics.getText(),
                         (Integer) spinnerCost.getValue(),
-                        cbbxCategory.getSelectedIndex() + 1
+                        comboBoxCategory.getSelectedIndex() + 1
                 );
 
                 JOptionPane.showMessageDialog(
@@ -440,7 +440,7 @@ public class StoreForm {
                     tfName.getText(),
                     textAreaCharacteristics.getText(),
                     (Integer) spinnerCost.getValue(),
-                    cbbxCategory.getSelectedIndex() + 1
+                    comboBoxCategory.getSelectedIndex() + 1
             );
 
             unpickProduct();
@@ -578,7 +578,7 @@ public class StoreForm {
             }
 
             if ((int) spinnerMoveProduct.getValue() > 0) {
-                int storeID = dbService.getStoreIDByName(Objects.requireNonNull(cbbxOtherStores.getSelectedItem()).toString());
+                int storeID = dbService.getStoreIDByName(Objects.requireNonNull(comboBoxOtherStores.getSelectedItem()).toString());
                 ArrayList<ProductToStore> productsInOtherStory = dbService.getProductToStore(currentProductToStore.getProduct_ID(), storeID);
 
                 if (productsInOtherStory.size() != 0) {

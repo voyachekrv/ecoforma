@@ -22,18 +22,18 @@ import static com.ecoforma.frontend.services.JComponentFactory.*;
 public class DeliveryForm {
     JFrame frame;
 
-    JTable tableOrders, tableEmployees;
-    JScrollPane tableOrdersScroll, tableEmployeesScroll;
-    JTextField tfSearch;
-    JSpinner spinnerDeliveryStatus;
-    JButton btnDeliveryStatus;
-    JLabelDefaultText lInfProduct, lInfCount, lInfStoreAddress, lInfCustomerAddress, lInfCustomerName, lInfCustomerPhone;
-    JButton btnStopSearch, btnSearch;
+    private JTable tableOrders, tableEmployees;
+    private final JScrollPane tableOrdersScroll, tableEmployeesScroll;
+    private final JTextField tfSearch;
+    private final JSpinner spinnerDeliveryStatus;
+    private final JButton btnDeliveryStatus;
+    private final JLabelDefaultText lInfProduct, lInfCount, lInfStoreAddress, lInfCustomerAddress, lInfCustomerName, lInfCustomerPhone;
+    private final JButton btnStopSearch, btnSearch;
 
-    DeliveryService dbService;
+    private final DeliveryService dbService;
 
-    Integer currentOrderID;
-    Integer currentEmployeeID;
+    private Integer currentOrderID;
+    private Integer currentEmployeeID;
 
     private final String[] employeeColumns = new String[] {
             "Код",

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public interface DeliveryMapper {
     @Select("SELECT delivery.ID, delivery.order_ID AS 'orderID', product.name AS 'productName', orders.count,  " +
-            "store.name AS 'storeName', store.adress AS 'addressFrom', customer.adress AS 'addressTo', " +
+            "store.name AS 'storeName', store.address AS 'addressFrom', customer.address AS 'addressTo', " +
             "customer.name 'customerName', customer.phoneNumber, delivery.status, delivery.employee_ID AS 'employeeID' " +
             "FROM delivery " +
             "JOIN orders ON  delivery.order_ID = orders.ID " +

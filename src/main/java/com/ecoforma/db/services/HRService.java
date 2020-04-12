@@ -70,7 +70,7 @@ public class HRService {
     public void deleteRegistrationData(int employee_ID) {
         try (SqlSession session = DbSession.startSession()) {
             HRMapper mapper = session.getMapper(HRMapper.class);
-            mapper.deleteEmployee(employee_ID);
+            mapper.deleteRegistrationData(employee_ID);
             session.commit();
         }
     }
@@ -81,7 +81,7 @@ public class HRService {
             String dateOfBirth,
             String passport,
             String education,
-            String adress,
+            String address,
             String phoneNumber,
             String email,
             int post_ID,
@@ -90,7 +90,7 @@ public class HRService {
     ) {
         try (SqlSession session = DbSession.startSession()) {
             HRMapper mapper = session.getMapper(HRMapper.class);
-            mapper.updateEmployee(ID, name, dateOfBirth, passport, education, adress, phoneNumber, email, post_ID, department_ID, personalSalary);
+            mapper.updateEmployee(ID, name, dateOfBirth, passport, education, address, phoneNumber, email, post_ID, department_ID, personalSalary);
             session.commit();
         }
     }
@@ -131,7 +131,7 @@ public class HRService {
             String dateOfBirth,
             String passport,
             String education,
-            String adress,
+            String address,
             String phoneNumber,
             String email,
             int post_ID,
@@ -139,7 +139,7 @@ public class HRService {
     ) {
         try (SqlSession session = DbSession.startSession()) {
             HRMapper mapper = session.getMapper(HRMapper.class);
-            mapper.insertEmployee(name, dateOfBirth, passport, education, adress, phoneNumber, email, post_ID, department_ID);
+            mapper.insertEmployee(name, dateOfBirth, passport, education, address, phoneNumber, email, post_ID, department_ID);
             session.commit();
         }
     }

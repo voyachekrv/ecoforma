@@ -6,7 +6,7 @@ public class EmployeeView {
     private String dateOfBirth;
     private String passport;
     private String education;
-    private String adress;
+    private String address;
     private String phoneNumber;
     private String email;
     private String dateOfEmployment;
@@ -54,12 +54,12 @@ public class EmployeeView {
         this.education = education;
     }
 
-    public String getAdress() {
-        return adress;
+    public String getAddress() {
+        return address;
     }
 
-    public void setAdress(String adress) {
-        this.adress = adress;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getPhoneNumber() {
