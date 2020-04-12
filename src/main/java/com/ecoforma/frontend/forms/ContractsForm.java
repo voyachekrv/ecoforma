@@ -2,7 +2,7 @@ package com.ecoforma.frontend.forms;
 
 import com.ecoforma.db.entities.Contract;
 import com.ecoforma.db.services.SaleService;
-import com.ecoforma.frontend.JDateSpinner;
+import com.ecoforma.frontend.components.JDateSpinner;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;

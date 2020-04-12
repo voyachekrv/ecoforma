@@ -4,7 +4,7 @@ import com.ecoforma.db.entities.ContractView;
 import com.ecoforma.db.entities.IndividualPersonView;
 import com.ecoforma.db.entities.LegalPersonView;
 import com.ecoforma.db.services.SaleService;
-import com.ecoforma.frontend.CompanyFrame;
+import com.ecoforma.frontend.components.CompanyFrame;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;

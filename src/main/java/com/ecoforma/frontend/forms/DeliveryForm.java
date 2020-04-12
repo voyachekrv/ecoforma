@@ -3,8 +3,8 @@ package com.ecoforma.frontend.forms;
 import com.ecoforma.db.entities.Employee;
 import com.ecoforma.db.entities.Order;
 import com.ecoforma.db.services.DeliveryService;
-import com.ecoforma.frontend.CompanyFrame;
-import com.ecoforma.frontend.JLabelDefaultText;
+import com.ecoforma.frontend.components.CompanyFrame;
+import com.ecoforma.frontend.components.JLabelDefaultText;
 import com.ecoforma.frontend.services.JComponentFactory;
 import org.jetbrains.annotations.NotNull;
 

@@ -1,7 +1,7 @@
 package com.ecoforma.frontend.forms;
 
 import com.ecoforma.db.services.HRService;
-import com.ecoforma.frontend.JDateSpinner;
+import com.ecoforma.frontend.components.JDateSpinner;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;

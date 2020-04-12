@@ -1,4 +1,4 @@
-package com.ecoforma.frontend;
+package com.ecoforma.frontend.components;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;

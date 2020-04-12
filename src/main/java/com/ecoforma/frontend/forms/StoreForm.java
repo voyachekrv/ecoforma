@@ -2,7 +2,7 @@ package com.ecoforma.frontend.forms;
 
 import com.ecoforma.db.entities.*;
 import com.ecoforma.db.services.StoreService;
-import com.ecoforma.frontend.CompanyFrame;
+import com.ecoforma.frontend.components.CompanyFrame;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;

@@ -4,8 +4,8 @@ import com.ecoforma.db.entities.Employee;
 import com.ecoforma.db.entities.EmployeeView;
 import com.ecoforma.db.entities.RegistrationData;
 import com.ecoforma.db.services.HRService;
-import com.ecoforma.frontend.CompanyFrame;
-import com.ecoforma.frontend.JDateSpinner;
+import com.ecoforma.frontend.components.CompanyFrame;
+import com.ecoforma.frontend.components.JDateSpinner;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
